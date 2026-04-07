@@ -70,20 +70,20 @@
 
 <section class="panel">
   <h2>Frequency Bands</h2>
-  <p class="section-note">Start from easier bands first, then move to harder ones.</p>
+  <p class="section-note">These bands show how often a word appeared in your Economist source data over the last 10 years. Bigger numbers mean the word appeared more often.</p>
   <div class="band-legend simple">
-    <span>Earlier bands = more common words</span>
-    <span>Later bands = less common words</span>
+    <span><strong>50~99</strong> means the word appeared between 50 and 99 times</span>
+    <span><strong>2000~</strong> means the word appeared 2000 times or more</span>
   </div>
   <div class="band-list friendlier">
     {% for band in bands %}
     <a class="band-pill band-pill-friendly" href="/dictionary/band/{{ band.best_band_rank }}">
       <strong>
-        {% if band.best_band_rank == 50 %}Most common
-        {% elif band.best_band_rank == 100 %}Common
-        {% elif band.best_band_rank == 200 %}Less common
-        {% elif band.best_band_rank == 500 %}Advanced
-        {% else %}Very advanced
+        {% if band.best_band_rank == 50 %}50 to 99 times
+        {% elif band.best_band_rank == 100 %}100 to 199 times
+        {% elif band.best_band_rank == 200 %}200 to 499 times
+        {% elif band.best_band_rank == 500 %}500 to 1999 times
+        {% else %}2000+ times
         {% endif %}
       </strong>
       <small>{{ band.best_band_label }}</small>
