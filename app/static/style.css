@@ -125,6 +125,10 @@ a {
   margin-bottom: 1.5rem;
 }
 
+.panel-grid.compact-panels {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
 .starter-grid,
 .visual-grid,
 .empty-grid {
@@ -205,6 +209,10 @@ h1 {
   gap: 0.4rem;
   margin: 1rem 0 1.1rem;
   color: var(--muted);
+}
+
+.band-legend.simple {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .starter-card,
@@ -448,6 +456,33 @@ h1 {
   padding: 0.65rem 0.95rem;
   border-radius: 999px;
   background: var(--accent-soft);
+}
+
+.band-list.friendlier {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.band-pill-friendly {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+  min-height: 110px;
+  border-radius: 20px;
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(220, 235, 230, 0.78), rgba(255, 250, 242, 0.96));
+}
+
+.band-pill-friendly strong {
+  font-size: 1rem;
+}
+
+.band-pill-friendly small {
+  color: var(--muted);
+}
+
+.band-pill-friendly span {
+  margin-top: 0.35rem;
 }
 
 .band-pill span,

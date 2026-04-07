@@ -4,151 +4,112 @@
 <section class="hero">
   <div>
     <p class="eyebrow">Personal vocabulary system</p>
-    <h1>Turn 10 years of Economist vocabulary into a study workflow.</h1>
-    <p class="lede">Use a placement test to find your level, train with guided multiple-choice practice, and browse the dictionary by frequency band and letter.</p>
+    <h1>Learn Economist vocabulary with three simple tools.</h1>
+    <p class="lede">Test your level, practise a short session, or browse the dictionary.</p>
     <div class="callout">
-      <strong>Recommended next step:</strong>
+      <strong>Start here:</strong>
       {% if latest_test %}
-      Start learning around {{ recommended_band }} and enrich the words you miss most often.
+      Your latest result suggests starting around {{ recommended_band }}.
       {% else %}
-      Take the level test first so the app can recommend the right starting band.
+      Take the level test first. It only takes a few minutes.
       {% endif %}
+    </div>
+    <div class="action-row">
+      <a class="button" href="/test">Start Test</a>
+      <a class="button secondary" href="/dictionary">Open Dictionary</a>
     </div>
   </div>
   <div class="stat-grid">
     <article class="stat-card">
       <span>Total Words</span>
       <strong>{{ stats.total_words }}</strong>
-      <small>All unique vocabulary items currently stored in the database.</small>
+      <small>Vocabulary currently in the app.</small>
     </article>
     <article class="stat-card">
       <span>Tests Taken</span>
       <strong>{{ stats.tests_taken }}</strong>
-      <small>How many placement test sessions have been completed so far.</small>
+      <small>Placement tests completed so far.</small>
     </article>
     <article class="stat-card">
       <span>Learning Runs</span>
       <strong>{{ stats.learning_runs }}</strong>
-      <small>The number of learning sessions that have been started and saved.</small>
+      <small>Learning sessions already saved.</small>
     </article>
     <article class="stat-card">
       <span>Synonym Ready</span>
       <strong>{{ stats.words_with_synonyms }}</strong>
-      <small>Words that already have synonym data prepared for richer practice.</small>
+      <small>Words with richer practice content.</small>
     </article>
   </div>
 </section>
 
-<section class="panel-grid">
-  <article class="panel inset">
-    <p class="eyebrow">Review Queue</p>
-    <h2>{{ missed_words_count }} recent misses</h2>
-    <p>Turn wrong answers from test and learning into a focused review list.</p>
-    <a class="button secondary" href="/review/missed">Open Missed Words</a>
-  </article>
-</section>
-
-<section class="panel-grid">
-  <article class="panel inset">
-    <p class="eyebrow">Latest Test</p>
-    {% if latest_test %}
-    <h2>{{ latest_test.estimated_band_label or "Getting Started" }}</h2>
-    <p>Last placement test score: {{ latest_test.score }} correct answers.</p>
-    <a class="text-link" href="/test/{{ latest_test.id }}/result">Review result</a>
-    {% else %}
-    <h2>No test yet</h2>
-    <p>Take one placement test to estimate your working frequency band.</p>
-    {% endif %}
-  </article>
-  <article class="panel inset">
-    <p class="eyebrow">Latest Learning</p>
-    {% if latest_learning %}
-    <h2>{{ latest_learning.score }} points</h2>
-    <p>Your most recent learning session is saved, so you can compare progress over time.</p>
-    <a class="text-link" href="/learning/{{ latest_learning.id }}/result">Review session</a>
-    {% else %}
-    <h2>No learning session yet</h2>
-    <p>Start with definitions now, then add synonyms and example sentences gradually.</p>
-    {% endif %}
-  </article>
-</section>
-
-<section class="panel-grid">
-  <article class="panel">
-    <h2>1. Level Test</h2>
-    <p>Sample words from different frequency bands and estimate your current vocabulary range.</p>
-    <a class="button" href="/test">Start Test</a>
-  </article>
-  <article class="panel">
-    <h2>2. Learning</h2>
-    <p>Practice definitions now, then gradually enrich words with synonyms and example sentences for deeper training.</p>
-    <a class="button" href="/learning">Open Learning</a>
-  </article>
-  <article class="panel">
-    <h2>3. Dictionary</h2>
-    <p>Browse by frequency first, then drill into A-Z to see meanings, sources, notes, and custom learning content.</p>
-    <a class="button" href="/dictionary">Browse Dictionary</a>
-  </article>
-</section>
-
 <section class="panel">
-  <p class="eyebrow">How To Start</p>
-  <h2>Your First 10 Minutes</h2>
+  <p class="eyebrow">Choose One</p>
+  <h2>What do you want to do today?</h2>
   <div class="starter-grid">
     <article class="starter-card">
       <div class="starter-number">1</div>
-      <h3>Take One Test</h3>
-      <p>Start with the placement test so the app can estimate which frequency band fits you best.</p>
+      <h3>Find your level</h3>
+      <p>Take a quick test and get a starting band.</p>
       <a class="text-link" href="/test">Open Level Test</a>
     </article>
     <article class="starter-card">
       <div class="starter-number">2</div>
-      <h3>Practice A Short Session</h3>
-      <p>Use learning mode for a quick round of definition practice and review the words you miss.</p>
+      <h3>Practise now</h3>
+      <p>Run a short learning session and review mistakes.</p>
       <a class="text-link" href="/learning">Open Learning</a>
     </article>
     <article class="starter-card">
       <div class="starter-number">3</div>
-      <h3>Browse And Save Words</h3>
-      <p>Open the dictionary, check meanings by band, and add notes or enrichment to important words.</p>
+      <h3>Look up words</h3>
+      <p>Browse the dictionary and save notes for useful words.</p>
       <a class="text-link" href="/dictionary">Open Dictionary</a>
     </article>
   </div>
 </section>
 
 <section class="panel">
-  <p class="eyebrow">Quick View</p>
-  <h2>What This App Helps You Do</h2>
-  <div class="visual-grid">
-    <article class="visual-card">
-      <div class="visual-dot"></div>
-      <h3>Find Your Level</h3>
-      <p>Use word-frequency bands to see whether you are working with easier, medium, or harder Economist vocabulary.</p>
-    </article>
-    <article class="visual-card">
-      <div class="visual-dot"></div>
-      <h3>Practice In Small Loops</h3>
-      <p>Answer a question, review the result, then move forward. The app keeps the flow short and manageable.</p>
-    </article>
-    <article class="visual-card">
-      <div class="visual-dot"></div>
-      <h3>Build A Personal Word Bank</h3>
-      <p>Keep notes, examples, synonyms, and missed words in one place so your study material becomes more personal over time.</p>
-    </article>
+  <h2>Frequency Bands</h2>
+  <p class="section-note">Start from easier bands first, then move to harder ones.</p>
+  <div class="band-legend simple">
+    <span>Earlier bands = more common words</span>
+    <span>Later bands = less common words</span>
+  </div>
+  <div class="band-list friendlier">
+    {% for band in bands %}
+    <a class="band-pill band-pill-friendly" href="/dictionary/band/{{ band.best_band_rank }}">
+      <strong>
+        {% if band.best_band_rank == 50 %}Most common
+        {% elif band.best_band_rank == 100 %}Common
+        {% elif band.best_band_rank == 200 %}Less common
+        {% elif band.best_band_rank == 500 %}Advanced
+        {% else %}Very advanced
+        {% endif %}
+      </strong>
+      <small>{{ band.best_band_label }}</small>
+      <span>{{ band.total }} words</span>
+    </a>
+    {% endfor %}
   </div>
 </section>
 
-<section class="panel">
-  <h2>Frequency Bands</h2>
-  <p class="section-note">These groups organize words by how often they appeared in your Economist source lists. The label on the left is the original band name, and the bold number on the right is how many unique words from that band are currently stored in the database.</p>
-  <div class="band-legend">
-    <span><strong>Band label</strong>: the original frequency range from your spreadsheet files</span>
-    <span><strong>Bold number</strong>: unique words currently available in this app for that band</span>
-  </div>
-  <div class="band-list">
-    {% for band in bands %}
-    <a class="band-pill" href="/dictionary/band/{{ band.best_band_rank }}">{{ band.best_band_label }} <span>{{ band.total }}</span></a>
-    {% endfor %}
-  </div>
+<section class="panel-grid compact-panels">
+  <article class="panel inset">
+    <p class="eyebrow">Latest Test</p>
+    {% if latest_test %}
+    <h2>{{ latest_test.estimated_band_label or "Getting Started" }}</h2>
+    <p>Last score: {{ latest_test.score }} correct answers.</p>
+    <a class="text-link" href="/test/{{ latest_test.id }}/result">Review result</a>
+    {% else %}
+    <h2>No test yet</h2>
+    <p>Take one test to get your starting point.</p>
+    {% endif %}
+  </article>
+  <article class="panel inset">
+    <p class="eyebrow">Missed Words</p>
+    <h2>{{ missed_words_count }} to review</h2>
+    <p>Use your mistake list as a quick revision queue.</p>
+    <a class="text-link" href="/review/missed">Open missed words</a>
+  </article>
 </section>
 {% endblock %}
