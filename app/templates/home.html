@@ -79,14 +79,6 @@
     {% for band in bands %}
     <a class="band-pill band-pill-friendly" href="/dictionary/band/{{ band.best_band_rank }}">
       <strong>{{ band.range_label }}</strong>
-      <small>
-        {% if band.best_band_rank == 50 %}appeared 50 to 99 times
-        {% elif band.best_band_rank == 100 %}appeared 100 to 199 times
-        {% elif band.best_band_rank == 200 %}appeared 200 to 499 times
-        {% elif band.best_band_rank == 500 %}appeared 500 to 1999 times
-        {% else %}appeared 2000 times or more
-        {% endif %}
-      </small>
       <span>{{ band.workbook_total }} words</span>
     </a>
     {% endfor %}
