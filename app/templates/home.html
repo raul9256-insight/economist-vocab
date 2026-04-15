@@ -1,111 +1,135 @@
 {% extends "base.html" %}
 {% block title %}Home | Economist Vocabulary Lab{% endblock %}
 {% block content %}
-<section class="dashboard-simple-hero">
-  <article class="panel dashboard-v2-card dashboard-simple-main">
+<section class="dashboard-refined-head">
+  <div>
     <p class="eyebrow">Dashboard</p>
-    <h1>Learn Economist vocabulary in a simple flow.</h1>
-    <p class="lede">Take a test, practise the right band, and use the dictionary only when you need it.</p>
-    <blockquote class="quote-card compact-quote">
-      <p>“Without grammar very little can be conveyed, without vocabulary nothing can be conveyed.”</p>
-      <footer>Wilkins, 1972, p. 111</footer>
-    </blockquote>
+    <h1>Hello, Lawrence.</h1>
+    <p class="lede">Build your Economist vocabulary with a clear daily flow: test, learn, and review.</p>
+  </div>
+  <div class="dashboard-refined-chips">
+    <div class="refined-chip warm">
+      <strong>{{ stats.tests_taken }}</strong>
+      <span>tests taken</span>
+    </div>
+    <div class="refined-chip blue">
+      <strong>{{ recommended_band.split(' (')[0] if recommended_band else '50~99' }}</strong>
+      <span>current band</span>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-refined-top">
+  <article class="panel dashboard-v2-card refined-feature-card">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">Today's Goal</p>
+        <h2>Keep your study moving</h2>
+      </div>
+      <span class="goal-pill">3 core steps</span>
+    </div>
+    <div class="goal-progress-head">
+      <strong>Study flow</strong>
+      <span>Test → Learn → Review</span>
+    </div>
+    <div class="progress-track refined-track">
+      <div class="progress-fill blue-fill" style="width: 72%"></div>
+    </div>
+    <p class="goal-note">Start with your level test, then work the recommended band, then check missed words or the dictionary.</p>
     <div class="action-row">
       <a class="button" href="/test">Start Level Test</a>
       <a class="button secondary" href="/learning">Continue Learning</a>
     </div>
   </article>
 
-  <article class="panel dashboard-v2-card dashboard-simple-side">
-    <p class="eyebrow">Current Focus</p>
-    <h2>{{ recommended_band.split(' (')[0] if recommended_band else '50~99' }}</h2>
-    <p class="section-note">Recommended starting band based on your latest level test.</p>
-    <div class="summary-stack">
-      <div class="summary-line">
-        <span>Tests taken</span>
-        <strong>{{ stats.tests_taken }}</strong>
+  <article class="panel dashboard-v2-card refined-progress-card">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">Your Progress</p>
+        <h2>At a glance</h2>
       </div>
-      <div class="summary-line">
-        <span>Learning sessions</span>
+    </div>
+    <div class="refined-stats-grid">
+      <div class="refined-stat">
+        <span>Total Words</span>
+        <strong>{{ stats.total_words }}</strong>
+      </div>
+      <div class="refined-stat">
+        <span>Learning Runs</span>
         <strong>{{ stats.learning_runs }}</strong>
       </div>
-      <div class="summary-line">
-        <span>Missed words</span>
+      <div class="refined-stat">
+        <span>Missed Words</span>
         <strong>{{ missed_words_count }}</strong>
+      </div>
+      <div class="refined-stat">
+        <span>Synonym Ready</span>
+        <strong>{{ stats.words_with_synonyms }}</strong>
       </div>
     </div>
   </article>
 </section>
 
-<section class="panel dashboard-v2-card dashboard-simple-actions">
-  <div class="card-head">
+<section class="panel dashboard-v2-card refined-words-panel">
+  <div class="card-head tight">
     <div>
-      <p class="eyebrow">Start Here</p>
-      <h2>Three things you can do</h2>
+      <p class="eyebrow">Today's Words</p>
+      <h2>Start with a few words</h2>
+    </div>
+    <a class="text-link" href="/dictionary">View all</a>
+  </div>
+  <div class="refined-words-grid">
+    {% for word in spotlight_words[:3] %}
+    <a class="refined-word-card" href="/word/{{ word.id }}">
+      <div class="refined-word-head">
+        <strong>{{ word.lemma }}</strong>
+        <span class="word-type-pill">{{ word.parts_of_speech|join(", ") if word.parts_of_speech else "type" }}</span>
+      </div>
+      <span class="refined-word-band">{{ word.best_band_label }}</span>
+      <p>{{ word.english_definition or (word.chinese_preview|join(" / ")) or "Open this word to add richer details." }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel dashboard-v2-card refined-recommend-panel">
+  <div class="card-head tight">
+    <div>
+      <p class="eyebrow">Recommended For You</p>
+      <h2>Choose your next step</h2>
     </div>
   </div>
-  <div class="hero-actions-grid">
-    <a class="simple-action-card" href="/test">
-      <span class="step-number">1</span>
-      <strong>Find your level</strong>
-      <p>Take a short placement test.</p>
+  <div class="refined-recommend-grid">
+    <a class="recommend-card recommend-card-blue" href="/test">
+      <span class="recommend-tag">Placement</span>
+      <strong>Level Test</strong>
+      <p>{% if latest_test %}Latest result: {{ latest_test.estimated_band_label }}.{% else %}Take your first test to unlock a starting band.{% endif %}</p>
     </a>
-    <a class="simple-action-card" href="/learning">
-      <span class="step-number">2</span>
-      <strong>Practise</strong>
-      <p>Study words from the right band.</p>
+    <a class="recommend-card recommend-card-pink" href="/learning">
+      <span class="recommend-tag">Practice</span>
+      <strong>Learning Session</strong>
+      <p>{% if latest_learning %}Latest score: {{ latest_learning.score }}/{{ latest_learning.total_questions }}.{% else %}Start a short session in your recommended band.{% endif %}</p>
     </a>
-    <a class="simple-action-card" href="/dictionary">
-      <span class="step-number">3</span>
-      <strong>Open dictionary</strong>
-      <p>Search a word or browse by band.</p>
+    <a class="recommend-card recommend-card-sand" href="/review/missed">
+      <span class="recommend-tag">Review</span>
+      <strong>Missed Words</strong>
+      <p>{{ missed_words_count }} words are waiting in your review list.</p>
     </a>
   </div>
 </section>
 
-<section class="panel dashboard-v2-card dashboard-simple-summary">
-  <div class="card-head">
-    <div>
-      <p class="eyebrow">Overview</p>
-      <h2>At a glance</h2>
-    </div>
-  </div>
-  <div class="summary-grid">
-    <div class="summary-card">
-      <span>Total Words</span>
-      <strong>{{ stats.total_words }}</strong>
-      <small>Words in your database.</small>
-    </div>
-    <div class="summary-card">
-      <span>Latest Test</span>
-      <strong>{{ latest_test.estimated_band_label if latest_test else "No test yet" }}</strong>
-      <small>{% if latest_test %}{{ latest_test.score }} correct answers.{% else %}Take your first test to get a band.{% endif %}</small>
-    </div>
-    <div class="summary-card">
-      <span>Latest Learning</span>
-      <strong>{% if latest_learning %}{{ latest_learning.score }}/{{ latest_learning.total_questions }}{% else %}No session yet{% endif %}</strong>
-      <small>{% if latest_learning %}Most recent learning score.{% else %}Start a session when ready.{% endif %}</small>
-    </div>
-    <div class="summary-card">
-      <span>Synonym Ready</span>
-      <strong>{{ stats.words_with_synonyms }}</strong>
-      <small>Words with synonyms added.</small>
-    </div>
-  </div>
-</section>
-
-<section class="panel dashboard-v2-card">
-  <div class="card-head">
+<section class="panel dashboard-v2-card refined-band-panel">
+  <div class="card-head tight">
     <div>
       <p class="eyebrow">Frequency Bands</p>
-      <h2>Choose a band</h2>
+      <h2>Browse by appearance count</h2>
     </div>
     <a class="text-link" href="/dictionary">Open dictionary</a>
   </div>
-  <p class="section-note">The number means how many times the word appeared in your Economist source data over the last 10 years. Bigger number means the word appeared more often.</p>
-  <div class="band-grid-v2 compact">
+  <p class="section-note">Higher bands mean the word appeared more often in your Economist source data over the last 10 years.</p>
+  <div class="band-grid-v2 refined-band-grid">
     {% for band in bands %}
-    <a class="band-card-v2" href="/dictionary/band/{{ band.best_band_rank }}">
+    <a class="band-card-v2 refined-band-card" href="/dictionary/band/{{ band.best_band_rank }}">
       <strong>{{ band.range_label }}</strong>
       <small>{{ band.workbook_total }} words</small>
     </a>
