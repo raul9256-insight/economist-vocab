@@ -1706,11 +1706,207 @@ input[type="file"] {
   background: rgba(255, 255, 255, 0.82);
 }
 
+.word-detail-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.word-detail-hero,
+.word-section-card,
+.word-note-card,
+.word-edit-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 248, 255, 0.94));
+}
+
+.word-detail-topbar,
+.word-detail-main,
+.word-detail-tabs,
+.word-detail-grid,
+.word-definition-grid,
+.word-chip-row,
+.source-reference-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.word-detail-topbar {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.word-back-link {
+  color: #5d6783;
+  font-weight: 600;
+}
+
+.word-band-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(95, 115, 255, 0.12);
+  color: #5666f1;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.word-detail-main {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.word-detail-heading h1 {
+  margin-bottom: 0.3rem;
+}
+
+.word-pronunciation {
+  margin: 0;
+  color: #6f7890;
+  font-size: 1rem;
+}
+
+.word-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.word-stat-card,
+.source-reference-card {
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  background: rgba(248, 249, 255, 0.88);
+  border: 1px solid rgba(112, 125, 184, 0.12);
+}
+
+.word-stat-card span,
+.source-reference-card span,
+.source-reference-card small {
+  display: block;
+  color: #6f7890;
+}
+
+.word-stat-card strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.35rem;
+}
+
+.word-detail-tabs {
+  grid-template-columns: repeat(4, max-content);
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.word-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.62rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(247, 249, 255, 0.9);
+  color: #6f7890;
+  border: 1px solid rgba(112, 125, 184, 0.12);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.word-tab.active {
+  background: rgba(95, 115, 255, 0.12);
+  color: #5666f1;
+}
+
+.word-detail-grid {
+  grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+  align-items: start;
+}
+
+.word-detail-content,
+.word-detail-sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.word-definition-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.word-info-card {
+  padding: 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(112, 125, 184, 0.14);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.word-info-card.primary {
+  background: linear-gradient(180deg, rgba(232, 238, 255, 0.9), rgba(255, 255, 255, 0.92));
+}
+
+.word-info-card p,
+.word-note-card p {
+  margin: 0;
+  color: #687086;
+  line-height: 1.55;
+}
+
+.clean-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #687086;
+}
+
+.clean-list li + li {
+  margin-top: 0.45rem;
+}
+
+.word-chip-row {
+  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+}
+
+.soft-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(95, 115, 255, 0.1);
+  color: #5666f1;
+  font-size: 0.9rem;
+}
+
+.source-reference-list {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.source-reference-card strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.source-reference-card small {
+  margin-top: 0.3rem;
+}
+
+.word-note-card {
+  min-height: 0;
+}
+
+.refined-form textarea {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(112, 125, 184, 0.16);
+}
+
+.word-save-button {
+  width: 100%;
+}
+
 @media (max-width: 1120px) {
   .app-shell {
     grid-template-columns: 220px minmax(0, 1fr);
   }
 
+  .word-detail-grid,
+  .word-definition-grid,
   .dashboard-refined-top,
   .dashboard-simple-hero,
   .dashboard-v2-grid,
@@ -1749,6 +1945,8 @@ input[type="file"] {
   .dashboard-refined-head,
   .dashboard-v2-intro,
   .dashboard-v2-stats,
+  .word-detail-main,
+  .word-detail-stats,
   .dashboard-simple-hero,
   .refined-stats-grid,
   .refined-words-grid,
@@ -1780,5 +1978,9 @@ input[type="file"] {
 
   .band-grid-v2.compact {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .word-detail-tabs {
+    grid-template-columns: repeat(2, max-content);
   }
 }

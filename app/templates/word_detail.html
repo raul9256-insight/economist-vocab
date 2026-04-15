@@ -1,102 +1,162 @@
 {% extends "base.html" %}
 {% block title %}{{ word.lemma }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
-<section class="word-hero">
-  <article class="word-main-card">
-    <p class="eyebrow">{{ word.best_band_label }}</p>
-    <div class="word-main-top">
-      <div>
+<section class="word-detail-shell">
+  <article class="panel dashboard-v2-card word-detail-hero">
+    <div class="word-detail-topbar">
+      <a class="word-back-link" href="/dictionary">← Back to dictionary</a>
+      <span class="word-band-pill">{{ word.best_band_label }}</span>
+    </div>
+
+    <div class="word-detail-main">
+      <div class="word-detail-heading">
         <h1>{{ word.lemma }}</h1>
-        <div class="info-badges">
-          <span class="info-chip">{{ parts_of_speech|join(", ") if parts_of_speech else "Unknown type" }}</span>
-          <span class="info-chip">Status: {{ word.status }}</span>
-          <span class="info-chip">Correct {{ word.correct_count }}</span>
-          <span class="info-chip">Wrong {{ word.wrong_count }}</span>
+        <p class="word-pronunciation">{{ parts_of_speech|join(", ") if parts_of_speech else "Unknown type" }}</p>
+      </div>
+
+      <div class="word-detail-stats">
+        <div class="word-stat-card">
+          <span>Status</span>
+          <strong>{{ word.status }}</strong>
+        </div>
+        <div class="word-stat-card">
+          <span>Correct</span>
+          <strong>{{ word.correct_count }}</strong>
+        </div>
+        <div class="word-stat-card">
+          <span>Wrong</span>
+          <strong>{{ word.wrong_count }}</strong>
         </div>
       </div>
-      <a class="button secondary" href="/dictionary">Back To Dictionary</a>
     </div>
 
-    <div class="word-focus-grid">
-      <section class="focus-card primary">
-        <span class="focus-label">English Definition</span>
-        <p>{{ english_definition or "Not added yet." }}</p>
-      </section>
-      <section class="focus-card">
-        <span class="focus-label">Example Sentence</span>
-        <p>{{ example_sentence or "Not added yet." }}</p>
-      </section>
-      <section class="focus-card">
-        <span class="focus-label">Synonyms</span>
-        <p>{{ synonyms|join(", ") if synonyms else "Not added yet." }}</p>
-      </section>
-      <section class="focus-card">
-        <span class="focus-label">Personal Notes</span>
-        <p>{{ word.notes or "No notes yet." }}</p>
-      </section>
+    <div class="word-detail-tabs">
+      <span class="word-tab active">Overview</span>
+      <span class="word-tab">Meaning</span>
+      <span class="word-tab">Examples</span>
+      <span class="word-tab">Notes</span>
     </div>
   </article>
-</section>
 
-<section class="dashboard-columns word-columns">
-  <article class="panel">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Word Details</p>
-        <h2>Chinese Meaning & Source</h2>
-      </div>
-    </div>
-    <div class="detail-stack">
-      <section class="detail-card">
-        <h3>Chinese Definitions</h3>
-        <ul>
-          {% for item in definitions %}
-          <li>{{ item }}</li>
-          {% endfor %}
-        </ul>
-      </section>
-      <section class="detail-card">
-        <h3>Source References</h3>
-        <ul>
+  <section class="word-detail-grid">
+    <div class="word-detail-content">
+      <article class="panel dashboard-v2-card word-section-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">Definition</p>
+            <h2>Core meaning</h2>
+          </div>
+        </div>
+        <div class="word-definition-grid">
+          <section class="word-info-card primary">
+            <span class="focus-label">English Definition</span>
+            <p>{{ english_definition or "No English definition added yet." }}</p>
+          </section>
+          <section class="word-info-card">
+            <span class="focus-label">Chinese Definition</span>
+            {% if definitions %}
+            <ul class="clean-list">
+              {% for item in definitions %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>No Chinese definition added yet.</p>
+            {% endif %}
+          </section>
+        </div>
+      </article>
+
+      <article class="panel dashboard-v2-card word-section-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">Examples</p>
+            <h2>Usage and related words</h2>
+          </div>
+        </div>
+        <div class="word-definition-grid">
+          <section class="word-info-card">
+            <span class="focus-label">Example Sentence</span>
+            <p>{{ example_sentence or "No example sentence added yet." }}</p>
+          </section>
+          <section class="word-info-card">
+            <span class="focus-label">Synonyms</span>
+            {% if synonyms %}
+            <div class="word-chip-row">
+              {% for synonym in synonyms %}
+              <span class="soft-chip">{{ synonym }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p>No synonyms added yet.</p>
+            {% endif %}
+          </section>
+        </div>
+      </article>
+
+      <article class="panel dashboard-v2-card word-section-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">Source</p>
+            <h2>Workbook references</h2>
+          </div>
+        </div>
+        <div class="source-reference-list">
           {% for source in sources %}
-          <li>{{ source.workbook_name }} / {{ source.sheet_name }}{{ source.row_number }}{% if source.pos %} / {{ source.pos }}{% endif %}</li>
+          <div class="source-reference-card">
+            <strong>{{ source.workbook_name }}</strong>
+            <span>{{ source.sheet_name }}{{ source.row_number }}</span>
+            <small>{% if source.pos %}{{ source.pos }}{% else %}Part of speech not provided{% endif %}</small>
+          </div>
           {% endfor %}
-        </ul>
-      </section>
+        </div>
+      </article>
     </div>
-  </article>
 
-  <article class="panel">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Edit</p>
-        <h2>Improve This Word</h2>
-      </div>
-    </div>
-    <p class="section-note">Save better definitions, examples, synonyms, and notes so the learning mode becomes more useful over time.</p>
-    <form method="post" action="/word/{{ word.id }}/update" class="stack-form">
-      <label>
-        <span>Notes</span>
-        <textarea name="notes" rows="4">{{ word.notes }}</textarea>
-      </label>
-      <label>
-        <span>English Definition</span>
-        <textarea name="english_definition" rows="4" placeholder="Add a concise English definition">{{ english_definition }}</textarea>
-      </label>
-      <label>
-        <span>Synonyms</span>
-        <textarea name="synonyms" rows="5" placeholder="One synonym per line">{{ synonyms|join('\n') }}</textarea>
-      </label>
-      <label>
-        <span>Correct Example Sentence</span>
-        <textarea name="example_sentence" rows="4" placeholder="Add one natural sentence using the word">{{ example_sentence }}</textarea>
-      </label>
-      <label>
-        <span>Wrong Sentence Options</span>
-        <textarea name="sentence_distractors" rows="6" placeholder="One distractor sentence per line">{{ sentence_distractors|join('\n') }}</textarea>
-      </label>
-      <button class="button" type="submit">Save Changes</button>
-    </form>
-  </article>
+    <aside class="word-detail-sidebar">
+      <article class="panel dashboard-v2-card word-note-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">Notes</p>
+            <h2>Your memory hook</h2>
+          </div>
+        </div>
+        <p>{{ word.notes or "No personal notes yet. Add a short memory hook or reminder for this word." }}</p>
+      </article>
+
+      <article class="panel dashboard-v2-card word-edit-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">Edit</p>
+            <h2>Improve this word</h2>
+          </div>
+        </div>
+        <p class="section-note">Add clearer definitions, examples, and distractors to make learning mode stronger.</p>
+        <form method="post" action="/word/{{ word.id }}/update" class="stack-form refined-form">
+          <label>
+            <span>Notes</span>
+            <textarea name="notes" rows="3">{{ word.notes }}</textarea>
+          </label>
+          <label>
+            <span>English Definition</span>
+            <textarea name="english_definition" rows="4" placeholder="Add a concise English definition">{{ english_definition }}</textarea>
+          </label>
+          <label>
+            <span>Synonyms</span>
+            <textarea name="synonyms" rows="4" placeholder="One synonym per line">{{ synonyms|join('\n') }}</textarea>
+          </label>
+          <label>
+            <span>Example Sentence</span>
+            <textarea name="example_sentence" rows="4" placeholder="Add one natural sentence using the word">{{ example_sentence }}</textarea>
+          </label>
+          <label>
+            <span>Wrong Sentence Options</span>
+            <textarea name="sentence_distractors" rows="5" placeholder="One distractor sentence per line">{{ sentence_distractors|join('\n') }}</textarea>
+          </label>
+          <button class="button word-save-button" type="submit">Save Changes</button>
+        </form>
+      </article>
+    </aside>
+  </section>
 </section>
 {% endblock %}
