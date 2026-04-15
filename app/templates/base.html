@@ -6,22 +6,70 @@
   <title>{% block title %}Economist Vocabulary Lab{% endblock %}</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="/">
-      <span class="brand-mark">EL</span>
-      <span>Economist Vocabulary Lab</span>
-    </a>
-    <nav class="main-nav">
-      <a href="/test">Level Test</a>
-      <a href="/learning">Learning</a>
-      <a href="/dictionary">Dictionary</a>
-      <a href="/bulk-import">Bulk Import</a>
-      <a href="/review/missed">Missed Words</a>
-    </nav>
-  </header>
-  <main class="page-shell">
-    {% block content %}{% endblock %}
-  </main>
+<body class="app-body">
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <a class="sidebar-brand" href="/">
+        <span class="brand-mark">EL</span>
+        <span class="brand-stack">
+          <strong>Economist Lab</strong>
+          <small>Vocabulary dashboard</small>
+        </span>
+      </a>
+
+      <nav class="sidebar-nav" aria-label="Primary">
+        <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">
+          <span class="nav-icon">◼</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="/test" class="{% if request.url.path.startswith('/test') %}active{% endif %}">
+          <span class="nav-icon">◌</span>
+          <span>Level Test</span>
+        </a>
+        <a href="/learning" class="{% if request.url.path.startswith('/learning') %}active{% endif %}">
+          <span class="nav-icon">△</span>
+          <span>Learning</span>
+        </a>
+        <a href="/dictionary" class="{% if request.url.path.startswith('/dictionary') or request.url.path.startswith('/word') %}active{% endif %}">
+          <span class="nav-icon">□</span>
+          <span>Dictionary</span>
+        </a>
+        <a href="/review/missed" class="{% if request.url.path.startswith('/review') %}active{% endif %}">
+          <span class="nav-icon">↺</span>
+          <span>Missed Words</span>
+        </a>
+        <a href="/bulk-import" class="{% if request.url.path.startswith('/bulk-import') %}active{% endif %}">
+          <span class="nav-icon">+</span>
+          <span>Bulk Import</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-card">
+        <p class="sidebar-card-label">Study Flow</p>
+        <strong>Test, learn, review.</strong>
+        <span>Keep adding definitions, examples, and synonyms as your database grows.</span>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="topbar-search">
+          <span class="topbar-search-icon">⌕</span>
+          <span>Search for a word, phrase, or frequency band</span>
+        </div>
+        <div class="topbar-user">
+          <span class="user-badge">LC</span>
+          <div>
+            <strong>Personal Database</strong>
+            <small>The Economist vocabulary project</small>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-shell">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
 </body>
 </html>
