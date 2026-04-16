@@ -184,7 +184,7 @@ def decorate_band_rows(rows: list[sqlite3.Row]) -> list[dict]:
                 "range_label": label.split(" (")[0],
             }
         )
-    return decorated
+    return sorted(decorated, key=lambda band: band["best_band_rank"], reverse=True)
 
 
 def dashboard_spotlight_words(conn: sqlite3.Connection, limit: int = 4) -> list[dict]:
@@ -1050,7 +1050,6 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
 def dictionary_home(request: Request) -> HTMLResponse:
     conn = db_conn()
     bands = decorate_band_rows(band_summary(conn))
-    bands = sorted(bands, key=lambda band: band["best_band_rank"], reverse=True)
     return render(request, "dictionary_home.html", bands=bands, missed_count=len(missed_words(conn, limit=10)))
 
 
@@ -1153,7 +1152,7 @@ def bulk_import_page(request: Request) -> HTMLResponse:
     return render(
         request,
         "bulk_import.html",
-        bands=band_summary(conn),
+        bands=decorate_band_rows(band_summary(conn)),
         stats=fetch_stats(conn),
         export_dir=str(EXPORT_DIR),
         api_key_ready=bool(os.environ.get("OPENAI_API_KEY", "").strip()),
