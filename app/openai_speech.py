@@ -17,10 +17,10 @@ def synthesize_pronunciation_audio(text: str) -> bytes:
 
     client = openai_client()
     model = os.environ.get("OPENAI_TTS_MODEL", "gpt-4o-mini-tts").strip() or "gpt-4o-mini-tts"
-    voice = os.environ.get("OPENAI_TTS_VOICE", "sage").strip() or "sage"
+    voice = os.environ.get("OPENAI_TTS_VOICE", "coral").strip() or "coral"
     instructions = (
-        "Pronounce the word clearly and gently for an English learner. "
-        "Use a calm, warm, natural tone. Keep it brief and slightly slower than normal speech."
+        "Read this as a clean dictionary-style pronunciation. "
+        "Speak naturally, clearly, and briefly. Avoid dramatic emotion or exaggerated emphasis."
     )
 
     response = client.audio.speech.create(
@@ -29,6 +29,6 @@ def synthesize_pronunciation_audio(text: str) -> bytes:
         input=cleaned,
         instructions=instructions,
         response_format="mp3",
-        speed=0.9,
+        speed=0.82,
     )
     return bytes(response.content)
