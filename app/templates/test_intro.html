@@ -1,17 +1,54 @@
 {% extends "base.html" %}
 {% block title %}Level Test | Economist Vocabulary Lab{% endblock %}
 {% block content %}
-<section class="panel narrow">
-  <p class="eyebrow">Step 1</p>
-  <h1>Level Test</h1>
-  <p>This test uses {{ question_count }} multiple-choice questions sampled from all frequency bands. It currently focuses on definition recognition so we can estimate your foundation reliably from the source data you already have.</p>
-  <div class="band-list">
-    {% for band in bands %}
-    <span class="band-pill muted">{{ band.best_band_label }} <span>{{ band.total }}</span></span>
-    {% endfor %}
-  </div>
-  <form method="post" action="/test/start">
-    <button class="button" type="submit">Begin Test</button>
-  </form>
+<section class="test-shell">
+  <article class="panel dashboard-v2-card test-hero">
+    <div class="test-hero-top">
+      <div>
+        <p class="eyebrow">Level Test</p>
+        <h1>Find your starting band.</h1>
+        <p class="lede">This placement test uses {{ question_count }} multiple-choice questions from different frequency bands to estimate your current Economist vocabulary level.</p>
+      </div>
+      <div class="test-hero-badge">
+        <span>Questions</span>
+        <strong>{{ question_count }}</strong>
+        <small>definition-based items</small>
+      </div>
+    </div>
+
+    <div class="test-hero-grid">
+      <article class="test-focus-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">What It Measures</p>
+            <h2>Foundation across bands</h2>
+          </div>
+        </div>
+        <div class="mini-kicker-row">
+          <span class="mini-kicker active">Frequency</span>
+          <span class="mini-kicker">Recognition</span>
+          <span class="mini-kicker">Placement</span>
+        </div>
+        <p class="goal-note">The result combines your total accuracy with how well you handled harder frequency bands.</p>
+        <form method="post" action="/test/start">
+          <button class="button learning-start-button" type="submit">Begin Test</button>
+        </form>
+      </article>
+
+      <article class="test-bands-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">Band Coverage</p>
+            <h2>Sampled ranges</h2>
+          </div>
+        </div>
+        <div class="test-band-chip-grid">
+          {% for band in bands %}
+          <span class="test-band-chip">{{ band.range_label }}</span>
+          {% endfor %}
+        </div>
+      </article>
+    </div>
+  </article>
 </section>
 {% endblock %}

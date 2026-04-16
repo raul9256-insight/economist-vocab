@@ -1,56 +1,60 @@
 {% extends "base.html" %}
 {% block title %}Test Result | Economist Vocabulary Lab{% endblock %}
 {% block content %}
-<section class="panel narrow">
-  <p class="eyebrow">Result</p>
-  <h1>{{ level_name }}: {{ session.estimated_band_label or "Getting Started" }}</h1>
-  <p>You answered {{ session.score }} correctly in this placement test.</p>
-  <div class="result-hero">
-    <div class="result-ring">
+<section class="test-shell">
+  <article class="panel dashboard-v2-card test-result-hero">
+    <p class="eyebrow">Result</p>
+    <h1>{{ level_name }}: {{ session.estimated_band_label or "Getting Started" }}</h1>
+    <p class="lede">You answered {{ session.score }} correctly in this placement test. This result estimates where you should start learning next.</p>
+
+    <div class="test-result-summary-grid">
+      <div class="test-result-ring-card">
+        <div class="result-ring">
+          <div>
+            <strong>{{ summary.accuracy_percent }}%</strong>
+            <span>accuracy</span>
+          </div>
+        </div>
+      </div>
+      <div class="test-result-info-card">
+        <div class="info-badges">
+          <span class="info-chip">Estimated band: {{ session.estimated_band_label or "Getting Started" }}</span>
+          <span class="info-chip">Correct: {{ session.score }}</span>
+          <span class="info-chip">Weighted: {{ summary.weighted_percent }}%</span>
+        </div>
+        <p class="section-subtle">This result combines your total accuracy and how well you handled harder frequency bands.</p>
+        <div class="callout learning-result-callout">
+          <strong>What to do next:</strong> {{ recommendation }}
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel dashboard-v2-card test-band-breakdown-card">
+    <div class="card-head tight">
       <div>
-        <strong>{{ summary.accuracy_percent }}%</strong>
-        <span>accuracy</span>
+        <p class="eyebrow">Band Breakdown</p>
+        <h2>How you performed by range</h2>
       </div>
     </div>
-    <div class="result-summary">
-      <div class="info-badges">
-        <span class="info-chip">Estimated band: {{ session.estimated_band_label or "Getting Started" }}</span>
-        <span class="info-chip">Correct: {{ session.score }}</span>
-        <span class="info-chip">Weighted: {{ summary.weighted_percent }}%</span>
-      </div>
-      <p class="section-note">This result combines your total accuracy and how well you handled harder frequency bands.</p>
+    <div class="test-band-breakdown-grid">
+      {% for row in band_results %}
+      <article class="test-band-breakdown-item">
+        <div class="band-result-head">
+          <h3>{{ row.band_label }}</h3>
+          <span>{{ row.correct }} / {{ row.total }}</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: {{ row.accuracy }}%;"></div>
+        </div>
+        <p class="section-subtle">{{ row.accuracy }}% accuracy in this band.</p>
+      </article>
+      {% endfor %}
     </div>
-  </div>
-  <div class="stat-grid compact">
-    <article class="stat-card">
-      <span>Accuracy</span>
-      <strong>{{ summary.accuracy_percent }}%</strong>
-    </article>
-    <article class="stat-card">
-      <span>Weighted Strength</span>
-      <strong>{{ summary.weighted_percent }}%</strong>
-    </article>
-  </div>
-  <div class="callout">
-    <strong>What to do next:</strong> {{ recommendation }}
-  </div>
-  <div class="band-result-stack">
-    {% for row in band_results %}
-    <article class="band-result-card">
-      <div class="band-result-head">
-        <h3>{{ row.band_label }}</h3>
-        <span>{{ row.correct }} / {{ row.total }}</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" style="width: {{ row.accuracy }}%;"></div>
-      </div>
-      <p class="section-note">{{ row.accuracy }}% accuracy in this band.</p>
-    </article>
-    {% endfor %}
-  </div>
-  <div class="action-row">
-    <a class="button secondary" href="/test">Try Again</a>
-    <a class="button" href="/learning">Go To Learning</a>
-  </div>
+    <div class="action-row">
+      <a class="button secondary" href="/test">Try Again</a>
+      <a class="button" href="/learning">Go To Learning</a>
+    </div>
+  </article>
 </section>
 {% endblock %}

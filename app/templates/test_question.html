@@ -1,26 +1,49 @@
 {% extends "base.html" %}
 {% block title %}Test Question | Economist Vocabulary Lab{% endblock %}
 {% block content %}
-<section class="question-shell">
-  <div class="question-meta">
-    <span>Level Test</span>
-    <span>Question {{ progress.current }} / {{ progress.total }}</span>
-    <span>{{ progress.percent }}% complete</span>
-    <span>{{ question.band_label }}</span>
+<section class="learning-session-shell">
+  <div class="learning-session-meta">
+    <span class="session-meta-pill active">Level Test</span>
+    <span class="session-meta-pill">Question {{ progress.current }} / {{ progress.total }}</span>
+    <span class="session-meta-pill">{{ progress.percent }}% complete</span>
+    <span class="session-meta-pill">{{ question.band_label }}</span>
   </div>
-  <article class="panel">
-    <p class="eyebrow">{{ question.question_type|title }}</p>
-    <h1>{{ question.prompt_text }}</h1>
-    <p>{{ question.explanation }}</p>
-    <form method="post" action="/test/{{ session.id }}/answer" class="options-form">
-      {% for option in options %}
-      <label class="option-card">
-        <input type="radio" name="answer" value="{{ option }}" required>
-        <span>{{ option }}</span>
-      </label>
-      {% endfor %}
-      <button class="button" type="submit">Submit</button>
-    </form>
-  </article>
+
+  <section class="learning-session-grid test-session-grid">
+    <article class="panel dashboard-v2-card learning-question-card">
+      <p class="eyebrow">{{ question.question_type|title }}</p>
+      <h1>{{ question.prompt_text }}</h1>
+      <p class="section-subtle">{{ question.explanation }}</p>
+
+      <form method="post" action="/test/{{ session.id }}/answer" class="options-form learning-options-form">
+        {% for option in options %}
+        <label class="option-card learning-option-card">
+          <input type="radio" name="answer" value="{{ option }}" required>
+          <span>{{ option }}</span>
+        </label>
+        {% endfor %}
+        <button class="button learning-submit-button" type="submit">Submit Answer</button>
+      </form>
+    </article>
+
+    <aside class="panel dashboard-v2-card learning-side-card">
+      <div class="card-head tight">
+        <div>
+          <p class="eyebrow">Placement Hint</p>
+          <h2>{{ question.band_label }}</h2>
+        </div>
+      </div>
+      <div class="learning-side-stack">
+        <div class="learning-info-block">
+          <span class="focus-label">What this means</span>
+          <p>This question is sampled from the {{ question.band_label }} frequency band.</p>
+        </div>
+        <div class="learning-info-block">
+          <span class="focus-label">Goal</span>
+          <p>Choose the best definition and keep moving. The test is designed to be fast and reliable.</p>
+        </div>
+      </div>
+    </aside>
+  </section>
 </section>
 {% endblock %}

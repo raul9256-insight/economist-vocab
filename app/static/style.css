@@ -2393,11 +2393,112 @@ input[type="file"] {
   font-size: 1.05rem;
 }
 
+.test-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.test-hero,
+.test-result-hero,
+.test-band-breakdown-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 248, 255, 0.94));
+}
+
+.test-hero-top,
+.test-hero-grid,
+.test-band-chip-grid,
+.test-result-summary-grid,
+.test-band-breakdown-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.test-hero-top {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.test-hero-badge {
+  min-width: 150px;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(247, 249, 255, 0.9);
+  border: 1px solid rgba(112, 125, 184, 0.12);
+}
+
+.test-hero-badge span,
+.test-hero-badge small {
+  display: block;
+  color: #6f7890;
+}
+
+.test-hero-badge strong {
+  display: block;
+  margin: 0.2rem 0;
+  font-size: 1.6rem;
+}
+
+.test-hero-grid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+}
+
+.test-focus-card,
+.test-bands-card {
+  padding: 1.25rem;
+  border-radius: 22px;
+  border: 1px solid rgba(112, 125, 184, 0.12);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.test-band-chip-grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+}
+
+.test-band-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(247, 249, 255, 0.94);
+  border: 1px solid rgba(112, 125, 184, 0.12);
+  color: #6f7890;
+  font-weight: 600;
+}
+
+.test-session-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+}
+
+.test-result-summary-grid {
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.test-result-ring-card,
+.test-result-info-card,
+.test-band-breakdown-item {
+  padding: 1rem;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(248, 250, 255, 0.96), rgba(243, 246, 255, 0.9));
+  border: 1px solid rgba(112, 125, 184, 0.12);
+}
+
+.test-band-breakdown-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 @media (max-width: 1120px) {
   .app-shell {
     grid-template-columns: 220px minmax(0, 1fr);
   }
 
+  .test-hero-top,
+  .test-hero-grid,
+  .test-result-summary-grid,
+  .test-session-grid,
   .learning-hero-top,
   .learning-hero-grid,
   .learning-support-grid,
@@ -2425,6 +2526,7 @@ input[type="file"] {
   .dictionary-refined-actions,
   .dictionary-results-grid,
   .dictionary-band-results,
+  .test-band-breakdown-grid,
   .learning-stats-grid,
   .refined-words-grid,
   .refined-recommend-grid,
