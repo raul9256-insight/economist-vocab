@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS word_enrichment (
     word_id INTEGER PRIMARY KEY REFERENCES words(id) ON DELETE CASCADE,
     english_definition TEXT NOT NULL DEFAULT '',
+    pronunciation TEXT NOT NULL DEFAULT '',
     synonyms_json TEXT NOT NULL DEFAULT '[]',
     example_sentence TEXT NOT NULL DEFAULT '',
     sentence_distractors_json TEXT NOT NULL DEFAULT '[]',
@@ -89,6 +90,7 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
     conn = connect(db_path or DEFAULT_DB_PATH)
     conn.executescript(WEB_SCHEMA)
     ensure_column(conn, "word_enrichment", "english_definition", "TEXT NOT NULL DEFAULT ''")
+    ensure_column(conn, "word_enrichment", "pronunciation", "TEXT NOT NULL DEFAULT ''")
     conn.execute(
         """
         INSERT INTO users (id, username)
