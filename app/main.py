@@ -1049,7 +1049,9 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
 @app.get("/dictionary", response_class=HTMLResponse)
 def dictionary_home(request: Request) -> HTMLResponse:
     conn = db_conn()
-    return render(request, "dictionary_home.html", bands=decorate_band_rows(band_summary(conn)), missed_count=len(missed_words(conn, limit=10)))
+    bands = decorate_band_rows(band_summary(conn))
+    bands = sorted(bands, key=lambda band: band["best_band_rank"], reverse=True)
+    return render(request, "dictionary_home.html", bands=bands, missed_count=len(missed_words(conn, limit=10)))
 
 
 @app.get("/dictionary/band/{band_rank}", response_class=HTMLResponse)
