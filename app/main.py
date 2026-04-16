@@ -278,6 +278,31 @@ def word_row(conn: sqlite3.Connection, word_id: int) -> sqlite3.Row:
     return row
 
 
+def source_fallback_for_word(conn: sqlite3.Connection, word_id: int) -> dict[str, str]:
+    rows = conn.execute(
+        """
+        SELECT extra_json
+        FROM source_entries
+        WHERE word_id = ?
+        ORDER BY band_rank, workbook_name, row_number
+        """,
+        (word_id,),
+    ).fetchall()
+    english_definition = ""
+    example_sentence = ""
+    for row in rows:
+        extra = json.loads(row["extra_json"]) if row["extra_json"] else {}
+        if isinstance(extra, dict):
+            if not english_definition and extra.get("english_definition"):
+                english_definition = extra["english_definition"]
+            if not example_sentence and extra.get("example_sentence"):
+                example_sentence = extra["example_sentence"]
+    return {
+        "english_definition": english_definition,
+        "example_sentence": example_sentence,
+    }
+
+
 def word_payload(conn: sqlite3.Connection, word_id: int) -> dict:
     row = word_row(conn, word_id)
     definitions = definitions_for_word(conn, word_id)
@@ -299,18 +324,10 @@ def word_payload(conn: sqlite3.Connection, word_id: int) -> dict:
         """,
         (word_id,),
     ).fetchone()
-    source_english_definition = ""
-    source_example_sentence = ""
-    for source in source_rows:
-        extra = json.loads(source["extra_json"]) if source["extra_json"] else {}
-        if isinstance(extra, dict):
-            if not source_english_definition and extra.get("english_definition"):
-                source_english_definition = extra["english_definition"]
-            if not source_example_sentence and extra.get("example_sentence"):
-                source_example_sentence = extra["example_sentence"]
-    english_definition = (enrichment["english_definition"] if enrichment and enrichment["english_definition"] else source_english_definition)
+    source_fallback = source_fallback_for_word(conn, word_id)
+    english_definition = (enrichment["english_definition"] if enrichment and enrichment["english_definition"] else source_fallback["english_definition"])
     synonyms = json_loads(enrichment["synonyms_json"]) if enrichment else []
-    example_sentence = (enrichment["example_sentence"] if enrichment and enrichment["example_sentence"] else source_example_sentence)
+    example_sentence = (enrichment["example_sentence"] if enrichment and enrichment["example_sentence"] else source_fallback["example_sentence"])
     return {
         "word": row,
         "definitions": definitions,
@@ -396,8 +413,9 @@ def dashboard_spotlight_words(conn: sqlite3.Connection, limit: int = 4) -> list[
     for row in rows:
         defs = definitions_for_word(conn, row["id"])
         pos = parts_of_speech_for_word(conn, row["id"])
-        english_definition = row["english_definition"]
-        example_sentence = row["example_sentence"]
+        source_fallback = source_fallback_for_word(conn, row["id"])
+        english_definition = row["english_definition"] or source_fallback["english_definition"]
+        example_sentence = row["example_sentence"] or source_fallback["example_sentence"]
         items.append(
             {
                 "id": row["id"],
@@ -493,8 +511,9 @@ def search_result_cards(
     for row in rows:
         definitions = definitions_for_word(conn, row["id"])
         parts = parts_of_speech_for_word(conn, row["id"])
-        english_definition = row["english_definition"]
-        example_sentence = row["example_sentence"]
+        source_fallback = source_fallback_for_word(conn, row["id"])
+        english_definition = row["english_definition"] or source_fallback["english_definition"]
+        example_sentence = row["example_sentence"] or source_fallback["example_sentence"]
         enrichment = conn.execute(
             "SELECT synonyms_json FROM word_enrichment WHERE word_id = ?",
             (row["id"],),
@@ -1308,6 +1327,7 @@ def dictionary_band(
     for row in rows:
         definitions = definitions_for_word(conn, row["id"])
         parts_of_speech = parts_of_speech_for_word(conn, row["id"])
+        source_fallback = source_fallback_for_word(conn, row["id"])
         enrichment = conn.execute(
             "SELECT synonyms_json FROM word_enrichment WHERE word_id = ?",
             (row["id"],),
@@ -1318,15 +1338,15 @@ def dictionary_band(
                 "id": row["id"],
                 "lemma": row["lemma"],
                 "best_band_label": row["best_band_label"],
-                "english_definition": row["english_definition"],
-                "example_sentence": row["example_sentence"],
+                "english_definition": row["english_definition"] or source_fallback["english_definition"],
+                "example_sentence": row["example_sentence"] or source_fallback["example_sentence"],
                 "chinese_preview": definitions[:2],
                 "chinese_headword": definitions[0] if definitions else "",
                 "completeness": completeness_summary(
                     parts_of_speech=parts_of_speech,
                     definitions=definitions,
-                    english_definition=row["english_definition"],
-                    example_sentence=row["example_sentence"],
+                    english_definition=row["english_definition"] or source_fallback["english_definition"],
+                    example_sentence=row["example_sentence"] or source_fallback["example_sentence"],
                     synonyms=synonyms,
                 ),
             }
