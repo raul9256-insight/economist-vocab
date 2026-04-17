@@ -2576,8 +2576,8 @@ input[type="file"] {
 .motto-quote {
   margin: 0;
   max-width: 17ch;
-  font-size: clamp(2.45rem, 5.6vw, 4.2rem);
-  line-height: 1.01;
+  font-size: clamp(2rem, 4.7vw, 3.35rem);
+  line-height: 1.04;
   letter-spacing: -0.04em;
   font-weight: 700;
 }
@@ -2728,6 +2728,407 @@ input[type="file"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.monopoly-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.monopoly-hero h1 {
+  margin: 0.2rem 0 0.6rem;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 0.96;
+}
+
+.monopoly-hero .lede {
+  max-width: 60ch;
+  margin: 0;
+}
+
+.monopoly-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+.monopoly-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 380px);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.monopoly-stage {
+  position: relative;
+  min-height: 720px;
+  border-radius: 36px;
+  overflow: hidden;
+  padding: 1.4rem;
+  border: 1px solid rgba(29, 26, 23, 0.1);
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(160deg, #11332c 0%, #1f5c4d 35%, #dc9d54 100%);
+  box-shadow: 0 24px 80px rgba(16, 28, 24, 0.25);
+}
+
+.monopoly-stage::before,
+.monopoly-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  border-radius: 999px;
+  filter: blur(2px);
+  opacity: 0.45;
+}
+
+.monopoly-stage::before {
+  width: 240px;
+  height: 240px;
+  top: 24px;
+  right: 24px;
+  background: radial-gradient(circle, rgba(255, 244, 209, 0.7), rgba(255, 244, 209, 0));
+}
+
+.monopoly-stage::after {
+  width: 320px;
+  height: 320px;
+  bottom: -100px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(116, 224, 225, 0.45), rgba(116, 224, 225, 0));
+}
+
+.monopoly-camera {
+  perspective: 1600px;
+  height: 100%;
+}
+
+.monopoly-board-shell {
+  position: relative;
+  width: min(100%, 760px);
+  margin: 0 auto;
+  transform-style: preserve-3d;
+  transform: rotateX(62deg) rotateZ(-45deg);
+  animation: monopoly-float 8s ease-in-out infinite;
+}
+
+.monopoly-board-shell::before {
+  content: "";
+  position: absolute;
+  inset: 8% 10% -8%;
+  border-radius: 44px;
+  background: rgba(8, 18, 16, 0.45);
+  transform: translateZ(-90px);
+  filter: blur(26px);
+}
+
+.monopoly-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  grid-template-rows: repeat(4, minmax(90px, 1fr));
+  gap: 0.8rem;
+  padding: 1rem;
+  aspect-ratio: 1;
+  border-radius: 40px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 242, 0.98), rgba(235, 222, 200, 0.94)),
+    linear-gradient(135deg, rgba(199, 109, 58, 0.12), rgba(31, 92, 77, 0.16));
+  border: 1px solid rgba(29, 26, 23, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -6px 12px rgba(81, 60, 29, 0.08),
+    0 26px 40px rgba(44, 31, 14, 0.24);
+  transform-style: preserve-3d;
+}
+
+.monopoly-tile,
+.monopoly-centerpiece {
+  position: relative;
+  border-radius: 24px;
+  transform-style: preserve-3d;
+}
+
+.monopoly-tile {
+  display: block;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  outline-offset: 5px;
+}
+
+.tile-ridge,
+.tile-top,
+.tile-face-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+}
+
+.tile-ridge {
+  background: linear-gradient(180deg, rgba(56, 45, 32, 0.14), rgba(56, 45, 32, 0.25));
+  transform: translateZ(-18px);
+}
+
+.tile-top {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.9rem;
+  color: #1d1a17;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(242, 232, 214, 0.96));
+  border: 1px solid rgba(29, 26, 23, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transform: translateZ(2px);
+}
+
+.tile-face-shadow {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(29, 26, 23, 0.12));
+  transform: translateZ(1px);
+  pointer-events: none;
+}
+
+.tile-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.tile-meta {
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(29, 26, 23, 0.72);
+}
+
+.tile-go .tile-top,
+.tile-jail .tile-top,
+.tile-parking .tile-top,
+.tile-go_to_jail .tile-top,
+.tile-tax .tile-top,
+.tile-chance .tile-top {
+  color: #fffaf2;
+}
+
+.tile-go .tile-top {
+  background: linear-gradient(160deg, #1b6d60, #2ca892);
+}
+
+.tile-jail .tile-top {
+  background: linear-gradient(160deg, #385167, #54728d);
+}
+
+.tile-parking .tile-top {
+  background: linear-gradient(160deg, #907242, #c79f56);
+}
+
+.tile-go_to_jail .tile-top {
+  background: linear-gradient(160deg, #8a3131, #d25e5e);
+}
+
+.tile-tax .tile-top {
+  background: linear-gradient(160deg, #73503d, #b87457);
+}
+
+.tile-chance .tile-top {
+  background: linear-gradient(160deg, #5c51aa, #8e7af4);
+}
+
+.tile-color-amber .tile-top {
+  background: linear-gradient(160deg, #f3d7a7, #d7994b);
+}
+
+.tile-color-blue .tile-top {
+  background: linear-gradient(160deg, #bfd8ff, #6b90dc);
+}
+
+.tile-color-rose .tile-top {
+  background: linear-gradient(160deg, #ffd0dc, #df6990);
+}
+
+.tile-color-gold .tile-top {
+  background: linear-gradient(160deg, #ffe59d, #d7aa23);
+}
+
+.tile-color-teal .tile-top {
+  background: linear-gradient(160deg, #bbece4, #42a59a);
+}
+
+.tile-color-violet .tile-top {
+  background: linear-gradient(160deg, #dccdff, #8765d8);
+}
+
+.tile-color-sea .tile-top {
+  background: linear-gradient(160deg, #bcecf4, #3296b3);
+}
+
+.tile-color-coal .tile-top {
+  background: linear-gradient(160deg, #d9d9dd, #6e7587);
+}
+
+.tile-owner {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(22, 22, 22, 0.18);
+}
+
+.owner-crimson {
+  background: #cc3e58;
+}
+
+.owner-cyan {
+  background: #2dabc0;
+}
+
+.tile-pawns {
+  position: absolute;
+  left: 50%;
+  bottom: 0.65rem;
+  width: 100%;
+  height: 32px;
+  z-index: 3;
+  transform: translateX(-50%);
+}
+
+.player-pawn,
+.player-chip {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 14px rgba(15, 15, 15, 0.22);
+}
+
+.player-pawn {
+  position: absolute;
+  left: calc(50% + var(--pawn-offset, 0px));
+  bottom: 0;
+  transform: translateX(-50%) translateZ(18px);
+}
+
+.pawn-crimson {
+  background: radial-gradient(circle at 35% 30%, #ffd2d9, #c82b4f 68%, #8a1e36);
+}
+
+.pawn-cyan {
+  background: radial-gradient(circle at 35% 30%, #d7ffff, #2ea9c1 68%, #1b6f80);
+}
+
+.monopoly-centerpiece {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  padding: 1.5rem;
+  border: 1px solid rgba(29, 26, 23, 0.1);
+  background:
+    radial-gradient(circle at top left, rgba(199, 109, 58, 0.18), rgba(199, 109, 58, 0) 35%),
+    radial-gradient(circle at bottom right, rgba(31, 92, 77, 0.18), rgba(31, 92, 77, 0) 35%),
+    linear-gradient(180deg, rgba(255, 250, 242, 0.98), rgba(245, 236, 223, 0.98));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 22px 30px rgba(42, 30, 17, 0.18);
+  transform: translateZ(8px);
+}
+
+.monopoly-centerpiece strong {
+  display: block;
+  font-size: clamp(1.6rem, 2vw, 2.4rem);
+  margin-bottom: 0.5rem;
+}
+
+.monopoly-centerpiece p {
+  margin: 0;
+  max-width: 22ch;
+  color: var(--muted);
+}
+
+.centerpiece-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent));
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.monopoly-sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.monopoly-turn-summary,
+.monopoly-player-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.monopoly-player-card {
+  padding: 1rem;
+  border: 1px solid rgba(29, 26, 23, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 253, 249, 0.92);
+}
+
+.monopoly-player-card.active {
+  border-color: rgba(31, 92, 77, 0.35);
+  box-shadow: 0 18px 34px rgba(31, 92, 77, 0.12);
+}
+
+.monopoly-player-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.monopoly-player-stats {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+}
+
+.monopoly-log {
+  display: grid;
+  gap: 0.7rem;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.monopoly-log-entry {
+  padding: 0.85rem 0.95rem;
+  border-radius: 16px;
+  background: rgba(245, 239, 229, 0.88);
+  border: 1px solid rgba(29, 26, 23, 0.08);
+  line-height: 1.4;
+}
+
+.monopoly-launch-panel {
+  margin-top: 1.25rem;
+}
+
+@keyframes monopoly-float {
+  0%,
+  100% {
+    transform: rotateX(62deg) rotateZ(-45deg) translateY(0);
+  }
+  50% {
+    transform: rotateX(62deg) rotateZ(-45deg) translateY(-10px);
+  }
+}
+
 @media (max-width: 1120px) {
   .app-shell {
     grid-template-columns: 220px minmax(0, 1fr);
@@ -2774,6 +3175,14 @@ input[type="file"] {
   .today-words-grid,
   .snapshot-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monopoly-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .monopoly-stage {
+    min-height: 620px;
   }
 }
 
@@ -2849,5 +3258,32 @@ input[type="file"] {
 
   .word-detail-tabs {
     grid-template-columns: repeat(2, max-content);
+  }
+
+  .monopoly-hero {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .monopoly-board-shell {
+    transform: rotateX(58deg) rotateZ(-45deg) scale(0.92);
+    transform-origin: center top;
+  }
+
+  .monopoly-board {
+    grid-template-columns: repeat(4, minmax(72px, 1fr));
+    grid-template-rows: repeat(4, minmax(72px, 1fr));
+  }
+
+  .tile-top {
+    padding: 0.65rem;
+  }
+
+  .tile-name {
+    font-size: 0.75rem;
+  }
+
+  .tile-meta {
+    font-size: 0.63rem;
   }
 }

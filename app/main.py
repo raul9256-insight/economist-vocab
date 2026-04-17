@@ -90,6 +90,13 @@ TRANSLATIONS = {
         "browse_count": "Browse by appearance count",
         "open_dictionary": "Open dictionary",
         "bands_note": "Higher bands mean the word appeared more often in your Economist source data over the last 10 years.",
+        "core_steps": "3 core steps",
+        "flow_sequence": "Test → Learn → Review",
+        "latest_result": "Latest result: {band}.",
+        "first_test_prompt": "Take your first test to unlock a starting band.",
+        "latest_score": "Latest score: {score}/{total}.",
+        "start_short_session": "Start a short session in your recommended band.",
+        "review_queue_count": "{count} words are waiting in your review list.",
     },
     "zh-Hant": {
         "brand_title": "經濟學人詞彙實驗室",
@@ -141,6 +148,13 @@ TRANSLATIONS = {
         "browse_count": "依出現次數瀏覽",
         "open_dictionary": "打開詞典",
         "bands_note": "頻率帶數字越高，表示該字在你近十年的《經濟學人》資料中出現得越多。",
+        "core_steps": "3 個核心步驟",
+        "flow_sequence": "測驗 → 練習 → 複習",
+        "latest_result": "最近結果：{band}。",
+        "first_test_prompt": "先完成第一次測驗，系統才會推薦起始頻率帶。",
+        "latest_score": "最近分數：{score}/{total}。",
+        "start_short_session": "先從建議頻率帶開始做一個短練習。",
+        "review_queue_count": "目前有 {count} 個錯題等待你複習。",
     },
 }
 
@@ -1032,6 +1046,11 @@ def home(request: Request) -> HTMLResponse:
         missed_words_count=len(missed_words(conn, limit=10)),
         spotlight_words=dashboard_spotlight_words(conn),
     )
+
+
+@app.get("/games/monopoly-3d", response_class=HTMLResponse)
+def monopoly_3d(request: Request) -> HTMLResponse:
+    return render(request, "monopoly_3d.html")
 
 
 @app.get("/test", response_class=HTMLResponse)

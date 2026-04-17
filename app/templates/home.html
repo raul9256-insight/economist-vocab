@@ -33,7 +33,7 @@
           <p class="eyebrow">{{ t("today_goal") }}</p>
           <h2>{{ t("keep_moving") }}</h2>
         </div>
-        <span class="goal-pill">3 core steps</span>
+        <span class="goal-pill">{{ t("core_steps") }}</span>
       </div>
       <div class="mini-kicker-row">
         <span class="mini-kicker active">{{ t("placement") }}</span>
@@ -42,7 +42,7 @@
       </div>
       <div class="goal-progress-head">
         <strong>{{ t("study_flow") }}</strong>
-        <span>Test → Learn → Review</span>
+        <span>{{ t("flow_sequence") }}</span>
       </div>
       <div class="progress-track refined-track">
         <div class="progress-fill blue-fill" style="width: 72%"></div>
@@ -124,17 +124,17 @@
       <a class="recommend-card recommend-card-blue" href="/test">
         <span class="recommend-tag">{{ t("placement") }}</span>
         <strong>{{ t("nav_test") }}</strong>
-        <p>{% if latest_test %}Latest result: {{ latest_test.estimated_band_label }}.{% else %}Take your first test to unlock a starting band.{% endif %}</p>
+        <p>{% if latest_test %}{{ t("latest_result", band=latest_test.estimated_band_label) }}{% else %}{{ t("first_test_prompt") }}{% endif %}</p>
       </a>
       <a class="recommend-card recommend-card-pink" href="/learning">
         <span class="recommend-tag">{{ t("practice") }}</span>
         <strong>{{ t("learning_session") }}</strong>
-        <p>{% if latest_learning %}Latest score: {{ latest_learning.score }}/{{ latest_learning.total_questions }}.{% else %}Start a short session in your recommended band.{% endif %}</p>
+        <p>{% if latest_learning %}{{ t("latest_score", score=latest_learning.score, total=latest_learning.total_questions) }}{% else %}{{ t("start_short_session") }}{% endif %}</p>
       </a>
       <a class="recommend-card recommend-card-sand" href="/review/missed">
         <span class="recommend-tag">{{ t("review") }}</span>
         <strong>{{ t("nav_missed") }}</strong>
-        <p>{{ missed_words_count }} words are waiting in your review list.</p>
+        <p>{{ t("review_queue_count", count=missed_words_count) }}</p>
       </a>
     </div>
   </article>
@@ -156,6 +156,17 @@
       <small>{{ band.workbook_total }} words</small>
     </a>
     {% endfor %}
+  </div>
+</section>
+
+<section class="panel dashboard-v2-card monopoly-launch-panel">
+  <div class="card-head tight">
+    <div>
+      <p class="eyebrow">Game Prototype</p>
+      <h2>3D Monopoly-style board</h2>
+      <p class="section-subtle">Open a self-contained browser prototype with dice, turn flow, buying, rent, and a stylized 3D board.</p>
+    </div>
+    <a class="button" href="/games/monopoly-3d">Launch game</a>
   </div>
 </section>
 {% endblock %}
