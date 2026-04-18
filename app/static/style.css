@@ -2593,7 +2593,7 @@ input[type="file"] {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
   gap: 1.2rem;
-  align-items: stretch;
+  align-items: center;
 }
 
 .motto-quote {
@@ -2607,70 +2607,57 @@ input[type="file"] {
 
 .motto-chart-card {
   display: grid;
-  gap: 0.9rem;
+  gap: 1rem;
   align-content: start;
-  padding: 1.15rem;
+  padding: 1.1rem 1.15rem;
   border-radius: 24px;
   border: 1px solid rgba(112, 125, 184, 0.12);
   background: linear-gradient(180deg, rgba(247, 249, 255, 0.9), rgba(255, 255, 255, 0.82));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
-.motto-chart-card h2 {
-  margin: 0;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
-}
-
-.motto-chart-total {
+.motto-chart-head {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   gap: 1rem;
-  padding: 0.9rem 1rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(112, 125, 184, 0.1);
 }
 
-.motto-chart-total span {
-  color: #6f7890;
-  font-size: 0.9rem;
+.motto-chart-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(95, 115, 255, 0.12);
+  color: #5666f1;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
-.motto-chart-total strong {
-  font-size: 2rem;
+.motto-chart-head strong {
+  font-size: 1.8rem;
   letter-spacing: -0.04em;
+  color: #232635;
 }
 
-.motto-band-chart {
+.motto-band-chart.visual {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.95rem;
 }
 
 .motto-band-row {
   display: grid;
-  gap: 0.38rem;
+  gap: 0.45rem;
 }
 
-.motto-band-meta {
+.motto-band-bars {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
   align-items: center;
-  font-size: 0.92rem;
-}
-
-.motto-band-meta span {
-  color: #4f566d;
-  font-weight: 600;
-}
-
-.motto-band-meta strong {
-  color: #232635;
+  gap: 1rem;
 }
 
 .motto-band-track {
+  flex: 1;
   height: 10px;
   border-radius: 999px;
   overflow: hidden;
@@ -2681,6 +2668,19 @@ input[type="file"] {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #5e70ff, #88a0ff);
+}
+
+.motto-band-bars strong {
+  min-width: 3.5rem;
+  text-align: right;
+  font-size: 0.95rem;
+  color: #2b3042;
+}
+
+.motto-band-label {
+  color: #5e667d;
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .learning-option-card:hover {
@@ -2829,7 +2829,7 @@ input[type="file"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (max-width: 1120px) {
+@media (max-width: 980px) {
   .app-shell {
     grid-template-columns: 220px minmax(0, 1fr);
   }
@@ -2845,7 +2845,6 @@ input[type="file"] {
   .learning-review-grid,
   .learning-result-grid,
   .review-hero-top,
-  .motto-hero-grid,
   .dictionary-refined-head,
   .dictionary-result-body,
   .dashboard-hero-v3-main,
@@ -2897,7 +2896,6 @@ input[type="file"] {
   .dashboard-refined-head,
   .dashboard-v2-intro,
   .dashboard-v2-stats,
-  .motto-hero-grid,
   .dashboard-hero-v3-main,
   .dashboard-hero-v3-grid,
   .dictionary-refined-head,
@@ -2911,6 +2909,10 @@ input[type="file"] {
   .snapshot-grid,
   .summary-grid,
   .hero-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .motto-hero-grid {
     grid-template-columns: 1fr;
   }
 
