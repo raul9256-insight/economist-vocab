@@ -2,9 +2,40 @@
 {% block title %}Home | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="panel dashboard-v2-card motto-hero">
-  <blockquote class="motto-quote">
-    “{{ t("motto_quote") }}”
-  </blockquote>
+  <div class="motto-hero-grid">
+    <blockquote class="motto-quote">
+      “{{ t("motto_quote") }}”
+    </blockquote>
+
+    <aside class="motto-chart-card">
+      <div class="card-head tight">
+        <div>
+          <p class="eyebrow">{{ t("hero_chart_label") }}</p>
+          <h2>{{ t("hero_chart_title") }}</h2>
+        </div>
+      </div>
+      <p class="section-subtle">{{ t("hero_chart_note") }}</p>
+
+      <div class="motto-chart-total">
+        <span>{{ t("hero_chart_total") }}</span>
+        <strong>{{ stats.total_words }}</strong>
+      </div>
+
+      <div class="motto-band-chart" aria-label="{{ t('hero_chart_bands') }}">
+        {% for band in hero_band_chart %}
+        <div class="motto-band-row">
+          <div class="motto-band-meta">
+            <span>{{ band.label }}</span>
+            <strong>{{ band.count }}</strong>
+          </div>
+          <div class="motto-band-track">
+            <div class="motto-band-fill" style="width: {{ band.percent }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
 </section>
 
 <section class="panel dashboard-v2-card dashboard-hero-v3">

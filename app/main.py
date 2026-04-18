@@ -351,6 +351,11 @@ TRANSLATIONS["en"].update(
         "no_missed_words": "No missed words yet.",
         "review_queue_auto": "After a test or learning session, your review queue will appear here automatically.",
         "start_learning": "Start Learning",
+        "hero_chart_label": "Vocabulary Snapshot",
+        "hero_chart_title": "Your Economist corpus",
+        "hero_chart_note": "A quick look at how your vocabulary source is distributed across frequency groups.",
+        "hero_chart_total": "Total entries",
+        "hero_chart_bands": "Frequency groups",
     }
 )
 
@@ -547,6 +552,11 @@ TRANSLATIONS["zh-Hant"].update(
         "no_missed_words": "目前還沒有錯題。",
         "review_queue_auto": "做完一次檢測或練習後，錯題清單就會自動出現在這裡。",
         "start_learning": "開始學習",
+        "hero_chart_label": "詞彙概況",
+        "hero_chart_title": "你的 Economist 詞彙分布",
+        "hero_chart_note": "快速看看目前詞彙資料在不同常見程度分類中的分布情況。",
+        "hero_chart_total": "總詞彙數",
+        "hero_chart_bands": "詞彙分類",
     }
 )
 
@@ -1502,6 +1512,15 @@ def home(request: Request) -> HTMLResponse:
     latest_learning = latest_learning_result(conn)
     recommended_band = latest_test["estimated_band_label"] if latest_test else "50~99 (3924)"
     bands = decorate_band_rows(band_summary(conn))
+    max_band_total = max((band["workbook_total"] for band in bands), default=1)
+    hero_band_chart = [
+        {
+            "label": band["range_label"],
+            "count": band["workbook_total"],
+            "percent": max(18, round((band["workbook_total"] / max_band_total) * 100)),
+        }
+        for band in bands[:5]
+    ]
     return render(
         request,
         "home.html",
@@ -1512,6 +1531,7 @@ def home(request: Request) -> HTMLResponse:
         recommended_band=recommended_band,
         missed_words_count=len(missed_words(conn, limit=10)),
         spotlight_words=dashboard_spotlight_words(conn),
+        hero_band_chart=hero_band_chart,
     )
 
 @app.get("/test", response_class=HTMLResponse)
