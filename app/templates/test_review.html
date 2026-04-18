@@ -1,35 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Test Review | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("level_test_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="learning-session-shell">
   <div class="learning-session-meta">
-    <span class="session-meta-pill active">Level Test</span>
-    <span class="session-meta-pill">{{ progress.answered }}/{{ progress.total }} answered</span>
+    <span class="session-meta-pill active">{{ t("level_test_title") }}</span>
+    <span class="session-meta-pill">{{ t("answered_counter", answered=progress.answered, total=progress.total) }}</span>
     <span class="session-meta-pill">{{ question.band_label }}</span>
   </div>
 
   <section class="learning-session-grid test-session-grid">
     <article class="panel dashboard-v2-card learning-question-card">
-      <p class="eyebrow">{% if question.is_correct %}Correct{% else %}Review{% endif %}</p>
+      <p class="eyebrow">{% if question.is_correct %}{{ t("correct_review") }}{% else %}{{ t("review_label") }}{% endif %}</p>
       <h1>{{ question.prompt_text }}</h1>
 
       <div class="feedback-card learning-feedback {% if question.is_correct %}feedback-good{% else %}feedback-bad{% endif %}">
-        <p><strong>Your answer:</strong> {{ question.user_answer }}</p>
-        <p><strong>Correct answer:</strong> {{ question.correct_option }}</p>
+        <p><strong>{{ t("your_answer") }}</strong> {{ question.user_answer }}</p>
+        <p><strong>{{ t("correct_answer") }}</strong> {{ question.correct_option }}</p>
         {% if question.is_correct %}
-        <p>You recognized this word correctly.</p>
+        <p>{{ t("recognized_correctly") }}</p>
         {% else %}
-        <p>This is a useful word to revisit later in learning mode.</p>
+        <p>{{ t("revisit_later_note") }}</p>
         {% endif %}
       </div>
 
       <div class="learning-review-grid">
         <div class="learning-info-block">
-          <span class="focus-label">Pronunciation</span>
-          <p>{{ pronunciation or "Not added yet." }}</p>
+          <span class="focus-label">{{ t("pronunciation_label") }}</span>
+          <p>{{ pronunciation or t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Chinese Definition</span>
+          <span class="focus-label">{{ t("chinese_definition") }}</span>
           {% if definitions %}
           <ul class="clean-list">
             {% for item in definitions[:4] %}
@@ -37,58 +37,58 @@
             {% endfor %}
           </ul>
           {% else %}
-          <p>Not added yet.</p>
+          <p>{{ t("not_added_yet") }}</p>
           {% endif %}
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">English Definition</span>
-          <p>{{ english_definition or "Not added yet." }}</p>
+          <span class="focus-label">{{ t("english_definition") }}</span>
+          <p>{{ english_definition or t("not_added_yet") }}</p>
         </div>
       </div>
 
       <div class="action-row">
         {% if is_last %}
-        <a class="button" href="/test/{{ session.id }}/result">See Test Result</a>
+        <a class="button" href="/test/{{ session.id }}/result">{{ t("see_test_result") }}</a>
         {% else %}
-        <a class="button" href="/test/{{ session.id }}">Next Question</a>
+        <a class="button" href="/test/{{ session.id }}">{{ t("next_question") }}</a>
         {% endif %}
-        <a class="button secondary" href="/word/{{ word.id }}">Open Word Page</a>
+        <a class="button secondary" href="/word/{{ word.id }}">{{ t("open_word_page") }}</a>
       </div>
     </article>
 
     <aside class="panel dashboard-v2-card learning-side-card">
       <div class="card-head tight">
         <div>
-          <p class="eyebrow">After Answering</p>
+          <p class="eyebrow">{{ t("after_answering") }}</p>
           <div class="word-heading-row compact">
             <h2>{{ word.lemma }}</h2>
-            <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="Pronounce {{ word.lemma }}">🔊</button>
+            <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
           </div>
         </div>
       </div>
       <div class="learning-side-stack">
         <div class="learning-info-block">
-          <span class="focus-label">Now unlocked</span>
-          <p>This review step shows the meaning after your choice so you can confirm the word without affecting the test fairness.</p>
+          <span class="focus-label">{{ t("now_unlocked") }}</span>
+          <p>{{ t("hidden_test_note") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Pronunciation</span>
-          <p>{{ pronunciation or "Not added yet." }}</p>
+          <span class="focus-label">{{ t("pronunciation_label") }}</span>
+          <p>{{ pronunciation or t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Word Type</span>
-          <p>{{ parts_of_speech|join(", ") if parts_of_speech else "Unknown" }}</p>
+          <span class="focus-label">{{ t("word_type") }}</span>
+          <p>{{ parts_of_speech|join(", ") if parts_of_speech else t("unknown") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">English Definition</span>
-          <p>{{ english_definition or "Not added yet." }}</p>
+          <span class="focus-label">{{ t("english_definition") }}</span>
+          <p>{{ english_definition or t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Chinese Definition</span>
-          <p>{{ definitions[:2]|join(" / ") if definitions else "Not added yet." }}</p>
+          <span class="focus-label">{{ t("chinese_definition") }}</span>
+          <p>{{ definitions[:2]|join(" / ") if definitions else t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Band</span>
+          <span class="focus-label">{{ t("frequency_band_label") }}</span>
           <p>{{ question.band_label }}</p>
         </div>
       </div>

@@ -5,18 +5,18 @@
   <article class="panel dashboard-v2-card dictionary-refined-hero">
     <div class="card-head tight">
       <div>
-        <p class="eyebrow">Frequency Band</p>
+        <p class="eyebrow">{{ t("frequency_band") }}</p>
         <h1>{{ band.best_band_label }}</h1>
-        <p class="lede">{{ band.total }} words in this band.</p>
+        <p class="lede">{{ t("words_in_band", count=band.total) }}</p>
       </div>
-      <a class="text-link" href="/dictionary">Back to dictionary</a>
+      <a class="text-link" href="/dictionary">{{ t("back_to_dictionary") }}</a>
     </div>
 
     <form class="dictionary-band-filters" method="get" action="/dictionary/band/{{ band.best_band_rank }}">
       <input type="hidden" name="letter" value="{{ active_letter }}">
-      <label class="checkbox-row"><input type="checkbox" name="has_english" value="1" {% if has_english %}checked{% endif %}> English only</label>
-      <label class="checkbox-row"><input type="checkbox" name="has_example" value="1" {% if has_example %}checked{% endif %}> Example only</label>
-      <button class="button secondary" type="submit">Apply filters</button>
+      <label class="checkbox-row"><input type="checkbox" name="has_english" value="1" {% if has_english %}checked{% endif %}> {{ t("english_only") }}</label>
+      <label class="checkbox-row"><input type="checkbox" name="has_example" value="1" {% if has_example %}checked{% endif %}> {{ t("example_only") }}</label>
+      <button class="button secondary" type="submit">{{ t("apply_filters") }}</button>
     </form>
 
     <div class="dictionary-letter-grid">
@@ -29,7 +29,7 @@
   <section class="panel dashboard-v2-card dictionary-results-panel">
     <div class="card-head tight">
       <div>
-        <p class="eyebrow">Words</p>
+        <p class="eyebrow">{{ t("words_label") }}</p>
         <h2>{{ active_letter }}</h2>
       </div>
     </div>
@@ -50,13 +50,13 @@
         {% elif word.example_sentence %}
         <p>{{ word.example_sentence }}</p>
         {% else %}
-        <p>Open this word to add richer details.</p>
+        <p>{{ t("open_word_add_details") }}</p>
         {% endif %}
       </a>
       {% else %}
       <div class="empty-card dictionary-empty-card">
-        <h3>No words found for this letter.</h3>
-        <p>Try another letter or remove one of the filters.</p>
+        <h3>{{ t("no_words_for_letter") }}</h3>
+        <p>{{ t("no_words_for_letter_note") }}</p>
       </div>
       {% endfor %}
     </div>

@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Level Test | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("level_test_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="test-shell">
   <article class="panel dashboard-v2-card test-hero">
     <div class="test-hero-top">
       <div>
-        <p class="eyebrow">Level Test</p>
-        <h1>Find your starting band.</h1>
-        <p class="lede">This placement test uses {{ question_count }} multiple-choice questions from different frequency bands to estimate your current Economist vocabulary level.</p>
+        <p class="eyebrow">{{ t("level_test_title") }}</p>
+        <h1>{{ t("find_starting_band") }}</h1>
+        <p class="lede">{{ t("test_intro_lede", count=question_count) }}</p>
       </div>
       <div class="test-hero-badge">
-        <span>Questions</span>
+        <span>{{ t("questions_label") }}</span>
         <strong>{{ question_count }}</strong>
-        <small>definition-based items</small>
+        <small>{{ t("definition_based_items") }}</small>
       </div>
     </div>
 
@@ -20,26 +20,26 @@
       <article class="test-focus-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">What It Measures</p>
-            <h2>Foundation across bands</h2>
+            <p class="eyebrow">{{ t("what_it_measures") }}</p>
+            <h2>{{ t("foundation_across_bands") }}</h2>
           </div>
         </div>
         <div class="mini-kicker-row">
-          <span class="mini-kicker active">Frequency</span>
-          <span class="mini-kicker">Recognition</span>
-          <span class="mini-kicker">Placement</span>
+          <span class="mini-kicker active">{{ t("frequency_short") }}</span>
+          <span class="mini-kicker">{{ t("recognition_short") }}</span>
+          <span class="mini-kicker">{{ t("placement_short") }}</span>
         </div>
-        <p class="goal-note">The result combines your total accuracy with how well you handled harder frequency bands.</p>
+        <p class="goal-note">{{ t("test_goal_note") }}</p>
         <form method="post" action="/test/start">
-          <button class="button learning-start-button" type="submit">Begin Test</button>
+          <button class="button learning-start-button" type="submit">{{ t("begin_test") }}</button>
         </form>
       </article>
 
       <article class="test-bands-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Band Coverage</p>
-            <h2>Sampled ranges</h2>
+            <p class="eyebrow">{{ t("band_coverage") }}</p>
+            <h2>{{ t("sampled_ranges") }}</h2>
           </div>
         </div>
         <div class="test-band-chip-grid">

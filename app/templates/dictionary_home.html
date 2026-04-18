@@ -1,53 +1,53 @@
 {% extends "base.html" %}
-{% block title %}Dictionary | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("dictionary_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="dictionary-refined-shell">
   <article class="panel dashboard-v2-card dictionary-refined-hero">
     <div class="dictionary-refined-head">
       <div>
-        <p class="eyebrow">Dictionary</p>
-        <h1>Search, browse, and explore your word bank.</h1>
-        <p class="lede">Search when you know the word. Browse bands when you want to discover vocabulary by frequency.</p>
+        <p class="eyebrow">{{ t("dictionary_title") }}</p>
+        <h1>{{ t("dictionary_home_title") }}</h1>
+        <p class="lede">{{ t("dictionary_home_lede") }}</p>
       </div>
       <div class="dictionary-hero-note">
-        <span class="dictionary-note-label">Review queue</span>
+        <span class="dictionary-note-label">{{ t("review_queue") }}</span>
         <strong>{{ missed_count }}</strong>
-        <small>missed words ready to revisit</small>
+        <small>{{ missed_count }} {{ t("missed_ready") }}</small>
       </div>
     </div>
 
     <form class="dictionary-search-bar" method="get" action="/dictionary/search">
-      <input type="search" name="q" placeholder="Search a word, for example analyze" required>
-      <button class="button" type="submit">Search</button>
+      <input type="search" name="q" placeholder="{{ t('search_example_placeholder') }}" required>
+      <button class="button" type="submit">{{ t("search_button") }}</button>
     </form>
   </article>
 
   <section class="dictionary-refined-actions">
     <a class="dictionary-action-card" href="/dictionary/search?q=analyze">
-      <span class="dictionary-action-tag">Search</span>
-      <strong>Find a specific word</strong>
-      <p>Best when you already know what you want to look up.</p>
+      <span class="dictionary-action-tag">{{ t("search_tag") }}</span>
+      <strong>{{ t("find_specific_word") }}</strong>
+      <p>{{ t("find_specific_word_note") }}</p>
     </a>
     <a class="dictionary-action-card" href="/dictionary/band/{{ bands[0].best_band_rank if bands else 50 }}">
-      <span class="dictionary-action-tag">Browse</span>
-      <strong>Open a frequency band</strong>
-      <p>Best when you want to study words by appearance count.</p>
+      <span class="dictionary-action-tag">{{ t("browse_tag") }}</span>
+      <strong>{{ t("open_frequency_band") }}</strong>
+      <p>{{ t("open_frequency_band_note") }}</p>
     </a>
     <a class="dictionary-action-card" href="/review/missed">
-      <span class="dictionary-action-tag">Review</span>
-      <strong>Go to missed words</strong>
-      <p>Best when you want a list based on your actual mistakes.</p>
+      <span class="dictionary-action-tag">{{ t("review_tag") }}</span>
+      <strong>{{ t("go_to_missed_words") }}</strong>
+      <p>{{ t("go_to_missed_words_note") }}</p>
     </a>
   </section>
 
   <section class="panel dashboard-v2-card dictionary-band-panel">
     <div class="card-head tight">
       <div>
-        <p class="eyebrow">Frequency Bands</p>
-        <h2>Choose a band to browse</h2>
+        <p class="eyebrow">{{ t("frequency_bands") }}</p>
+        <h2>{{ t("choose_band_browse") }}</h2>
       </div>
     </div>
-    <p class="section-note">Higher numbers mean the word appeared more often in your Economist source data over the last 10 years.</p>
+    <p class="section-note">{{ t("bands_note") }}</p>
     <div class="dictionary-band-grid">
       {% for band in bands %}
       <a class="dictionary-band-card" href="/dictionary/band/{{ band.best_band_rank }}">

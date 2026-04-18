@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Test Question | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("level_test_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="learning-session-shell">
   <div class="learning-session-meta">
-    <span class="session-meta-pill active">Level Test</span>
-    <span class="session-meta-pill">Question {{ progress.current }} / {{ progress.total }}</span>
-    <span class="session-meta-pill">{{ progress.percent }}% complete</span>
+    <span class="session-meta-pill active">{{ t("level_test_title") }}</span>
+    <span class="session-meta-pill">{{ t("question_counter", current=progress.current, total=progress.total) }}</span>
+    <span class="session-meta-pill">{{ t("percent_complete", percent=progress.percent) }}</span>
     <span class="session-meta-pill">{{ question.band_label }}</span>
   </div>
 
   <section class="learning-session-grid test-session-grid">
     <article class="panel dashboard-v2-card learning-question-card">
-      <p class="eyebrow">{{ question.question_type|title }}</p>
+      <p class="eyebrow">{{ qtype_label(question.question_type) }}</p>
       <h1>{{ question.prompt_text }}</h1>
       <p class="section-subtle">{{ question.explanation }}</p>
 
@@ -22,29 +22,29 @@
           <span>{{ option }}</span>
         </label>
         {% endfor %}
-        <button class="button learning-submit-button" type="submit">Submit Answer</button>
+        <button class="button learning-submit-button" type="submit">{{ t("submit_answer") }}</button>
       </form>
     </article>
 
     <aside class="panel dashboard-v2-card learning-side-card">
       <div class="card-head tight">
         <div>
-          <p class="eyebrow">Before Answering</p>
+          <p class="eyebrow">{{ t("before_answering") }}</p>
           <h2>{{ question.band_label }}</h2>
         </div>
       </div>
       <div class="learning-side-stack">
         <div class="learning-info-block">
-          <span class="focus-label">What this means</span>
-          <p>This question is sampled from the {{ question.band_label }} frequency band.</p>
+          <span class="focus-label">{{ t("what_this_means") }}</span>
+          <p>{{ t("sampled_from_band", band=question.band_label) }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Goal</span>
-          <p>Choose the best definition and keep moving. The test is designed to be fast and reliable.</p>
+          <span class="focus-label">{{ t("goal_label") }}</span>
+          <p>{{ t("test_goal_fast") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">What stays hidden</span>
-          <p>Definitions and full word details appear only after you submit, so the placement result stays fair.</p>
+          <span class="focus-label">{{ t("what_stays_hidden") }}</span>
+          <p>{{ t("hidden_test_note") }}</p>
         </div>
       </div>
     </aside>

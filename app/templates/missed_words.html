@@ -1,24 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Missed Words | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("missed_words") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="review-shell">
   <article class="panel dashboard-v2-card review-hero">
     <div class="review-hero-top">
       <div>
-        <p class="eyebrow">Review Queue</p>
-        <h1>Missed words</h1>
-        <p class="lede">This list collects words you answered incorrectly in tests and learning sessions, so your revision is guided by real mistakes instead of random guesses.</p>
+        <p class="eyebrow">{{ t("review_queue") }}</p>
+        <h1>{{ t("review_queue_title") }}</h1>
+        <p class="lede">{{ t("review_queue_lede") }}</p>
       </div>
       <div class="review-hero-badge">
-        <span>Total to review</span>
+        <span>{{ t("total_to_review") }}</span>
         <strong>{{ rows|length }}</strong>
-        <small>words in the queue</small>
+        <small>{{ rows|length }} {{ t("words_in_queue") }}</small>
       </div>
     </div>
 
     <div class="review-hero-actions">
-      <a class="button" href="/learning">Open Learning</a>
-      <a class="button secondary" href="/dictionary">Open Dictionary</a>
+      <a class="button" href="/learning">{{ t("open_learning") }}</a>
+      <a class="button secondary" href="/dictionary">{{ t("open_dictionary") }}</a>
     </div>
   </article>
 
@@ -36,7 +36,7 @@
         <span class="word-band-pill">{{ row.best_band_label }}</span>
       </div>
       <div class="review-word-meta">
-        <span class="review-miss-pill">missed {{ row.miss_count }} time{% if row.miss_count != 1 %}s{% endif %}</span>
+        <span class="review-miss-pill">{{ t("missed_times", count=row.miss_count) }}</span>
       </div>
       {% if row.pronunciation %}
       <p class="review-word-ipa">{{ row.pronunciation }}</p>
@@ -46,19 +46,19 @@
       {% elif row.example_sentence %}
       <p>{{ row.example_sentence }}</p>
       {% else %}
-      <p>Open this word to add an English definition and example sentence.</p>
+      <p>{{ t("open_word_add_definition_example") }}</p>
       {% endif %}
     </a>
     {% endfor %}
   </section>
   {% else %}
   <article class="panel dashboard-v2-card review-empty-card">
-    <p class="eyebrow">All Clear</p>
-    <h2>No missed words yet.</h2>
-    <p class="section-subtle">After a test or learning session, your review queue will appear here automatically.</p>
+    <p class="eyebrow">{{ t("all_clear") }}</p>
+    <h2>{{ t("no_missed_words") }}</h2>
+    <p class="section-subtle">{{ t("review_queue_auto") }}</p>
     <div class="action-row">
-      <a class="button" href="/test">Start Level Test</a>
-      <a class="button secondary" href="/learning">Start Learning</a>
+      <a class="button" href="/test">{{ t("start_test") }}</a>
+      <a class="button secondary" href="/learning">{{ t("start_learning") }}</a>
     </div>
   </article>
   {% endif %}

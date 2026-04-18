@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Learning Question | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("learning_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="learning-session-shell">
   <div class="learning-session-meta">
-    <span class="session-meta-pill active">Learning</span>
-    <span class="session-meta-pill">Question {{ progress.current }} / {{ progress.total }}</span>
-    <span class="session-meta-pill">{{ progress.percent }}% complete</span>
-    <span class="session-meta-pill">{{ question.question_type|title }}</span>
+    <span class="session-meta-pill active">{{ t("learning_title") }}</span>
+    <span class="session-meta-pill">{{ t("question_counter", current=progress.current, total=progress.total) }}</span>
+    <span class="session-meta-pill">{{ t("percent_complete", percent=progress.percent) }}</span>
+    <span class="session-meta-pill">{{ qtype_label(question.question_type) }}</span>
   </div>
 
   <section class="learning-session-grid">
@@ -22,37 +22,37 @@
           <span>{{ option }}</span>
         </label>
         {% endfor %}
-        <button class="button learning-submit-button" type="submit">Submit Answer</button>
+        <button class="button learning-submit-button" type="submit">{{ t("submit_answer") }}</button>
       </form>
     </article>
 
     <aside class="panel dashboard-v2-card learning-side-card">
       <div class="card-head tight">
         <div>
-          <p class="eyebrow">Before Answering</p>
+          <p class="eyebrow">{{ t("before_answering") }}</p>
           <div class="word-heading-row compact">
             <h2>{{ word.lemma }}</h2>
-            <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="Pronounce {{ word.lemma }}">🔊</button>
+            <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
           </div>
         </div>
-        <a class="text-link" href="/word/{{ word.id }}">Open word</a>
+        <a class="text-link" href="/word/{{ word.id }}">{{ t("open_word") }}</a>
       </div>
       <div class="learning-side-stack">
         <div class="learning-info-block">
-          <span class="focus-label">Pronunciation</span>
-          <p>{{ pronunciation or "Not added yet." }}</p>
+          <span class="focus-label">{{ t("pronunciation_label") }}</span>
+          <p>{{ pronunciation or t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Word Type</span>
-          <p>{{ parts_of_speech|join(", ") if parts_of_speech else "Unknown" }}</p>
+          <span class="focus-label">{{ t("word_type") }}</span>
+          <p>{{ parts_of_speech|join(", ") if parts_of_speech else t("unknown") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">Frequency Band</span>
+          <span class="focus-label">{{ t("frequency_band_label") }}</span>
           <p>{{ word.best_band_label }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">What stays hidden</span>
-          <p>Definitions, synonyms, and examples stay hidden until you submit, so this step works like real practice.</p>
+          <span class="focus-label">{{ t("what_stays_hidden") }}</span>
+          <p>{{ t("hidden_learning_note") }}</p>
         </div>
       </div>
     </aside>

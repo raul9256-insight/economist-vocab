@@ -158,6 +158,398 @@ TRANSLATIONS = {
     },
 }
 
+TRANSLATIONS["en"].update(
+    {
+        "unknown_type": "Unknown type",
+        "unknown": "Unknown",
+        "not_added_yet": "Not added yet.",
+        "not_available": "Not available.",
+        "back_to_dictionary": "Back to dictionary",
+        "dictionary_title": "Dictionary",
+        "dictionary_home_title": "Search, browse, and explore your word bank.",
+        "dictionary_home_lede": "Search when you know the word. Browse bands when you want to discover vocabulary by frequency.",
+        "review_queue": "Review queue",
+        "missed_ready": "missed words ready to revisit",
+        "search_example_placeholder": "Search a word, for example analyze",
+        "search_button": "Search",
+        "search_tag": "Search",
+        "browse_tag": "Browse",
+        "review_tag": "Review",
+        "find_specific_word": "Find a specific word",
+        "find_specific_word_note": "Best when you already know what you want to look up.",
+        "open_frequency_band": "Open a frequency band",
+        "open_frequency_band_note": "Best when you want to study words by appearance count.",
+        "go_to_missed_words": "Go to missed words",
+        "go_to_missed_words_note": "Best when you want a list based on your actual mistakes.",
+        "choose_band_browse": "Choose a band to browse",
+        "all_bands": "All bands",
+        "english_only": "English only",
+        "example_only": "Example only",
+        "dictionary_search_title": "Dictionary Search",
+        "dictionary_search_hero": "Find words fast.",
+        "results": "Results",
+        "search_results_count": "{count} results for \"{query}\"",
+        "english_label": "English",
+        "chinese_label": "Chinese",
+        "example_label": "Example",
+        "no_search_match": "No words matched this search.",
+        "no_search_match_note": "Try a shorter keyword, remove one filter, or browse by frequency band instead.",
+        "frequency_band": "Frequency Band",
+        "words_in_band": "{count} words in this band.",
+        "apply_filters": "Apply filters",
+        "words_label": "Words",
+        "open_word_add_details": "Open this word to add richer details.",
+        "no_words_for_letter": "No words found for this letter.",
+        "no_words_for_letter_note": "Try another letter or remove one of the filters.",
+        "word_status": "Status",
+        "correct_label": "Correct",
+        "wrong_label": "Wrong",
+        "overview_tab": "Overview",
+        "meaning_tab": "Meaning",
+        "examples_tab": "Examples",
+        "notes_tab": "Notes",
+        "definition_section": "Definition",
+        "core_meaning": "Core meaning",
+        "english_definition": "English Definition",
+        "chinese_definition": "Chinese Definition",
+        "no_english_definition": "No English definition added yet.",
+        "no_chinese_definition": "No Chinese definition added yet.",
+        "examples_section": "Examples",
+        "usage_related": "Usage and related words",
+        "example_sentence": "Example Sentence",
+        "no_example_sentence": "No example sentence added yet.",
+        "synonyms_label": "Synonyms",
+        "no_synonyms": "No synonyms added yet.",
+        "source_section": "Source",
+        "workbook_references": "Workbook references",
+        "pos_not_provided": "Part of speech not provided",
+        "notes_section": "Notes",
+        "memory_hook": "Your memory hook",
+        "no_personal_notes": "No personal notes yet. Add a short memory hook or reminder for this word.",
+        "edit_section": "Edit",
+        "improve_word": "Improve this word",
+        "improve_word_note": "Add clearer definitions, examples, and distractors to make learning mode stronger.",
+        "notes_label": "Notes",
+        "ipa_label": "IPA",
+        "wrong_sentence_options": "Wrong Sentence Options",
+        "save_changes": "Save Changes",
+        "add_concise_english_definition": "Add a concise English definition",
+        "add_ipa_placeholder": "Add IPA, e.g. /əˈbɪləti/",
+        "one_synonym_per_line": "One synonym per line",
+        "add_natural_sentence": "Add one natural sentence using the word",
+        "one_distractor_per_line": "One distractor sentence per line",
+        "learning_title": "Learning",
+        "learning_hero_title": "Train in short, focused loops.",
+        "learning_hero_lede": "Each session gives you multiple-choice practice from your Economist vocabulary database. As you enrich more words, learning becomes deeper and less repetitive.",
+        "latest_label": "Latest",
+        "ready_label": "Ready",
+        "most_recent_session": "most recent session",
+        "start_new_session_note": "start a new session",
+        "session_goal": "Session Goal",
+        "build_consistency": "Build consistency first",
+        "definition_short": "Definition",
+        "synonym_short": "Synonym",
+        "sentence_short": "Sentence",
+        "definition_available_note": "Definitions are available immediately. Synonym and sentence questions appear as more words gain enrichment.",
+        "start_learning_session": "Start Learning Session",
+        "coverage": "Coverage",
+        "learning_bank": "Your learning bank",
+        "enriched_label": "Enriched",
+        "sentence_ready": "Sentence Ready",
+        "how_it_works": "How It Works",
+        "what_mode_gives_you": "What this mode gives you",
+        "study_rounds_note": "Short study rounds help you keep momentum without overloading yourself.",
+        "definition_first": "Definition first",
+        "definition_first_note": "Start with meaning-based questions even if enrichment is still limited.",
+        "review_after_answer": "Review after every answer",
+        "review_after_answer_note": "See the explanation and reopen the full word page when needed.",
+        "smarter_over_time": "Smarter over time",
+        "smarter_over_time_note": "As you add notes, synonyms, and examples, practice becomes richer automatically.",
+        "best_next_step": "Best Next Step",
+        "enrich_first": "Enrich a few words first",
+        "enrich_first_note": "You can already start learning, but adding some English definitions, synonyms, and example sentences will make sessions much stronger.",
+        "latest_session": "Latest Session",
+        "recent_session_saved": "Your most recent learning session is saved. Start another round to keep building recall.",
+        "start_another_session": "Start Another Session",
+        "question_counter": "Question {current} / {total}",
+        "percent_complete": "{percent}% complete",
+        "submit_answer": "Submit Answer",
+        "before_answering": "Before Answering",
+        "open_word": "Open word",
+        "pronunciation_label": "Pronunciation",
+        "word_type": "Word Type",
+        "frequency_band_label": "Frequency Band",
+        "what_stays_hidden": "What stays hidden",
+        "hidden_learning_note": "Definitions, synonyms, and examples stay hidden until you submit, so this step works like real practice.",
+        "answered_counter": "{answered}/{total} answered",
+        "correct_review": "Correct",
+        "review_label": "Review",
+        "your_answer": "Your answer:",
+        "correct_answer": "Correct answer:",
+        "nice_work_note": "Nice work. This word is moving in the right direction.",
+        "read_details_note": "Take a moment to read the details below before moving on.",
+        "see_session_result": "See Session Result",
+        "next_question": "Next Question",
+        "open_word_page": "Open Word Page",
+        "after_answering": "After Answering",
+        "now_unlocked": "Now unlocked",
+        "now_unlocked_note": "The full meaning view is open now, so use this step to confirm the idea and fix the word in memory.",
+        "correct_wrong": "Correct / Wrong",
+        "session_complete": "Session Complete",
+        "learning_result_title": "You answered {score} correctly.",
+        "learning_result_lede": "Your learning round is saved. Use the result below to decide whether to continue, review, or enrich more words.",
+        "accuracy_label": "Accuracy",
+        "session_score": "Session Score",
+        "next_focus": "Next focus:",
+        "breakdown": "Breakdown",
+        "question_types": "Question types",
+        "question_type_label": "Question Type",
+        "total_label": "Total",
+        "level_test_title": "Level Test",
+        "find_starting_band": "Find your starting band.",
+        "test_intro_lede": "This placement test uses {count} multiple-choice questions from different frequency bands to estimate your current Economist vocabulary level.",
+        "questions_label": "Questions",
+        "definition_based_items": "definition-based items",
+        "what_it_measures": "What It Measures",
+        "foundation_across_bands": "Foundation across bands",
+        "frequency_short": "Frequency",
+        "recognition_short": "Recognition",
+        "placement_short": "Placement",
+        "test_goal_note": "The result combines your total accuracy with how well you handled harder frequency bands.",
+        "begin_test": "Begin Test",
+        "band_coverage": "Band Coverage",
+        "sampled_ranges": "Sampled ranges",
+        "what_this_means": "What this means",
+        "sampled_from_band": "This question is sampled from the {band} frequency band.",
+        "goal_label": "Goal",
+        "test_goal_fast": "Choose the best definition and keep moving. The test is designed to be fast and reliable.",
+        "hidden_test_note": "Definitions and full word details appear only after you submit, so the placement result stays fair.",
+        "recognized_correctly": "You recognized this word correctly.",
+        "revisit_later_note": "This is a useful word to revisit later in learning mode.",
+        "see_test_result": "See Test Result",
+        "result_label": "Result",
+        "getting_started": "Getting Started",
+        "test_result_lede": "You answered {score} correctly in this placement test. This result estimates where you should start learning next.",
+        "estimated_band_chip": "Estimated band: {band}",
+        "correct_chip": "Correct: {score}",
+        "weighted_chip": "Weighted: {percent}%",
+        "test_result_note": "This result combines your total accuracy and how well you handled harder frequency bands.",
+        "what_to_do_next": "What to do next:",
+        "band_breakdown": "Band Breakdown",
+        "band_performance": "How you performed by range",
+        "band_accuracy_note": "{percent}% accuracy in this band.",
+        "try_again": "Try Again",
+        "go_to_learning": "Go To Learning",
+        "review_queue_title": "Missed words",
+        "review_queue_lede": "This list collects words you answered incorrectly in tests and learning sessions, so your revision is guided by real mistakes instead of random guesses.",
+        "total_to_review": "Total to review",
+        "words_in_queue": "words in the queue",
+        "open_learning": "Open Learning",
+        "missed_times": "missed {count} times",
+        "open_word_add_definition_example": "Open this word to add an English definition and example sentence.",
+        "all_clear": "All Clear",
+        "no_missed_words": "No missed words yet.",
+        "review_queue_auto": "After a test or learning session, your review queue will appear here automatically.",
+        "start_learning": "Start Learning",
+    }
+)
+
+TRANSLATIONS["zh-Hant"].update(
+    {
+        "unknown_type": "詞性未提供",
+        "unknown": "未提供",
+        "not_added_yet": "尚未補上。",
+        "not_available": "目前沒有資料。",
+        "back_to_dictionary": "返回詞典",
+        "dictionary_title": "詞典查詢",
+        "dictionary_home_title": "搜尋、瀏覽並整理你的單字庫。",
+        "dictionary_home_lede": "知道單字時可直接搜尋；想依照頻率探索詞彙時可用頻率帶瀏覽。",
+        "review_queue": "複習清單",
+        "missed_ready": "個錯題待重新查看",
+        "search_example_placeholder": "搜尋單字，例如 analyze",
+        "search_button": "搜尋",
+        "search_tag": "搜尋",
+        "browse_tag": "瀏覽",
+        "review_tag": "複習",
+        "find_specific_word": "找特定單字",
+        "find_specific_word_note": "當你已經知道要查哪個字時最適合。",
+        "open_frequency_band": "打開一個頻率帶",
+        "open_frequency_band_note": "當你想按出現次數學習時最適合。",
+        "go_to_missed_words": "前往錯題清單",
+        "go_to_missed_words_note": "當你想根據實際答錯紀錄來複習時最適合。",
+        "choose_band_browse": "選擇要瀏覽的頻率帶",
+        "all_bands": "全部頻率帶",
+        "english_only": "只看有英文定義",
+        "example_only": "只看有例句",
+        "dictionary_search_title": "詞典搜尋",
+        "dictionary_search_hero": "快速找到你要的單字。",
+        "results": "搜尋結果",
+        "search_results_count": "「{query}」共有 {count} 筆結果",
+        "english_label": "英文",
+        "chinese_label": "中文",
+        "example_label": "例句",
+        "no_search_match": "找不到符合這次搜尋的單字。",
+        "no_search_match_note": "可以試試更短的關鍵字、移除一個篩選條件，或改用頻率帶瀏覽。",
+        "frequency_band": "頻率帶",
+        "words_in_band": "此頻率帶共有 {count} 個單字。",
+        "apply_filters": "套用篩選",
+        "words_label": "單字",
+        "open_word_add_details": "打開這個單字頁補上更完整的內容。",
+        "no_words_for_letter": "這個字母下目前沒有單字。",
+        "no_words_for_letter_note": "試試其他字母，或移除其中一個篩選條件。",
+        "word_status": "狀態",
+        "correct_label": "答對",
+        "wrong_label": "答錯",
+        "overview_tab": "總覽",
+        "meaning_tab": "詞義",
+        "examples_tab": "例句",
+        "notes_tab": "筆記",
+        "definition_section": "定義",
+        "core_meaning": "核心意思",
+        "english_definition": "英文定義",
+        "chinese_definition": "中文定義",
+        "no_english_definition": "尚未加入英文定義。",
+        "no_chinese_definition": "尚未加入中文定義。",
+        "examples_section": "例句",
+        "usage_related": "用法與相關詞",
+        "example_sentence": "例句",
+        "no_example_sentence": "尚未加入例句。",
+        "synonyms_label": "同義詞",
+        "no_synonyms": "尚未加入同義詞。",
+        "source_section": "來源",
+        "workbook_references": "工作表來源",
+        "pos_not_provided": "原始資料未提供詞性",
+        "notes_section": "筆記",
+        "memory_hook": "你的記憶提示",
+        "no_personal_notes": "目前還沒有個人筆記，可以加上一句方便記憶的提示。",
+        "edit_section": "編輯",
+        "improve_word": "補強這個單字",
+        "improve_word_note": "補上更清楚的定義、例句和干擾選項，能讓學習模式更完整。",
+        "notes_label": "筆記",
+        "ipa_label": "IPA",
+        "wrong_sentence_options": "錯誤例句選項",
+        "save_changes": "儲存變更",
+        "add_concise_english_definition": "加入精簡的英文定義",
+        "add_ipa_placeholder": "加入 IPA，例如 /əˈbɪləti/",
+        "one_synonym_per_line": "每行一個同義詞",
+        "add_natural_sentence": "加入一個自然的例句",
+        "one_distractor_per_line": "每行一個錯誤例句選項",
+        "learning_title": "學習練習",
+        "learning_hero_title": "用短而集中的節奏練習。",
+        "learning_hero_lede": "每次練習都會從你的《經濟學人》詞彙資料庫出題。當你補充更多內容後，學習會更深入，也更不重複。",
+        "latest_label": "最近",
+        "ready_label": "準備好了",
+        "most_recent_session": "最近一次練習",
+        "start_new_session_note": "開始新的練習",
+        "session_goal": "本次目標",
+        "build_consistency": "先建立穩定感",
+        "definition_short": "定義",
+        "synonym_short": "同義詞",
+        "sentence_short": "例句",
+        "definition_available_note": "一開始先用定義題練習；隨著更多單字被補充完整，系統會加入同義詞與例句題。",
+        "start_learning_session": "開始學習練習",
+        "coverage": "覆蓋率",
+        "learning_bank": "你的學習庫",
+        "enriched_label": "已補內容",
+        "sentence_ready": "已有例句",
+        "how_it_works": "使用方式",
+        "what_mode_gives_you": "這個模式能帶來什麼",
+        "study_rounds_note": "短回合練習能幫你維持節奏，不會一下子負擔太重。",
+        "definition_first": "先從定義開始",
+        "definition_first_note": "即使內容還沒完全補齊，也能先用意思題建立基礎。",
+        "review_after_answer": "每答完就複習",
+        "review_after_answer_note": "每題之後都能看解釋，需要時也能打開完整單字頁。",
+        "smarter_over_time": "越用越完整",
+        "smarter_over_time_note": "當你加入筆記、同義詞與例句後，練習內容會自動變得更豐富。",
+        "best_next_step": "建議下一步",
+        "enrich_first": "先補幾個單字",
+        "enrich_first_note": "你現在已經可以開始練習，但若先補上一些英文定義、同義詞和例句，效果會更好。",
+        "latest_session": "最近一次練習",
+        "recent_session_saved": "你最近一次的學習練習已經保存，可以直接再開始一輪。",
+        "start_another_session": "再開始一輪",
+        "question_counter": "第 {current} 題 / 共 {total} 題",
+        "percent_complete": "已完成 {percent}%",
+        "submit_answer": "提交答案",
+        "before_answering": "作答前",
+        "open_word": "打開單字頁",
+        "pronunciation_label": "發音",
+        "word_type": "詞性",
+        "frequency_band_label": "頻率帶",
+        "what_stays_hidden": "這一步暫時不顯示",
+        "hidden_learning_note": "在你作答前，定義、同義詞與例句都會先隱藏，這樣才像真正練習。",
+        "answered_counter": "已作答 {answered}/{total}",
+        "correct_review": "答對",
+        "review_label": "複習",
+        "your_answer": "你的答案：",
+        "correct_answer": "正確答案：",
+        "nice_work_note": "做得不錯，這個單字正在往穩定記憶前進。",
+        "read_details_note": "先看一下下面的內容，再繼續下一題。",
+        "see_session_result": "查看本次結果",
+        "next_question": "下一題",
+        "open_word_page": "打開單字頁",
+        "after_answering": "作答後",
+        "now_unlocked": "現在已解鎖",
+        "now_unlocked_note": "現在可以看完整意思，利用這一步確認概念，幫助把單字記住。",
+        "correct_wrong": "答對 / 答錯",
+        "session_complete": "本次練習完成",
+        "learning_result_title": "你這次答對了 {score} 題。",
+        "learning_result_lede": "本輪學習已經保存。你可以根據下面結果決定要繼續、複習，或補充更多單字內容。",
+        "accuracy_label": "正確率",
+        "session_score": "本次得分",
+        "next_focus": "下一步建議：",
+        "breakdown": "結果拆解",
+        "question_types": "題型分布",
+        "question_type_label": "題型",
+        "total_label": "總數",
+        "level_test_title": "程度測驗",
+        "find_starting_band": "找出你的起始頻率帶。",
+        "test_intro_lede": "這個程度測驗會從不同頻率帶抽出 {count} 題選擇題，用來估算你目前的《經濟學人》詞彙程度。",
+        "questions_label": "題目數",
+        "definition_based_items": "以定義為主的題目",
+        "what_it_measures": "測的是什麼",
+        "foundation_across_bands": "跨頻率帶的基礎掌握",
+        "frequency_short": "頻率",
+        "recognition_short": "辨識",
+        "placement_short": "定位",
+        "test_goal_note": "結果會同時考慮你的總正確率，以及你在較高頻率帶的表現。",
+        "begin_test": "開始測驗",
+        "band_coverage": "涵蓋頻率帶",
+        "sampled_ranges": "抽樣範圍",
+        "what_this_means": "這代表什麼",
+        "sampled_from_band": "這一題是從 {band} 頻率帶抽出的。",
+        "goal_label": "目標",
+        "test_goal_fast": "選出最合適的定義後繼續往下。這個測驗設計成快速且穩定。",
+        "hidden_test_note": "在你提交答案前，完整定義與單字細節都會隱藏，這樣程度結果才公平。",
+        "recognized_correctly": "你正確辨認了這個單字。",
+        "revisit_later_note": "這是之後很適合放回學習模式再加強的單字。",
+        "see_test_result": "查看測驗結果",
+        "result_label": "結果",
+        "getting_started": "起步中",
+        "test_result_lede": "你在這次程度測驗中答對了 {score} 題。這個結果會估算你下一步應該從哪個頻率帶開始。",
+        "estimated_band_chip": "建議頻率帶：{band}",
+        "correct_chip": "答對：{score}",
+        "weighted_chip": "加權：{percent}%",
+        "test_result_note": "這個結果會同時考慮你的總正確率，以及你在較高頻率帶的表現。",
+        "what_to_do_next": "接下來可以：",
+        "band_breakdown": "各頻率帶表現",
+        "band_performance": "你在各範圍的表現",
+        "band_accuracy_note": "此頻率帶正確率為 {percent}%。",
+        "try_again": "再測一次",
+        "go_to_learning": "前往學習",
+        "review_queue_title": "錯題複習",
+        "review_queue_lede": "這裡會收集你在測驗和學習中答錯的單字，讓你的複習根據真實錯誤，而不是隨機猜測。",
+        "total_to_review": "待複習總數",
+        "words_in_queue": "個單字在清單中",
+        "open_learning": "打開學習",
+        "missed_times": "答錯 {count} 次",
+        "open_word_add_definition_example": "打開這個單字頁，補上英文定義和例句。",
+        "all_clear": "目前清空了",
+        "no_missed_words": "目前還沒有錯題。",
+        "review_queue_auto": "完成一次測驗或學習後，錯題清單就會自動出現在這裡。",
+        "start_learning": "開始學習",
+    }
+)
+
 
 def db_conn() -> sqlite3.Connection:
     return get_connection(DEFAULT_DB_PATH)
@@ -178,6 +570,22 @@ def translate(lang: str, key: str, **kwargs) -> str:
     return text.format(**kwargs)
 
 
+def translate_question_type(value: str, lang: str = "en") -> str:
+    labels = {
+        "en": {"definition": "Definition", "synonym": "Synonym", "sentence": "Sentence"},
+        "zh-Hant": {"definition": "定義", "synonym": "同義詞", "sentence": "例句"},
+    }
+    return labels.get(lang, labels["en"]).get(value, value)
+
+
+def translate_status(value: str, lang: str = "en") -> str:
+    labels = {
+        "en": {"new": "new", "learning": "learning", "review": "review", "mastered": "mastered"},
+        "zh-Hant": {"new": "新字", "learning": "學習中", "review": "待複習", "mastered": "已熟悉"},
+    }
+    return labels.get(lang, labels["en"]).get(value, value)
+
+
 def build_lang_url(request: Request, lang: str) -> str:
     params = list(request.query_params.multi_items())
     filtered = [(key, value) for key, value in params if key != "lang"]
@@ -193,6 +601,8 @@ def render(request: Request, template_name: str, **context) -> HTMLResponse:
             "lang": lang,
             "t": lambda key, **kwargs: translate(lang, key, **kwargs),
             "lang_url": lambda target_lang: build_lang_url(request, target_lang),
+            "qtype_label": lambda value: translate_question_type(value, lang),
+            "status_label": lambda value: translate_status(value, lang),
         }
     )
     response = templates.TemplateResponse(name=template_name, request=request, context=context)
@@ -214,19 +624,30 @@ def json_loads(raw: str) -> list[str]:
     return json.loads(raw) if raw else []
 
 
-def progress_label(percent: float) -> str:
+def progress_label(percent: float, lang: str = "en") -> str:
+    labels = {
+        "en": ["Advanced", "Upper Intermediate", "Intermediate", "Lower Intermediate", "Foundation Builder"],
+        "zh-Hant": ["進階", "中高階", "中階", "初中階", "基礎建立中"],
+    }
+    bucket = labels.get(lang, labels["en"])
     if percent >= 0.85:
-        return "Advanced"
+        return bucket[0]
     if percent >= 0.7:
-        return "Upper Intermediate"
+        return bucket[1]
     if percent >= 0.5:
-        return "Intermediate"
+        return bucket[2]
     if percent >= 0.3:
-        return "Lower Intermediate"
-    return "Foundation Builder"
+        return bucket[3]
+    return bucket[4]
 
 
-def level_recommendation(estimated_band_label: str | None, percent: float) -> str:
+def level_recommendation(estimated_band_label: str | None, percent: float, lang: str = "en") -> str:
+    if lang == "zh-Hant":
+        if not estimated_band_label:
+            return "先從 50~99 頻率帶開始，再優先替你最常答錯的單字補上筆記與例句。"
+        if percent >= 0.7:
+            return f"你目前可以穩定從 {estimated_band_label} 附近開始。接下來可以到詞典看更高一級的頻率帶，並補強不熟的字。"
+        return f"接下來幾次學習，先集中在 {estimated_band_label} 和再低一級的頻率帶，直到答案更自然為止。"
     if not estimated_band_label:
         return "Start with the 50~99 band, then add notes and examples to words you miss most often."
     if percent >= 0.7:
@@ -234,7 +655,16 @@ def level_recommendation(estimated_band_label: str | None, percent: float) -> st
     return f"Focus your next learning sessions around {estimated_band_label} and the band just below it until the answers feel automatic."
 
 
-def learning_recommendation(correct: int, total: int, enriched_words: int) -> str:
+def learning_recommendation(correct: int, total: int, enriched_words: int, lang: str = "en") -> str:
+    if lang == "zh-Hant":
+        if total == 0:
+            return "先替幾個單字補充更多內容，學習模式之後才能出更豐富的題目。"
+        percent = correct / total
+        if percent >= 0.8 and enriched_words > 0:
+            return "節奏不錯。可以繼續學，或開始加入更高頻率帶與更多例句題。"
+        if enriched_words == 0:
+            return "定義題已經有幫助，但如果再補上同義詞和例句，下一輪學習會更完整。"
+        return "先回頭看錯題、補清楚筆記，再持續在詞典裡增加更完整的單字內容。"
     if total == 0:
         return "Add more enrichment to a few words first so the learning mode can ask richer questions."
     percent = correct / total
@@ -1181,8 +1611,9 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
     if session is None:
         raise HTTPException(status_code=404, detail="Test session not found")
     band_rows = band_accuracy_rows(conn, session_id)
-    level_name = progress_label((summary["accuracy_percent"] or 0) / 100)
-    recommendation = level_recommendation(session["estimated_band_label"], (summary["accuracy_percent"] or 0) / 100)
+    lang = getattr(request.state, "lang", get_lang(request))
+    level_name = progress_label((summary["accuracy_percent"] or 0) / 100, lang)
+    recommendation = level_recommendation(session["estimated_band_label"], (summary["accuracy_percent"] or 0) / 100, lang)
     return render(
         request,
         "test_result.html",
@@ -1339,7 +1770,8 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
     ).fetchall()
     enriched_words = conn.execute("SELECT COUNT(*) FROM word_enrichment").fetchone()[0]
     total = sum(row["total"] for row in rows)
-    recommendation = learning_recommendation(session["score"], total, enriched_words)
+    lang = getattr(request.state, "lang", get_lang(request))
+    recommendation = learning_recommendation(session["score"], total, enriched_words, lang)
     return render(
         request,
         "learning_result.html",

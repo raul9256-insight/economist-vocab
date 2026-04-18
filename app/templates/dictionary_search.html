@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Dictionary Search | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("dictionary_search_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="dictionary-refined-shell">
   <article class="panel dashboard-v2-card dictionary-refined-hero">
     <div class="card-head tight">
       <div>
-        <p class="eyebrow">Dictionary Search</p>
-        <h1>Find words fast.</h1>
+        <p class="eyebrow">{{ t("dictionary_search_title") }}</p>
+        <h1>{{ t("dictionary_search_hero") }}</h1>
       </div>
-      <a class="text-link" href="/dictionary">Back to dictionary</a>
+      <a class="text-link" href="/dictionary">{{ t("back_to_dictionary") }}</a>
     </div>
 
     <form class="dictionary-search-form" method="get" action="/dictionary/search">
-      <input type="search" name="q" placeholder="Search any word" value="{{ query }}" required>
+      <input type="search" name="q" placeholder="{{ t('search_button') }}" value="{{ query }}" required>
       <select name="band_rank">
-        <option value="">All bands</option>
+        <option value="">{{ t("all_bands") }}</option>
         {% for band in bands %}
         <option value="{{ band.best_band_rank }}" {% if selected_band == band.best_band_rank %}selected{% endif %}>{{ band.best_band_label }}</option>
         {% endfor %}
       </select>
-      <label class="checkbox-row"><input type="checkbox" name="has_english" value="1" {% if has_english %}checked{% endif %}> English only</label>
-      <label class="checkbox-row"><input type="checkbox" name="has_example" value="1" {% if has_example %}checked{% endif %}> Example only</label>
-      <button class="button" type="submit">Search</button>
+      <label class="checkbox-row"><input type="checkbox" name="has_english" value="1" {% if has_english %}checked{% endif %}> {{ t("english_only") }}</label>
+      <label class="checkbox-row"><input type="checkbox" name="has_example" value="1" {% if has_example %}checked{% endif %}> {{ t("example_only") }}</label>
+      <button class="button" type="submit">{{ t("search_button") }}</button>
     </form>
   </article>
 
@@ -29,8 +29,8 @@
   <section class="panel dashboard-v2-card dictionary-results-panel">
     <div class="card-head tight">
       <div>
-        <p class="eyebrow">Results</p>
-        <h2>{{ result_count }} match{% if result_count != 1 %}es{% endif %} for "{{ query }}"</h2>
+        <p class="eyebrow">{{ t("results") }}</p>
+        <h2>{{ t("search_results_count", count=result_count, query=query) }}</h2>
       </div>
     </div>
     <div class="dictionary-results-grid">
@@ -45,9 +45,9 @@
                 <strong>{{ word.chinese_preview[0] }}</strong>
                 {% endif %}
               </div>
-              <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="Pronounce {{ word.lemma }}">🔊</button>
+              <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
             </div>
-            <span class="dictionary-result-meta">{{ word.parts_of_speech|join(", ") if word.parts_of_speech else "Unknown type" }}</span>
+            <span class="dictionary-result-meta">{{ word.parts_of_speech|join(", ") if word.parts_of_speech else t("unknown_type") }}</span>
             {% if word.pronunciation %}
             <span class="dictionary-result-meta ipa-line">{{ word.pronunciation }}</span>
             {% endif %}
@@ -56,23 +56,23 @@
         </div>
         <div class="dictionary-result-body">
           <div class="dictionary-result-box">
-            <span class="focus-label">English</span>
-            <p>{{ word.english_definition or "Not added yet." }}</p>
+            <span class="focus-label">{{ t("english_label") }}</span>
+            <p>{{ word.english_definition or t("not_added_yet") }}</p>
           </div>
           <div class="dictionary-result-box">
-            <span class="focus-label">Chinese</span>
-            <p>{{ word.chinese_preview|join(" / ") if word.chinese_preview else "Not available." }}</p>
+            <span class="focus-label">{{ t("chinese_label") }}</span>
+            <p>{{ word.chinese_preview|join(" / ") if word.chinese_preview else t("not_available") }}</p>
           </div>
         </div>
         <div class="dictionary-result-box subtle">
-          <span class="focus-label">Example</span>
-          <p>{{ word.example_sentence or "Not added yet." }}</p>
+          <span class="focus-label">{{ t("example_label") }}</span>
+          <p>{{ word.example_sentence or t("not_added_yet") }}</p>
         </div>
       </a>
       {% else %}
       <div class="empty-card dictionary-empty-card">
-        <h3>No words matched this search.</h3>
-        <p>Try a shorter keyword, remove one filter, or browse by frequency band instead.</p>
+        <h3>{{ t("no_search_match") }}</h3>
+        <p>{{ t("no_search_match_note") }}</p>
       </div>
       {% endfor %}
     </div>

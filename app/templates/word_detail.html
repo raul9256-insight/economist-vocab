@@ -4,7 +4,7 @@
 <section class="word-detail-shell">
   <article class="panel dashboard-v2-card word-detail-hero">
     <div class="word-detail-topbar">
-      <a class="word-back-link" href="/dictionary">← Back to dictionary</a>
+      <a class="word-back-link" href="/dictionary">← {{ t("back_to_dictionary") }}</a>
       <span class="word-band-pill">{{ word.best_band_label }}</span>
     </div>
 
@@ -17,35 +17,35 @@
             <h1>{{ chinese_headword }}</h1>
             {% endif %}
           </div>
-          <button class="pronounce-button" type="button" data-pronounce="{{ word.lemma }}" aria-label="Pronounce {{ word.lemma }}">🔊</button>
+          <button class="pronounce-button" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
         </div>
         <p class="word-pronunciation">
           {% if pronunciation %}<span>{{ pronunciation }}</span>{% endif %}
-          <span>{{ parts_of_speech|join(", ") if parts_of_speech else "Unknown type" }}</span>
+          <span>{{ parts_of_speech|join(", ") if parts_of_speech else t("unknown_type") }}</span>
         </p>
       </div>
 
       <div class="word-detail-stats">
         <div class="word-stat-card">
-          <span>Status</span>
-          <strong>{{ word.status }}</strong>
+          <span>{{ t("word_status") }}</span>
+          <strong>{{ status_label(word.status) }}</strong>
         </div>
         <div class="word-stat-card">
-          <span>Correct</span>
+          <span>{{ t("correct_label") }}</span>
           <strong>{{ word.correct_count }}</strong>
         </div>
         <div class="word-stat-card">
-          <span>Wrong</span>
+          <span>{{ t("wrong_label") }}</span>
           <strong>{{ word.wrong_count }}</strong>
         </div>
       </div>
     </div>
 
     <div class="word-detail-tabs">
-      <span class="word-tab active">Overview</span>
-      <span class="word-tab">Meaning</span>
-      <span class="word-tab">Examples</span>
-      <span class="word-tab">Notes</span>
+      <span class="word-tab active">{{ t("overview_tab") }}</span>
+      <span class="word-tab">{{ t("meaning_tab") }}</span>
+      <span class="word-tab">{{ t("examples_tab") }}</span>
+      <span class="word-tab">{{ t("notes_tab") }}</span>
     </div>
   </article>
 
@@ -54,17 +54,17 @@
       <article class="panel dashboard-v2-card word-section-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Definition</p>
-            <h2>Core meaning</h2>
+            <p class="eyebrow">{{ t("definition_section") }}</p>
+            <h2>{{ t("core_meaning") }}</h2>
           </div>
         </div>
         <div class="word-definition-grid">
           <section class="word-info-card primary">
-            <span class="focus-label">English Definition</span>
-            <p>{{ english_definition or "No English definition added yet." }}</p>
+            <span class="focus-label">{{ t("english_definition") }}</span>
+            <p>{{ english_definition or t("no_english_definition") }}</p>
           </section>
           <section class="word-info-card">
-            <span class="focus-label">Chinese Definition</span>
+            <span class="focus-label">{{ t("chinese_definition") }}</span>
             {% if definitions %}
             <ul class="clean-list">
               {% for item in definitions %}
@@ -72,7 +72,7 @@
               {% endfor %}
             </ul>
             {% else %}
-            <p>No Chinese definition added yet.</p>
+            <p>{{ t("no_chinese_definition") }}</p>
             {% endif %}
           </section>
         </div>
@@ -81,17 +81,17 @@
       <article class="panel dashboard-v2-card word-section-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Examples</p>
-            <h2>Usage and related words</h2>
+            <p class="eyebrow">{{ t("examples_section") }}</p>
+            <h2>{{ t("usage_related") }}</h2>
           </div>
         </div>
         <div class="word-definition-grid">
           <section class="word-info-card">
-            <span class="focus-label">Example Sentence</span>
-            <p>{{ example_sentence or "No example sentence added yet." }}</p>
+            <span class="focus-label">{{ t("example_sentence") }}</span>
+            <p>{{ example_sentence or t("no_example_sentence") }}</p>
           </section>
           <section class="word-info-card">
-            <span class="focus-label">Synonyms</span>
+            <span class="focus-label">{{ t("synonyms_label") }}</span>
             {% if synonyms %}
             <div class="word-chip-row">
               {% for synonym in synonyms %}
@@ -99,7 +99,7 @@
               {% endfor %}
             </div>
             {% else %}
-            <p>No synonyms added yet.</p>
+            <p>{{ t("no_synonyms") }}</p>
             {% endif %}
           </section>
         </div>
@@ -108,8 +108,8 @@
       <article class="panel dashboard-v2-card word-section-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Source</p>
-            <h2>Workbook references</h2>
+            <p class="eyebrow">{{ t("source_section") }}</p>
+            <h2>{{ t("workbook_references") }}</h2>
           </div>
         </div>
         <div class="source-reference-list">
@@ -117,7 +117,7 @@
           <div class="source-reference-card">
             <strong>{{ source.workbook_name }}</strong>
             <span>{{ source.sheet_name }}{{ source.row_number }}</span>
-            <small>{% if source.pos %}{{ source.pos }}{% else %}Part of speech not provided{% endif %}</small>
+            <small>{% if source.pos %}{{ source.pos }}{% else %}{{ t("pos_not_provided") }}{% endif %}</small>
           </div>
           {% endfor %}
         </div>
@@ -128,47 +128,47 @@
       <article class="panel dashboard-v2-card word-note-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Notes</p>
-            <h2>Your memory hook</h2>
+            <p class="eyebrow">{{ t("notes_section") }}</p>
+            <h2>{{ t("memory_hook") }}</h2>
           </div>
         </div>
-        <p>{{ word.notes or "No personal notes yet. Add a short memory hook or reminder for this word." }}</p>
+        <p>{{ word.notes or t("no_personal_notes") }}</p>
       </article>
 
       <article class="panel dashboard-v2-card word-edit-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Edit</p>
-            <h2>Improve this word</h2>
+            <p class="eyebrow">{{ t("edit_section") }}</p>
+            <h2>{{ t("improve_word") }}</h2>
           </div>
         </div>
-        <p class="section-note">Add clearer definitions, examples, and distractors to make learning mode stronger.</p>
+        <p class="section-note">{{ t("improve_word_note") }}</p>
         <form method="post" action="/word/{{ word.id }}/update" class="stack-form refined-form">
           <label>
-            <span>Notes</span>
+            <span>{{ t("notes_label") }}</span>
             <textarea name="notes" rows="3">{{ word.notes }}</textarea>
           </label>
           <label>
-            <span>English Definition</span>
-            <textarea name="english_definition" rows="4" placeholder="Add a concise English definition">{{ english_definition }}</textarea>
+            <span>{{ t("english_definition") }}</span>
+            <textarea name="english_definition" rows="4" placeholder="{{ t('add_concise_english_definition') }}">{{ english_definition }}</textarea>
           </label>
           <label>
-            <span>IPA</span>
-            <input type="text" name="pronunciation" value="{{ pronunciation }}" placeholder="Add IPA, e.g. /əˈbɪləti/">
+            <span>{{ t("ipa_label") }}</span>
+            <input type="text" name="pronunciation" value="{{ pronunciation }}" placeholder="{{ t('add_ipa_placeholder') }}">
           </label>
           <label>
-            <span>Synonyms</span>
-            <textarea name="synonyms" rows="4" placeholder="One synonym per line">{{ synonyms|join('\n') }}</textarea>
+            <span>{{ t("synonyms_label") }}</span>
+            <textarea name="synonyms" rows="4" placeholder="{{ t('one_synonym_per_line') }}">{{ synonyms|join('\n') }}</textarea>
           </label>
           <label>
-            <span>Example Sentence</span>
-            <textarea name="example_sentence" rows="4" placeholder="Add one natural sentence using the word">{{ example_sentence }}</textarea>
+            <span>{{ t("example_sentence") }}</span>
+            <textarea name="example_sentence" rows="4" placeholder="{{ t('add_natural_sentence') }}">{{ example_sentence }}</textarea>
           </label>
           <label>
-            <span>Wrong Sentence Options</span>
-            <textarea name="sentence_distractors" rows="5" placeholder="One distractor sentence per line">{{ sentence_distractors|join('\n') }}</textarea>
+            <span>{{ t("wrong_sentence_options") }}</span>
+            <textarea name="sentence_distractors" rows="5" placeholder="{{ t('one_distractor_per_line') }}">{{ sentence_distractors|join('\n') }}</textarea>
           </label>
-          <button class="button word-save-button" type="submit">Save Changes</button>
+          <button class="button word-save-button" type="submit">{{ t("save_changes") }}</button>
         </form>
       </article>
     </aside>

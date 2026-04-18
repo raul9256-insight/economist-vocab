@@ -1,30 +1,30 @@
 {% extends "base.html" %}
-{% block title %}Test Result | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("level_test_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="test-shell">
   <article class="panel dashboard-v2-card test-result-hero">
-    <p class="eyebrow">Result</p>
-    <h1>{{ level_name }}: {{ session.estimated_band_label or "Getting Started" }}</h1>
-    <p class="lede">You answered {{ session.score }} correctly in this placement test. This result estimates where you should start learning next.</p>
+    <p class="eyebrow">{{ t("result_label") }}</p>
+    <h1>{{ level_name }}: {{ session.estimated_band_label or t("getting_started") }}</h1>
+    <p class="lede">{{ t("test_result_lede", score=session.score) }}</p>
 
     <div class="test-result-summary-grid">
       <div class="test-result-ring-card">
         <div class="result-ring">
           <div>
             <strong>{{ summary.accuracy_percent }}%</strong>
-            <span>accuracy</span>
+            <span>{{ t("accuracy_label") }}</span>
           </div>
         </div>
       </div>
       <div class="test-result-info-card">
         <div class="info-badges">
-          <span class="info-chip">Estimated band: {{ session.estimated_band_label or "Getting Started" }}</span>
-          <span class="info-chip">Correct: {{ session.score }}</span>
-          <span class="info-chip">Weighted: {{ summary.weighted_percent }}%</span>
+          <span class="info-chip">{{ t("estimated_band_chip", band=session.estimated_band_label or t("getting_started")) }}</span>
+          <span class="info-chip">{{ t("correct_chip", score=session.score) }}</span>
+          <span class="info-chip">{{ t("weighted_chip", percent=summary.weighted_percent) }}</span>
         </div>
-        <p class="section-subtle">This result combines your total accuracy and how well you handled harder frequency bands.</p>
+        <p class="section-subtle">{{ t("test_result_note") }}</p>
         <div class="callout learning-result-callout">
-          <strong>What to do next:</strong> {{ recommendation }}
+          <strong>{{ t("what_to_do_next") }}</strong> {{ recommendation }}
         </div>
       </div>
     </div>
@@ -33,8 +33,8 @@
   <article class="panel dashboard-v2-card test-band-breakdown-card">
     <div class="card-head tight">
       <div>
-        <p class="eyebrow">Band Breakdown</p>
-        <h2>How you performed by range</h2>
+        <p class="eyebrow">{{ t("band_breakdown") }}</p>
+        <h2>{{ t("band_performance") }}</h2>
       </div>
     </div>
     <div class="test-band-breakdown-grid">
@@ -47,13 +47,13 @@
         <div class="progress-track">
           <div class="progress-fill" style="width: {{ row.accuracy }}%;"></div>
         </div>
-        <p class="section-subtle">{{ row.accuracy }}% accuracy in this band.</p>
+        <p class="section-subtle">{{ t("band_accuracy_note", percent=row.accuracy) }}</p>
       </article>
       {% endfor %}
     </div>
     <div class="action-row">
-      <a class="button secondary" href="/test">Try Again</a>
-      <a class="button" href="/learning">Go To Learning</a>
+      <a class="button secondary" href="/test">{{ t("try_again") }}</a>
+      <a class="button" href="/learning">{{ t("go_to_learning") }}</a>
     </div>
   </article>
 </section>

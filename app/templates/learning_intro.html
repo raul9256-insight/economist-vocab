@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Learning | Economist Vocabulary Lab{% endblock %}
+{% block title %}{{ t("learning_title") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="learning-shell">
   <article class="panel dashboard-v2-card learning-hero">
     <div class="learning-hero-top">
       <div>
-        <p class="eyebrow">Learning</p>
-        <h1>Train in short, focused loops.</h1>
-        <p class="lede">Each session gives you multiple-choice practice from your Economist vocabulary database. As you enrich more words, learning becomes deeper and less repetitive.</p>
+        <p class="eyebrow">{{ t("learning_title") }}</p>
+        <h1>{{ t("learning_hero_title") }}</h1>
+        <p class="lede">{{ t("learning_hero_lede") }}</p>
       </div>
       <div class="learning-hero-badge">
-        <span>Latest</span>
-        <strong>{% if latest_learning %}{{ latest_learning.score }} pts{% else %}Ready{% endif %}</strong>
-        <small>{% if latest_learning %}most recent session{% else %}start a new session{% endif %}</small>
+        <span>{{ t("latest_label") }}</span>
+        <strong>{% if latest_learning %}{{ latest_learning.score }} pts{% else %}{{ t("ready_label") }}{% endif %}</strong>
+        <small>{% if latest_learning %}{{ t("most_recent_session") }}{% else %}{{ t("start_new_session_note") }}{% endif %}</small>
       </div>
     </div>
 
@@ -20,43 +20,43 @@
       <article class="learning-focus-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Session Goal</p>
-            <h2>Build consistency first</h2>
+            <p class="eyebrow">{{ t("session_goal") }}</p>
+            <h2>{{ t("build_consistency") }}</h2>
           </div>
         </div>
         <div class="mini-kicker-row">
-          <span class="mini-kicker active">Definition</span>
-          <span class="mini-kicker">Synonym</span>
-          <span class="mini-kicker">Sentence</span>
+          <span class="mini-kicker active">{{ t("definition_short") }}</span>
+          <span class="mini-kicker">{{ t("synonym_short") }}</span>
+          <span class="mini-kicker">{{ t("sentence_short") }}</span>
         </div>
-        <p class="goal-note">Definitions are available immediately. Synonym and sentence questions appear as more words gain enrichment.</p>
+        <p class="goal-note">{{ t("definition_available_note") }}</p>
         <form method="post" action="/learning/start">
-          <button class="button learning-start-button" type="submit">Start Learning Session</button>
+          <button class="button learning-start-button" type="submit">{{ t("start_learning_session") }}</button>
         </form>
       </article>
 
       <article class="learning-progress-card">
         <div class="card-head tight">
           <div>
-            <p class="eyebrow">Coverage</p>
-            <h2>Your learning bank</h2>
+            <p class="eyebrow">{{ t("coverage") }}</p>
+            <h2>{{ t("learning_bank") }}</h2>
           </div>
         </div>
         <div class="learning-stats-grid">
           <div class="learning-stat-card">
-            <span>Total Words</span>
+            <span>{{ t("total_words") }}</span>
             <strong>{{ stats.total_words }}</strong>
           </div>
           <div class="learning-stat-card">
-            <span>Enriched</span>
+            <span>{{ t("enriched_label") }}</span>
             <strong>{{ enrichment.enriched_words or 0 }}</strong>
           </div>
           <div class="learning-stat-card">
-            <span>Synonym Ready</span>
+            <span>{{ t("synonym_ready") }}</span>
             <strong>{{ enrichment.synonym_ready or 0 }}</strong>
           </div>
           <div class="learning-stat-card">
-            <span>Sentence Ready</span>
+            <span>{{ t("sentence_ready") }}</span>
             <strong>{{ enrichment.sentence_ready or 0 }}</strong>
           </div>
         </div>
@@ -66,39 +66,39 @@
 
   <section class="learning-support-grid">
     <article class="panel dashboard-v2-card learning-support-card">
-      <p class="eyebrow">How It Works</p>
-      <h2>What this mode gives you</h2>
-      <p class="section-subtle">Short study rounds help you keep momentum without overloading yourself.</p>
+      <p class="eyebrow">{{ t("how_it_works") }}</p>
+      <h2>{{ t("what_mode_gives_you") }}</h2>
+      <p class="section-subtle">{{ t("study_rounds_note") }}</p>
       <div class="learning-mini-list">
         <div class="learning-mini-item">
-          <strong>Definition first</strong>
-          <p>Start with meaning-based questions even if enrichment is still limited.</p>
+          <strong>{{ t("definition_first") }}</strong>
+          <p>{{ t("definition_first_note") }}</p>
         </div>
         <div class="learning-mini-item">
-          <strong>Review after every answer</strong>
-          <p>See the explanation and reopen the full word page when needed.</p>
+          <strong>{{ t("review_after_answer") }}</strong>
+          <p>{{ t("review_after_answer_note") }}</p>
         </div>
         <div class="learning-mini-item">
-          <strong>Smarter over time</strong>
-          <p>As you add notes, synonyms, and examples, practice becomes richer automatically.</p>
+          <strong>{{ t("smarter_over_time") }}</strong>
+          <p>{{ t("smarter_over_time_note") }}</p>
         </div>
       </div>
     </article>
 
     {% if (enrichment.enriched_words or 0) == 0 %}
     <article class="panel dashboard-v2-card learning-support-card accent">
-      <p class="eyebrow">Best Next Step</p>
-      <h2>Enrich a few words first</h2>
-      <p class="section-subtle">You can already start learning, but adding some English definitions, synonyms, and example sentences will make sessions much stronger.</p>
-      <a class="button secondary" href="/dictionary">Open Dictionary</a>
+      <p class="eyebrow">{{ t("best_next_step") }}</p>
+      <h2>{{ t("enrich_first") }}</h2>
+      <p class="section-subtle">{{ t("enrich_first_note") }}</p>
+      <a class="button secondary" href="/dictionary">{{ t("open_dictionary") }}</a>
     </article>
     {% elif latest_learning %}
     <article class="panel dashboard-v2-card learning-support-card accent">
-      <p class="eyebrow">Latest Session</p>
+      <p class="eyebrow">{{ t("latest_session") }}</p>
       <h2>{{ latest_learning.score }} points</h2>
-      <p class="section-subtle">Your most recent learning session is saved. Start another round to keep building recall.</p>
+      <p class="section-subtle">{{ t("recent_session_saved") }}</p>
       <form method="post" action="/learning/start">
-        <button class="button" type="submit">Start Another Session</button>
+        <button class="button" type="submit">{{ t("start_another_session") }}</button>
       </form>
     </article>
     {% endif %}
