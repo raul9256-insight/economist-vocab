@@ -160,6 +160,7 @@ TRANSLATIONS = {
 
 TRANSLATIONS["en"].update(
     {
+        "language_label": "Language",
         "unknown_type": "Unknown type",
         "unknown": "Unknown",
         "not_added_yet": "Not added yet.",
@@ -361,6 +362,7 @@ TRANSLATIONS["en"].update(
 
 TRANSLATIONS["zh-Hant"].update(
     {
+        "language_label": "語言",
         "unknown_type": "詞性未提供",
         "unknown": "未提供",
         "not_added_yet": "尚未補上。",
@@ -668,6 +670,7 @@ def to_simplified(text: str) -> str:
 TRANSLATIONS["zh-Hans"] = {key: to_simplified(value) for key, value in TRANSLATIONS["zh-Hant"].items()}
 TRANSLATIONS["zh-Hans"].update(
     {
+        "language_label": "语言",
         "brand_title": "经济学人词汇实验室",
         "brand_subtitle": "个人词汇学习系统",
         "nav_dashboard": "首页总览",
