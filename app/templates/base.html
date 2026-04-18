@@ -64,8 +64,9 @@
         </a>
         <div class="topbar-actions">
           <div class="lang-switch" aria-label="Language switch">
-            <a class="lang-switch-link {% if lang == 'en' %}active{% endif %}" href="{{ lang_url('en') }}">EN</a>
-            <a class="lang-switch-link {% if lang == 'zh-Hant' %}active{% endif %}" href="{{ lang_url('zh-Hant') }}">繁</a>
+            <a class="lang-switch-link {% if lang == 'en' %}active{% endif %}" href="{{ lang_url('en') }}">English</a>
+            <a class="lang-switch-link {% if lang == 'zh-Hant' %}active{% endif %}" href="{{ lang_url('zh-Hant') }}">繁中</a>
+            <a class="lang-switch-link {% if lang == 'zh-Hans' %}active{% endif %}" href="{{ lang_url('zh-Hans') }}">简中</a>
           </div>
           <a class="topbar-action" href="/test" aria-label="Open level test">◔</a>
           <a class="topbar-action" href="/review/missed" aria-label="Open missed words">↺</a>

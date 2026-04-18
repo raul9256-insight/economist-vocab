@@ -37,7 +37,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 USER_ID = 1
 TEST_QUESTION_COUNT = 15
 LEARNING_WORD_COUNT = 5
-SUPPORTED_LANGS = {"en", "zh-Hant"}
+SUPPORTED_LANGS = {"en", "zh-Hant", "zh-Hans"}
 
 TRANSLATIONS = {
     "en": {
@@ -560,6 +560,113 @@ TRANSLATIONS["zh-Hant"].update(
     }
 )
 
+SIMPLIFIED_CHAR_MAP = str.maketrans(
+    {
+        "經": "经",
+        "濟": "济",
+        "學": "学",
+        "實": "实",
+        "驗": "验",
+        "個": "个",
+        "詞": "词",
+        "彙": "汇",
+        "習": "习",
+        "統": "统",
+        "總": "总",
+        "覽": "览",
+        "測": "测",
+        "練": "练",
+        "詢": "询",
+        "錯": "错",
+        "複": "复",
+        "應": "应",
+        "匯": "汇",
+        "題": "题",
+        "檢": "检",
+        "適": "适",
+        "圍": "围",
+        "張": "张",
+        "類": "类",
+        "義": "义",
+        "專": "专",
+        "號": "号",
+        "進": "进",
+        "議": "议",
+        "步": "步",
+        "語": "语",
+        "層": "层",
+        "條": "条",
+        "濾": "滤",
+        "瀏": "浏",
+        "覽": "览",
+        "這": "这",
+        "關": "关",
+        "鍵": "键",
+        "筆": "笔",
+        "記": "记",
+        "補": "补",
+        "強": "强",
+        "誤": "误",
+        "選": "选",
+        "儲": "储",
+        "變": "变",
+        "輪": "轮",
+        "簡": "简",
+        "開": "开",
+        "啟": "启",
+        "幾": "几",
+        "際": "际",
+        "穩": "稳",
+        "庫": "库",
+        "幫": "帮",
+        "麼": "么",
+        "帶": "带",
+        "檢": "检",
+        "範": "范",
+        "圍": "围",
+        "對": "对",
+        "較": "较",
+        "難": "难",
+        "後": "后",
+        "續": "续",
+        "顯": "显",
+        "與": "与",
+        "當": "当",
+        "覺": "觉",
+        "還": "还",
+        "樣": "样",
+        "會": "会",
+        "麼": "么",
+        "數": "数",
+        "組": "组",
+        "網": "网",
+        "頁": "页",
+        "狀": "状",
+        "態": "态",
+        "說": "说",
+        "頭": "头",
+        "愛": "爱",
+        "區": "区",
+        "寫": "写",
+        "為": "为",
+        "條": "条",
+        "從": "从",
+        "級": "级",
+        "達": "达",
+        "清": "清",
+        "體": "体",
+        "簡": "简",
+        "廣": "广",
+    }
+)
+
+
+def to_simplified(text: str) -> str:
+    return text.translate(SIMPLIFIED_CHAR_MAP)
+
+
+TRANSLATIONS["zh-Hans"] = {key: to_simplified(value) for key, value in TRANSLATIONS["zh-Hant"].items()}
+
 
 def db_conn() -> sqlite3.Connection:
     return get_connection(DEFAULT_DB_PATH)
@@ -584,6 +691,7 @@ def translate_question_type(value: str, lang: str = "en") -> str:
     labels = {
         "en": {"definition": "Definition", "synonym": "Synonym", "sentence": "Sentence"},
         "zh-Hant": {"definition": "定義", "synonym": "同義詞", "sentence": "例句"},
+        "zh-Hans": {"definition": "定义", "synonym": "同义词", "sentence": "例句"},
     }
     return labels.get(lang, labels["en"]).get(value, value)
 
@@ -592,6 +700,7 @@ def translate_status(value: str, lang: str = "en") -> str:
     labels = {
         "en": {"new": "new", "learning": "learning", "review": "review", "mastered": "mastered"},
         "zh-Hant": {"new": "新字", "learning": "學習中", "review": "待複習", "mastered": "已熟悉"},
+        "zh-Hans": {"new": "新词", "learning": "学习中", "review": "待复习", "mastered": "已熟悉"},
     }
     return labels.get(lang, labels["en"]).get(value, value)
 
@@ -638,6 +747,7 @@ def progress_label(percent: float, lang: str = "en") -> str:
     labels = {
         "en": ["Advanced", "Upper Intermediate", "Intermediate", "Lower Intermediate", "Foundation Builder"],
         "zh-Hant": ["進階", "中高階", "中階", "初中階", "基礎建立中"],
+        "zh-Hans": ["进阶", "中高阶", "中阶", "初中阶", "基础建立中"],
     }
     bucket = labels.get(lang, labels["en"])
     if percent >= 0.85:
@@ -658,6 +768,12 @@ def level_recommendation(estimated_band_label: str | None, percent: float, lang:
         if percent >= 0.7:
             return f"你目前可以穩定從 {estimated_band_label} 附近開始。接下來可以到詞典看更高一級的詞彙分類，並補強不熟的詞彙。"
         return f"接下來幾次學習，先集中在 {estimated_band_label} 和再低一級的詞彙分類，直到答案更自然為止。"
+    if lang == "zh-Hans":
+        if not estimated_band_label:
+            return "先从 50~99 这一组词汇开始，再优先替你最常答错的词汇补上笔记与例句。"
+        if percent >= 0.7:
+            return f"你目前可以稳定从 {estimated_band_label} 附近开始。接下来可以到词典看更高一级的词汇分类，并补强不熟的词汇。"
+        return f"接下来几次学习，先集中在 {estimated_band_label} 和再低一级的词汇分类，直到答案更自然为止。"
     if not estimated_band_label:
         return "Start with the 50~99 band, then add notes and examples to words you miss most often."
     if percent >= 0.7:
@@ -675,6 +791,15 @@ def learning_recommendation(correct: int, total: int, enriched_words: int, lang:
         if enriched_words == 0:
             return "定義題已經有幫助，但如果再補上同義詞和例句，下一輪學習會更完整。"
         return "先回頭看錯題、補清楚筆記，再持續在詞典裡增加更完整的詞彙內容。"
+    if lang == "zh-Hans":
+        if total == 0:
+            return "先替几个词汇补充更多内容，学习模式之后才能出更丰富的题目。"
+        percent = correct / total
+        if percent >= 0.8 and enriched_words > 0:
+            return "节奏不错。可以继续学，或开始加入更高一级的词汇分类与更多例句题。"
+        if enriched_words == 0:
+            return "定义题已经有帮助，但如果再补上同义词和例句，下一轮学习会更完整。"
+        return "先回头看错题、补清楚笔记，再持续在词典里增加更完整的词汇内容。"
     if total == 0:
         return "Add more enrichment to a few words first so the learning mode can ask richer questions."
     percent = correct / total

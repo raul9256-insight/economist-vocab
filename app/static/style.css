@@ -2558,26 +2558,31 @@ input[type="file"] {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.28rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(112, 125, 184, 0.12);
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(112, 125, 184, 0.14);
+  box-shadow: 0 8px 16px rgba(29, 35, 61, 0.04);
 }
 
 .lang-switch-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2.4rem;
-  padding: 0.48rem 0.7rem;
-  border-radius: 12px;
+  min-width: 58px;
+  height: 38px;
+  padding: 0 0.95rem;
+  border-radius: 999px;
   color: #6f7890;
   font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
 }
 
 .lang-switch-link.active {
-  background: linear-gradient(180deg, rgba(95, 115, 255, 0.98), rgba(87, 101, 241, 0.96));
+  background: linear-gradient(135deg, #6b7cff, #5666f1);
   color: white;
+  box-shadow: 0 10px 18px rgba(86, 102, 241, 0.2);
 }
 
 .motto-hero {
