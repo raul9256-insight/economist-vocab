@@ -16,10 +16,6 @@ from fastapi.templating import Jinja2Templates
 
 from app.db import (
     band_summary,
-    briefing_articles_for_section,
-    briefing_overview,
-    briefing_section_by_slug,
-    briefing_sections,
     definitions_for_word,
     fetch_stats,
     get_connection,
@@ -1152,13 +1148,33 @@ def source_fallbacks_for_words(conn: sqlite3.Connection, word_ids: list[int]) ->
     return result
 
 
-def definitions_map_for_words(conn: sqlite3.Connection, word_ids: list[int]) -> dict[int, list[str]]:
+def parse_meaning_lines(value: str) -> list[str]:
+    if not value:
+        return []
+    items = [item.strip() for item in str(value).replace(" | ", "\n").splitlines() if item and item.strip()]
+    return items or ([str(value).strip()] if str(value).strip() else [])
+
+
+def preferred_source_meanings(meanings_json: str, extra_json: str, lang: str) -> list[str]:
+    if lang == "zh-Hans" and extra_json:
+        try:
+            extra = json.loads(extra_json)
+        except json.JSONDecodeError:
+            extra = {}
+        if isinstance(extra, dict):
+            simplified = parse_meaning_lines(extra.get("simplified_chinese_definition", ""))
+            if simplified:
+                return simplified
+    return json_loads(meanings_json)
+
+
+def definitions_map_for_words(conn: sqlite3.Connection, word_ids: list[int], lang: str = "en") -> dict[int, list[str]]:
     if not word_ids:
         return {}
     placeholders = ",".join("?" for _ in word_ids)
     rows = conn.execute(
         f"""
-        SELECT word_id, meanings_json
+        SELECT word_id, meanings_json, extra_json
         FROM source_entries
         WHERE word_id IN ({placeholders})
         ORDER BY band_rank, workbook_name, row_number
@@ -1168,7 +1184,7 @@ def definitions_map_for_words(conn: sqlite3.Connection, word_ids: list[int]) -> 
     result = {word_id: [] for word_id in word_ids}
     for row in rows:
         seen = result[row["word_id"]]
-        for meaning in json.loads(row["meanings_json"]):
+        for meaning in preferred_source_meanings(row["meanings_json"], row["extra_json"], lang):
             if meaning not in seen:
                 seen.append(meaning)
     return result
@@ -1195,9 +1211,8 @@ def parts_of_speech_map_for_words(conn: sqlite3.Connection, word_ids: list[int])
     return result
 
 
-def word_payload(conn: sqlite3.Connection, word_id: int) -> dict:
+def word_payload(conn: sqlite3.Connection, word_id: int, lang: str = "en") -> dict:
     row = word_row(conn, word_id)
-    definitions = definitions_for_word(conn, word_id)
     parts_of_speech = parts_of_speech_for_word(conn, word_id)
     source_rows = conn.execute(
         """
@@ -1208,6 +1223,11 @@ def word_payload(conn: sqlite3.Connection, word_id: int) -> dict:
         """,
         (word_id,),
     ).fetchall()
+    definitions: list[str] = []
+    for source_row in source_rows:
+        for meaning in preferred_source_meanings(source_row["meanings_json"], source_row["extra_json"], lang):
+            if meaning not in definitions:
+                definitions.append(meaning)
     enrichment = conn.execute(
         """
         SELECT english_definition, pronunciation, synonyms_json, example_sentence, sentence_distractors_json
@@ -1281,7 +1301,7 @@ def decorate_band_rows(rows: list[sqlite3.Row]) -> list[dict]:
     return sorted(decorated, key=lambda band: band["best_band_rank"], reverse=True)
 
 
-def dashboard_spotlight_words(conn: sqlite3.Connection, limit: int = 4) -> list[dict]:
+def dashboard_spotlight_words(conn: sqlite3.Connection, limit: int = 4, lang: str = "en") -> list[dict]:
     rows = conn.execute(
         """
         SELECT words.id, words.lemma, words.best_band_label,
@@ -1296,7 +1316,7 @@ def dashboard_spotlight_words(conn: sqlite3.Connection, limit: int = 4) -> list[
         (),
     ).fetchall()
     word_ids = [row["id"] for row in rows]
-    definitions_map = definitions_map_for_words(conn, word_ids)
+    definitions_map = definitions_map_for_words(conn, word_ids, lang)
     parts_map = parts_of_speech_map_for_words(conn, word_ids)
     fallback_map = source_fallbacks_for_words(conn, word_ids)
     items: list[dict] = []
@@ -1390,6 +1410,7 @@ def search_result_cards(
     band_rank: int | None = None,
     require_english: bool = False,
     require_example: bool = False,
+    lang: str = "en",
 ) -> list[dict]:
     rows = search_words(
         conn,
@@ -1399,7 +1420,7 @@ def search_result_cards(
         require_example=require_example,
     )
     word_ids = [row["id"] for row in rows]
-    definitions_map = definitions_map_for_words(conn, word_ids)
+    definitions_map = definitions_map_for_words(conn, word_ids, lang)
     parts_map = parts_of_speech_map_for_words(conn, word_ids)
     fallback_map = source_fallbacks_for_words(conn, word_ids)
     cards: list[dict] = []
@@ -1424,7 +1445,7 @@ def search_result_cards(
     return cards
 
 
-def missed_words(conn: sqlite3.Connection, limit: int = 100) -> list[sqlite3.Row]:
+def missed_words(conn: sqlite3.Connection, limit: int = 100, lang: str = "en") -> list[sqlite3.Row]:
     rows = conn.execute(
         """
         WITH wrong_answers AS (
@@ -1455,7 +1476,7 @@ def missed_words(conn: sqlite3.Connection, limit: int = 100) -> list[sqlite3.Row
         (limit,),
     ).fetchall()
     word_ids = [row["id"] for row in rows]
-    definitions_map = definitions_map_for_words(conn, word_ids)
+    definitions_map = definitions_map_for_words(conn, word_ids, lang)
     fallback_map = source_fallbacks_for_words(conn, word_ids)
     result = []
     for row in rows:
@@ -1898,29 +1919,36 @@ def finish_learning_session(conn: sqlite3.Connection, session_id: int) -> None:
     conn.commit()
 
 
-@app.get("/")
-def home() -> RedirectResponse:
-    return RedirectResponse(url="/briefing", status_code=307)
-
-
-@app.get("/briefing", response_class=HTMLResponse)
-def briefing_home(request: Request) -> HTMLResponse:
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request) -> HTMLResponse:
     conn = db_conn()
-    section_slug = request.query_params.get("section")
-    sections = briefing_sections(conn)
-    active_section = briefing_section_by_slug(conn, section_slug)
-    if active_section is None:
-        raise HTTPException(status_code=500, detail="No briefing sections available")
-    articles = briefing_articles_for_section(conn, active_section["id"])
-    overview = briefing_overview(conn)
+    stats = fetch_stats(conn)
+    latest_test = latest_test_result(conn)
+    latest_learning = latest_learning_result(conn)
+    recommended_band = latest_test["estimated_band_label"] if latest_test else "50~99 (3924)"
+    bands = decorate_band_rows(band_summary(conn))
+    max_band_total = max((band["workbook_total"] for band in bands), default=1)
+    hero_band_chart = [
+        {
+            "label": band["range_label"],
+            "count": band["workbook_total"],
+            "percent": max(18, round((band["workbook_total"] / max_band_total) * 100)),
+        }
+        for band in bands[:5]
+    ]
     return render(
         request,
         "home.html",
-        sections=sections,
-        active_section=active_section,
-        articles=articles,
-        overview=overview,
+        stats=stats,
+        bands=bands,
+        latest_test=latest_test,
+        latest_learning=latest_learning,
+        recommended_band=recommended_band,
+        missed_words_count=len(missed_words(conn, limit=10)),
+        spotlight_words=dashboard_spotlight_words(conn),
+        hero_band_chart=hero_band_chart,
     )
+
 
 @app.get("/test", response_class=HTMLResponse)
 def test_intro(request: Request) -> HTMLResponse:
@@ -1993,7 +2021,7 @@ def test_review(request: Request, session_id: int) -> HTMLResponse:
     question = previous_test_question(conn, session_id)
     if question is None:
         return RedirectResponse(url=f"/test/{session_id}", status_code=303)
-    payload = word_payload(conn, question["word_id"])
+    payload = word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))
     is_last = session["current_index"] >= TEST_QUESTION_COUNT
     return render(
         request,
@@ -2072,7 +2100,7 @@ def learning_question(request: Request, session_id: int) -> HTMLResponse:
     if question is None:
         finish_learning_session(conn, session_id)
         return RedirectResponse(url=f"/learning/{session_id}/result", status_code=303)
-    payload = word_payload(conn, question["word_id"])
+    payload = word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))
     return render(
         request,
         "learning_question.html",
@@ -2139,7 +2167,7 @@ def learning_review(request: Request, session_id: int) -> HTMLResponse:
     question = previous_learning_question(conn, session_id)
     if question is None:
         return RedirectResponse(url=f"/learning/{session_id}", status_code=303)
-    payload = word_payload(conn, question["word_id"])
+    payload = word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))
     progress = learning_progress(conn, session)
     is_last = progress["answered"] >= progress["total"]
     return render(
@@ -2194,7 +2222,12 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
 def dictionary_home(request: Request) -> HTMLResponse:
     conn = db_conn()
     bands = decorate_band_rows(band_summary(conn))
-    return render(request, "dictionary_home.html", bands=bands, missed_count=len(missed_words(conn, limit=10)))
+    return render(
+        request,
+        "dictionary_home.html",
+        bands=bands,
+        missed_count=len(missed_words(conn, limit=10, lang=getattr(request.state, "lang", get_lang(request)))),
+    )
 
 
 @app.get("/dictionary/band/{band_rank}", response_class=HTMLResponse)
@@ -2235,7 +2268,7 @@ def dictionary_band(
         (band_rank, active_letter, has_english, has_example),
     ).fetchall()
     word_ids = [row["id"] for row in rows]
-    definitions_map = definitions_map_for_words(conn, word_ids)
+    definitions_map = definitions_map_for_words(conn, word_ids, getattr(request.state, "lang", get_lang(request)))
     fallback_map = source_fallbacks_for_words(conn, word_ids)
     words = []
     for row in rows:
@@ -2281,6 +2314,7 @@ def dictionary_search(
         band_rank=selected_band,
         require_english=bool(has_english),
         require_example=bool(has_example),
+        lang=getattr(request.state, "lang", get_lang(request)),
     ) if q.strip() else []
     return render(
         request,
@@ -2364,14 +2398,14 @@ def bulk_generate_ai(
 @app.get("/review/missed", response_class=HTMLResponse)
 def missed_words_page(request: Request) -> HTMLResponse:
     conn = db_conn()
-    rows = missed_words(conn)
+    rows = missed_words(conn, lang=getattr(request.state, "lang", get_lang(request)))
     return render(request, "missed_words.html", rows=rows)
 
 
 @app.get("/word/{word_id}", response_class=HTMLResponse)
 def word_detail(request: Request, word_id: int) -> HTMLResponse:
     conn = db_conn()
-    payload = word_payload(conn, word_id)
+    payload = word_payload(conn, word_id, getattr(request.state, "lang", get_lang(request)))
     return render(request, "word_detail.html", **payload)
 
 
