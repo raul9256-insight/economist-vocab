@@ -10,7 +10,10 @@
     <aside class="motto-chart-card">
       <div class="motto-chart-head">
         <span class="motto-chart-chip">{{ t("hero_chart_label") }}</span>
-        <strong>{{ stats.total_words }}</strong>
+        <div class="motto-chart-total">
+          <strong>{{ stats.total_words }}</strong>
+          <span>{{ t("hero_chart_total") }}</span>
+        </div>
       </div>
 
       <div class="motto-band-chart visual" aria-label="{{ t('hero_chart_bands') }}">
@@ -21,11 +24,11 @@
             <div class="motto-band-column-fill" style="height: {{ band.percent }}%"></div>
           </div>
           <div class="motto-band-label">
-            <strong>{{ band.title }}</strong>
+            <strong class="motto-band-title">{{ band.title }}</strong>
             {% if band.subtitle %}
-            <small>{{ band.subtitle }}</small>
+            <span class="motto-band-subtitle">{{ band.subtitle }}</span>
             {% endif %}
-            <span>{{ band.label | replace("~", "+") if band.label == "2000~" else band.label }}</span>
+            <span class="motto-band-range">{{ band.label | replace("~", "+") if band.label == "2000~" else band.label }}</span>
           </div>
         </div>
         {% endfor %}

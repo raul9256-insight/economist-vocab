@@ -458,7 +458,7 @@ TRANSLATIONS["en"].update(
         "hero_chart_label": "Vocabulary Snapshot",
         "hero_chart_title": "Your Economist corpus",
         "hero_chart_note": "A quick look at how your vocabulary source is distributed across frequency groups.",
-        "hero_chart_total": "Total entries",
+        "hero_chart_total": "Total Words",
         "hero_chart_bands": "Frequency groups",
     }
 )
