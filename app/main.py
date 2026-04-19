@@ -613,6 +613,10 @@ TRANSLATIONS["en"].update(
         "ai_power_upload_title": "Upload completed AI Power file",
         "ai_power_upload_button": "Import AI Power File",
         "ai_power_upload_success": "Import complete. Updated {count} AI Power entries.",
+        "ai_power_search_title": "Find AI Power vocabulary fast",
+        "ai_power_search_placeholder": "Search English, Chinese, type, IPA, or definition",
+        "ai_power_category_all": "All categories",
+        "ai_power_results": "{count} entries shown",
     }
 )
 
@@ -844,6 +848,10 @@ TRANSLATIONS["zh-Hant"].update(
         "ai_power_upload_title": "上傳已完成的 AI Power 檔案",
         "ai_power_upload_button": "匯入 AI Power 檔案",
         "ai_power_upload_success": "匯入完成，已更新 {count} 筆 AI Power 詞彙。",
+        "ai_power_search_title": "快速找出 AI Power 詞彙",
+        "ai_power_search_placeholder": "搜尋英文、中文、詞性、IPA 或英文定義",
+        "ai_power_category_all": "全部分類",
+        "ai_power_results": "目前顯示 {count} 筆",
     }
 )
 
@@ -1289,6 +1297,10 @@ TRANSLATIONS["zh-Hans"].update(
         "ai_power_upload_title": "上传已完成的 AI Power 文件",
         "ai_power_upload_button": "导入 AI Power 文件",
         "ai_power_upload_success": "导入完成，已更新 {count} 笔 AI Power 词汇。",
+        "ai_power_search_title": "快速找出 AI Power 词汇",
+        "ai_power_search_placeholder": "搜索英文、中文、词性、IPA 或英文定义",
+        "ai_power_category_all": "全部分类",
+        "ai_power_results": "当前显示 {count} 笔",
     }
 )
 
@@ -1505,6 +1517,49 @@ def ai_power_track(lang: str = "en") -> dict:
         "completed_count": completed_count,
         "categories": categories,
     }
+
+
+def filter_ai_power_track(track: dict, query: str = "", category_slug: str = "") -> dict:
+    normalized_query = query.strip().lower()
+    filtered_categories = []
+    shown_count = 0
+
+    for category in track["categories"]:
+        if category_slug and category["slug"] != category_slug:
+            continue
+
+        filtered_entries = []
+        for entry in category["entries"]:
+            haystack = " ".join(
+                [
+                    entry.get("english", ""),
+                    entry.get("type_of_word", ""),
+                    entry.get("english_definition", ""),
+                    entry.get("traditional_chinese", ""),
+                    entry.get("simplified_chinese", ""),
+                    entry.get("example_sentence", ""),
+                    entry.get("ai_prompt_example", ""),
+                    entry.get("ipa", ""),
+                ]
+            ).lower()
+            if normalized_query and normalized_query not in haystack:
+                continue
+            filtered_entries.append(entry)
+
+        if filtered_entries:
+            shown_count += len(filtered_entries)
+            category_copy = dict(category)
+            category_copy["entries"] = filtered_entries
+            category_copy["starter_count"] = len(filtered_entries)
+            filtered_categories.append(category_copy)
+        elif not normalized_query and not category_slug:
+            filtered_categories.append(category)
+            shown_count += len(category["entries"])
+
+    filtered_track = dict(track)
+    filtered_track["categories"] = filtered_categories
+    filtered_track["shown_count"] = shown_count
+    return filtered_track
 
 
 def render(request: Request, template_name: str, **context) -> HTMLResponse:
@@ -2800,12 +2855,21 @@ def dictionary_home(request: Request) -> HTMLResponse:
 
 
 @app.get("/ai-power-vocabulary", response_class=HTMLResponse)
-def ai_power_vocabulary(request: Request) -> HTMLResponse:
+def ai_power_vocabulary(
+    request: Request,
+    q: str = Query(""),
+    category: str = Query(""),
+) -> HTMLResponse:
     lang = getattr(request.state, "lang", get_lang(request))
+    track = ai_power_track(lang)
+    filtered_track = filter_ai_power_track(track, q, category)
     return render(
         request,
         "ai_power_vocab.html",
-        ai_power=ai_power_track(lang),
+        ai_power=filtered_track,
+        ai_power_categories=track["categories"],
+        ai_query=q,
+        ai_category=category,
     )
 
 

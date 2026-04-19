@@ -42,6 +42,27 @@
     </div>
   </article>
 
+  <article class="panel dashboard-v2-card ai-power-search-panel">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">{{ t("ai_power_search_title") }}</p>
+        <h2>{{ t("nav_ai_power") }}</h2>
+      </div>
+      <span class="section-subtle">{{ t("ai_power_results", count=ai_power.shown_count or 0) }}</span>
+    </div>
+
+    <form class="dictionary-search-form" method="get" action="/ai-power-vocabulary">
+      <input type="search" name="q" value="{{ ai_query or '' }}" placeholder="{{ t('ai_power_search_placeholder') }}">
+      <select name="category">
+        <option value="">{{ t("ai_power_category_all") }}</option>
+        {% for category_option in ai_power_categories %}
+        <option value="{{ category_option.slug }}" {% if ai_category == category_option.slug %}selected{% endif %}>{{ category_option.title }}</option>
+        {% endfor %}
+      </select>
+      <button class="button" type="submit">{{ t("search_button") }}</button>
+    </form>
+  </article>
+
   <section class="learning-support-grid">
     <article class="panel dashboard-v2-card learning-support-card">
       <p class="eyebrow">{{ t("ai_power_structure_title") }}</p>
@@ -128,6 +149,17 @@
       </div>
     </article>
     {% endfor %}
+    {% if not ai_power.categories %}
+    <article class="panel dashboard-v2-card ai-power-category-card">
+      <div class="card-head tight">
+        <div>
+          <p class="eyebrow">{{ t("ai_power_search_title") }}</p>
+          <h2>{{ t("all_clear") }}</h2>
+        </div>
+      </div>
+      <p class="section-subtle">{{ t("search_example_placeholder") }}</p>
+    </article>
+    {% endif %}
   </section>
 </section>
 {% endblock %}
