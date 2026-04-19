@@ -15,7 +15,7 @@
 
       <div class="motto-band-chart visual" aria-label="{{ t('hero_chart_bands') }}">
         {% for band in hero_band_chart %}
-        <div class="motto-band-column">
+        <div class="motto-band-column{% if loop.first %} is-foundation{% endif %}">
           <strong class="motto-band-count">{{ band.count }}</strong>
           <div class="motto-band-column-track">
             <div class="motto-band-column-fill" style="height: {{ band.percent }}%"></div>

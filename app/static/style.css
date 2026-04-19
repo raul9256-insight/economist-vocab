@@ -3157,12 +3157,26 @@ input[type="file"] {
   gap: 0.6rem;
   min-height: 100%;
   z-index: 1;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.motto-band-column:not(.is-foundation) {
+  opacity: 0.9;
+}
+
+.motto-band-column.is-foundation {
+  transform: translateY(-6px);
 }
 
 .motto-band-count {
   font-size: 0.88rem;
   color: #59627b;
   font-weight: 700;
+}
+
+.motto-band-column.is-foundation .motto-band-count {
+  color: #3340b8;
+  font-size: 0.96rem;
 }
 
 .motto-band-column-track {
@@ -3178,32 +3192,54 @@ input[type="file"] {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(95, 115, 255, 0.03));
 }
 
+.motto-band-column.is-foundation .motto-band-column-track {
+  max-width: 64px;
+  background:
+    radial-gradient(circle at top, rgba(106, 119, 255, 0.18), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(95, 115, 255, 0.06));
+  box-shadow:
+    0 16px 36px rgba(86, 102, 241, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
 .motto-band-column-fill {
   width: 100%;
   border-radius: 16px 16px 10px 10px;
-  background: linear-gradient(180deg, #aeb9ff, #7282ff 52%, #5666f1);
+  background: linear-gradient(180deg, #b7c3ff, #7f91ff 54%, #5a6cf4);
   box-shadow:
     0 14px 24px rgba(94, 112, 255, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
+.motto-band-column.is-foundation .motto-band-column-fill {
+  background: linear-gradient(180deg, #d7deff, #8da0ff 48%, #495df0 78%, #3148db);
+  box-shadow:
+    0 20px 36px rgba(73, 93, 240, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.22) inset,
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
 .motto-band-column:nth-child(2) .motto-band-column-fill {
-  background: linear-gradient(180deg, #b8c1ff, #8894ff 52%, #6f79f4);
+  background: linear-gradient(180deg, #cad2ff, #97a4ff 52%, #7481f3);
 }
 
 .motto-band-column:nth-child(3) .motto-band-column-fill {
-  background: linear-gradient(180deg, #ffd9b7, #ffb673 52%, #ef9552);
+  background: linear-gradient(180deg, #ffe0bf, #ffc180 52%, #f29d5d);
   box-shadow:
     0 14px 24px rgba(239, 149, 82, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .motto-band-column:nth-child(4) .motto-band-column-fill {
-  background: linear-gradient(180deg, #c9d0ff, #93a0ff 52%, #6f79f4);
+  background: linear-gradient(180deg, #dadfff, #a7b1ff 52%, #7c87ee);
 }
 
 .motto-band-column:nth-child(5) .motto-band-column-fill {
-  background: linear-gradient(180deg, #d9ddff, #a8b0ff 52%, #7982eb);
+  background: linear-gradient(180deg, #ecefff, #c2c8ff 52%, #8e96ec);
+}
+
+.motto-band-column.is-foundation .motto-band-label strong {
+  color: #2433a5;
 }
 
 .motto-band-label {
@@ -3232,6 +3268,10 @@ input[type="file"] {
   color: #5e667d;
   font-size: 0.74rem;
   font-weight: 600;
+}
+
+.motto-band-column.is-foundation .motto-band-label span {
+  color: #4a57cc;
 }
 
 .motto-chart-foot {
