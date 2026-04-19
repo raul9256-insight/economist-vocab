@@ -1372,6 +1372,14 @@ input[type="file"] {
   font-size: 1rem;
 }
 
+.topbar-action-text {
+  width: auto;
+  min-width: 112px;
+  padding: 0 1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
 .topbar-action:hover {
   border-color: rgba(95, 115, 255, 0.2);
   color: #4857d6;
@@ -2827,14 +2835,6 @@ input[type="file"] {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(112, 125, 184, 0.14);
   box-shadow: 0 8px 16px rgba(29, 35, 61, 0.04);
-}
-
-.lang-switch-label {
-  color: #6f7890;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
 .lang-switch-options {

@@ -1076,6 +1076,15 @@ def get_profile_name(request: Request) -> str:
     return raw[:40] if raw else "Lawrence"
 
 
+def profile_initials(name: str) -> str:
+    parts = [part for part in re.split(r"\s+", (name or "").strip()) if part]
+    if not parts:
+        return "EL"
+    if len(parts) == 1:
+        return parts[0][:2].upper()
+    return (parts[0][0] + parts[1][0]).upper()
+
+
 def get_profile_persona(request: Request) -> str | None:
     raw = (request.cookies.get("profile_persona") or "").strip()
     return raw if raw in SUPPORTED_PERSONAS else None
@@ -1097,6 +1106,7 @@ def render(request: Request, template_name: str, **context) -> HTMLResponse:
         {
             "lang": lang,
             "profile_name": get_profile_name(request),
+            "profile_initials": profile_initials(get_profile_name(request)),
             "profile_persona": get_profile_persona(request),
             "t": lambda key, **kwargs: translate(lang, key, **kwargs),
             "lang_url": lambda target_lang: build_lang_url(request, target_lang),

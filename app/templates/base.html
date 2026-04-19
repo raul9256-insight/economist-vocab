@@ -64,17 +64,16 @@
         </a>
         <div class="topbar-actions">
           <div class="lang-switch" aria-label="Language switch">
-            <span class="lang-switch-label">{{ t("language_label") }}</span>
             <div class="lang-switch-options">
               <a class="lang-switch-link {% if lang == 'en' %}active{% endif %}" href="{{ lang_url('en') }}">English</a>
               <a class="lang-switch-link {% if lang == 'zh-Hant' %}active{% endif %}" href="{{ lang_url('zh-Hant') }}">繁中</a>
               <a class="lang-switch-link {% if lang == 'zh-Hans' %}active{% endif %}" href="{{ lang_url('zh-Hans') }}">简中</a>
             </div>
           </div>
-          <a class="topbar-action" href="/test" aria-label="Open level test">◔</a>
-          <a class="topbar-action" href="/review/missed" aria-label="Open missed words">↺</a>
+          <a class="topbar-action topbar-action-text" href="/test" aria-label="Open level test">Level Test</a>
+          <a class="topbar-action topbar-action-text" href="/review/missed" aria-label="Open missed words">Missed Words</a>
           <div class="topbar-user">
-            <span class="user-badge">LC</span>
+            <span class="user-badge">{{ profile_initials }}</span>
             <div>
               <strong>{{ profile_name }}</strong>
               <small>{{ t("topbar_project") }}</small>
