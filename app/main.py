@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -22,7 +22,7 @@ from app.db import (
     letters_for_band,
     parts_of_speech_for_word,
 )
-from app.enrichment_io import export_template, import_enrichment_rows, iter_import_rows
+from app.enrichment_io import export_ai_power_template, export_template, import_enrichment_rows, iter_import_rows
 from app.openai_enrichment import generate_enrichment_batch, load_env_file
 from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio
 from economist_vocab import DEFAULT_DB_PATH
@@ -604,6 +604,10 @@ TRANSLATIONS["en"].update(
         "ai_power_category_cta": "Category focus",
         "ai_power_examples_title": "Why this track is different",
         "ai_power_examples_lede": "Each category comes with normal usage and AI usage, so the vocabulary becomes immediately usable instead of purely academic.",
+        "ai_power_template_title": "AI Power import template",
+        "ai_power_template_lede": "Download an Excel sheet prefilled with categories and starter terms, then complete Traditional Chinese, Simplified Chinese, example sentences, and AI prompt examples in batches.",
+        "ai_power_download_template": "Download Excel Template",
+        "ai_power_template_note": "Suggested columns: English, Traditional Chinese, Simplified Chinese, example sentence, AI prompt example, and notes.",
     }
 )
 
@@ -828,6 +832,10 @@ TRANSLATIONS["zh-Hant"].update(
         "ai_power_category_cta": "分類重點",
         "ai_power_examples_title": "這條路線的差異",
         "ai_power_examples_lede": "每個分類都同時提供一般用法與 AI 用法，讓詞彙不是只會背，而是能立刻用。",
+        "ai_power_template_title": "AI Power 匯入模板",
+        "ai_power_template_lede": "下載已預填分類與起始詞的 Excel，之後可批量補上繁中、簡中、一般例句與 AI 提示範例。",
+        "ai_power_download_template": "下載 Excel 模板",
+        "ai_power_template_note": "建議欄位：英文、繁體中文、簡體中文、一般例句、AI 提示範例與備註。",
     }
 )
 
@@ -1266,6 +1274,10 @@ TRANSLATIONS["zh-Hans"].update(
         "ai_power_category_cta": "分类重点",
         "ai_power_examples_title": "这条路线的差异",
         "ai_power_examples_lede": "每个分类都同时提供一般用法与 AI 用法，让词汇不是只会背，而是能立刻用。",
+        "ai_power_template_title": "AI Power 导入模板",
+        "ai_power_template_lede": "下载已预填分类与起始词的 Excel，之后可批量补上繁中、简中、一般例句与 AI 提示范例。",
+        "ai_power_download_template": "下载 Excel 模板",
+        "ai_power_template_note": "建议栏位：英文、繁体中文、简体中文、一般例句、AI 提示范例与备注。",
     }
 )
 
@@ -2735,6 +2747,17 @@ def ai_power_vocabulary(request: Request) -> HTMLResponse:
         request,
         "ai_power_vocab.html",
         ai_power=ai_power_track(lang),
+    )
+
+
+@app.get("/ai-power-vocabulary/template")
+def ai_power_vocabulary_template() -> FileResponse:
+    output_path = EXPORT_DIR / "ai-power-vocabulary-template.xlsx"
+    export_ai_power_template(ai_power_track("en")["categories"], output_path)
+    return FileResponse(
+        output_path,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename="ai-power-vocabulary-template.xlsx",
     )
 
 

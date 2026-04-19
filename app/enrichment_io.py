@@ -26,6 +26,17 @@ EXPECTED_COLUMNS = [
     "notes",
 ]
 
+AI_POWER_EXPECTED_COLUMNS = [
+    "category_slug",
+    "category_name",
+    "english",
+    "traditional_chinese",
+    "simplified_chinese",
+    "example_sentence",
+    "ai_prompt_example",
+    "notes",
+]
+
 
 def parse_list_field(value: str) -> list[str]:
     if not value:
@@ -117,6 +128,34 @@ def export_template(
         )
     wb.save(output_path)
     return len(rows)
+
+
+def export_ai_power_template(categories: list[dict], output_path: Path) -> int:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "ai_power_vocab"
+    ws.append(AI_POWER_EXPECTED_COLUMNS)
+
+    total_rows = 0
+    for category in categories:
+        for term in category.get("terms", []):
+            ws.append(
+                [
+                    category.get("slug", ""),
+                    category.get("english_title", category.get("title", "")),
+                    term,
+                    "",
+                    "",
+                    category.get("normal_example", ""),
+                    category.get("prompt_example", ""),
+                    "",
+                ]
+            )
+            total_rows += 1
+
+    wb.save(output_path)
+    return total_rows
 
 
 def import_enrichment_rows(conn: sqlite3.Connection, rows: list[dict[str, str]]) -> dict[str, int]:
