@@ -22,7 +22,7 @@ from app.db import (
     letters_for_band,
     parts_of_speech_for_word,
 )
-from app.enrichment_io import export_ai_power_template, export_template, import_enrichment_rows, iter_import_rows
+from app.enrichment_io import export_ai_power_template, export_template, import_ai_power_rows, import_enrichment_rows, iter_import_rows
 from app.openai_enrichment import generate_enrichment_batch, load_env_file
 from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio
 from economist_vocab import DEFAULT_DB_PATH
@@ -30,6 +30,8 @@ from economist_vocab import DEFAULT_DB_PATH
 
 BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
+DATA_DIR = BASE_DIR.parent / "data"
+AI_POWER_DATA_PATH = DATA_DIR / "ai_power_vocab.json"
 app = FastAPI(title="Economist Vocabulary Lab")
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -608,6 +610,9 @@ TRANSLATIONS["en"].update(
         "ai_power_template_lede": "Download an Excel sheet prefilled with categories and starter terms, then complete Traditional Chinese, Simplified Chinese, example sentences, and AI prompt examples in batches.",
         "ai_power_download_template": "Download Excel Template",
         "ai_power_template_note": "Suggested columns: English, Traditional Chinese, Simplified Chinese, example sentence, AI prompt example, and notes.",
+        "ai_power_upload_title": "Upload completed AI Power file",
+        "ai_power_upload_button": "Import AI Power File",
+        "ai_power_upload_success": "Import complete. Updated {count} AI Power entries.",
     }
 )
 
@@ -836,6 +841,9 @@ TRANSLATIONS["zh-Hant"].update(
         "ai_power_template_lede": "下載已預填分類與起始詞的 Excel，之後可批量補上繁中、簡中、一般例句與 AI 提示範例。",
         "ai_power_download_template": "下載 Excel 模板",
         "ai_power_template_note": "建議欄位：英文、繁體中文、簡體中文、一般例句、AI 提示範例與備註。",
+        "ai_power_upload_title": "上傳已完成的 AI Power 檔案",
+        "ai_power_upload_button": "匯入 AI Power 檔案",
+        "ai_power_upload_success": "匯入完成，已更新 {count} 筆 AI Power 詞彙。",
     }
 )
 
@@ -1278,6 +1286,9 @@ TRANSLATIONS["zh-Hans"].update(
         "ai_power_template_lede": "下载已预填分类与起始词的 Excel，之后可批量补上繁中、简中、一般例句与 AI 提示范例。",
         "ai_power_download_template": "下载 Excel 模板",
         "ai_power_template_note": "建议栏位：英文、繁体中文、简体中文、一般例句、AI 提示范例与备注。",
+        "ai_power_upload_title": "上传已完成的 AI Power 文件",
+        "ai_power_upload_button": "导入 AI Power 文件",
+        "ai_power_upload_success": "导入完成，已更新 {count} 笔 AI Power 词汇。",
     }
 )
 
@@ -1413,9 +1424,26 @@ def hero_band_identity(range_label: str) -> dict[str, str]:
     return identities.get(range_label, {"title": range_label, "subtitle": ""})
 
 
+def load_ai_power_entries() -> list[dict[str, str]]:
+    if not AI_POWER_DATA_PATH.exists():
+        return []
+    try:
+        return json.loads(AI_POWER_DATA_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+
+
+def save_ai_power_entries(rows: list[dict[str, str]]) -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    AI_POWER_DATA_PATH.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def ai_power_track(lang: str = "en") -> dict:
+    imported_rows = load_ai_power_entries()
+    imported_map = {row["english"].strip().lower(): row for row in imported_rows if row.get("english", "").strip()}
     categories = []
     starter_count = 0
+    completed_count = 0
     for item in AI_POWER_TRACK:
         title = item["title"]
         description = item["description"]
@@ -1427,6 +1455,34 @@ def ai_power_track(lang: str = "en") -> dict:
             title = item["title_zh_hans"]
             description = item["description_zh_hans"]
         starter_count += len(sorted_terms)
+        enriched_terms = []
+        for term in sorted_terms:
+            entry = imported_map.get(term.strip().lower(), {})
+            if any(
+                [
+                    entry.get("type_of_word", "").strip(),
+                    entry.get("english_definition", "").strip(),
+                    entry.get("traditional_chinese", "").strip(),
+                    entry.get("simplified_chinese", "").strip(),
+                    entry.get("example_sentence", "").strip(),
+                    entry.get("ai_prompt_example", "").strip(),
+                    entry.get("ipa", "").strip(),
+                ]
+            ):
+                completed_count += 1
+            enriched_terms.append(
+                {
+                    "english": term,
+                    "type_of_word": entry.get("type_of_word", ""),
+                    "english_definition": entry.get("english_definition", ""),
+                    "traditional_chinese": entry.get("traditional_chinese", ""),
+                    "simplified_chinese": entry.get("simplified_chinese", ""),
+                    "example_sentence": entry.get("example_sentence", ""),
+                    "ai_prompt_example": entry.get("ai_prompt_example", ""),
+                    "ipa": entry.get("ipa", ""),
+                }
+            )
+
         categories.append(
             {
                 "slug": item["slug"],
@@ -1436,6 +1492,7 @@ def ai_power_track(lang: str = "en") -> dict:
                 "target_count": item["target_count"],
                 "starter_count": len(sorted_terms),
                 "terms": sorted_terms,
+                "entries": enriched_terms,
                 "normal_example": item["normal_example"],
                 "prompt_example": item["prompt_example"],
             }
@@ -1444,7 +1501,8 @@ def ai_power_track(lang: str = "en") -> dict:
         "target_count": 500,
         "starter_count": starter_count,
         "category_count": len(categories),
-        "progress_label": f"0 / 500",
+        "progress_label": f"{completed_count} / 500",
+        "completed_count": completed_count,
         "categories": categories,
     }
 
@@ -2759,6 +2817,18 @@ def ai_power_vocabulary_template() -> FileResponse:
         output_path,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename="ai-power-vocabulary-template.xlsx",
+    )
+
+
+@app.post("/ai-power-vocabulary/upload")
+async def ai_power_vocabulary_upload(file: UploadFile = File(...)) -> RedirectResponse:
+    content = await file.read()
+    rows = iter_import_rows(file.filename or "", content)
+    imported_rows, stats = import_ai_power_rows(rows)
+    save_ai_power_entries(imported_rows)
+    return RedirectResponse(
+        url=f"/ai-power-vocabulary?imported=1&updated={stats['updated']}",
+        status_code=303,
     )
 
 

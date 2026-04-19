@@ -2,6 +2,12 @@
 {% block title %}{{ t("nav_ai_power") }} | Economist Vocabulary Lab{% endblock %}
 {% block content %}
 <section class="ai-power-shell">
+  {% if request.query_params.get('imported') %}
+  <div class="callout">
+    <strong>{{ t("ai_power_upload_success", count=request.query_params.get('updated') or 0) }}</strong>
+  </div>
+  {% endif %}
+
   <article class="panel dashboard-v2-card ai-power-hero">
     <div class="learning-hero-top">
       <div>
@@ -63,6 +69,13 @@
       <p class="section-subtle">{{ t("ai_power_template_lede") }}</p>
       <p class="section-note">{{ t("ai_power_template_note") }}</p>
       <a class="button secondary" href="/ai-power-vocabulary/template">{{ t("ai_power_download_template") }}</a>
+      <form method="post" action="/ai-power-vocabulary/upload" enctype="multipart/form-data" class="stack-form">
+        <label>
+          <span>{{ t("ai_power_upload_title") }}</span>
+          <input type="file" name="file" accept=".xlsx,.csv" required>
+        </label>
+        <button class="button" type="submit">{{ t("ai_power_upload_button") }}</button>
+      </form>
     </article>
   </section>
 
@@ -98,8 +111,19 @@
       </div>
 
       <div class="ai-power-chip-grid">
-        {% for term in category.terms %}
-        <span class="ai-power-chip">{{ term }}</span>
+        {% for entry in category.entries %}
+        <div class="ai-power-chip-card">
+          <strong>{{ entry.english }}</strong>
+          {% if entry.traditional_chinese %}
+          <span>{{ zh_text(entry.traditional_chinese) }}</span>
+          {% endif %}
+          {% if entry.type_of_word or entry.ipa %}
+          <small>{% if entry.type_of_word %}{{ entry.type_of_word }}{% endif %}{% if entry.type_of_word and entry.ipa %} · {% endif %}{% if entry.ipa %}{{ entry.ipa }}{% endif %}</small>
+          {% endif %}
+          {% if entry.english_definition %}
+          <p>{{ entry.english_definition }}</p>
+          {% endif %}
+        </div>
         {% endfor %}
       </div>
     </article>

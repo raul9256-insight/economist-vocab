@@ -30,10 +30,13 @@ AI_POWER_EXPECTED_COLUMNS = [
     "category_slug",
     "category_name",
     "english",
+    "type_of_word",
+    "english_definition",
     "traditional_chinese",
     "simplified_chinese",
     "example_sentence",
     "ai_prompt_example",
+    "ipa",
     "notes",
 ]
 
@@ -147,8 +150,11 @@ def export_ai_power_template(categories: list[dict], output_path: Path) -> int:
                     term,
                     "",
                     "",
+                    "",
+                    "",
                     category.get("normal_example", ""),
                     category.get("prompt_example", ""),
+                    "",
                     "",
                 ]
             )
@@ -156,6 +162,57 @@ def export_ai_power_template(categories: list[dict], output_path: Path) -> int:
 
     wb.save(output_path)
     return total_rows
+
+
+def import_ai_power_rows(rows: list[dict[str, str]]) -> tuple[list[dict[str, str]], dict[str, int]]:
+    stats = {"updated": 0, "skipped": 0}
+    result: list[dict[str, str]] = []
+    for raw_row in rows:
+        english = (
+            raw_row.get("english", "")
+            or raw_row.get("Vocabulary", "")
+            or raw_row.get("vocabulary", "")
+            or raw_row.get("lemma", "")
+        ).strip()
+        if not english:
+            stats["skipped"] += 1
+            continue
+        result.append(
+            {
+                "category_slug": (raw_row.get("category_slug", "") or raw_row.get("Category Slug", "")).strip(),
+                "category_name": (raw_row.get("category_name", "") or raw_row.get("Category Name", "")).strip(),
+                "english": english,
+                "type_of_word": (
+                    raw_row.get("type_of_word", "")
+                    or raw_row.get("Type of word", "")
+                    or raw_row.get("part_of_speech", "")
+                ).strip(),
+                "english_definition": (
+                    raw_row.get("english_definition", "")
+                    or raw_row.get("English Definition", "")
+                ).strip(),
+                "traditional_chinese": (
+                    raw_row.get("traditional_chinese", "")
+                    or raw_row.get("Traditional Chinese", "")
+                ).strip(),
+                "simplified_chinese": (
+                    raw_row.get("simplified_chinese", "")
+                    or raw_row.get("Simplified Chinese", "")
+                ).strip(),
+                "example_sentence": (
+                    raw_row.get("example_sentence", "")
+                    or raw_row.get("Example Sentence", "")
+                ).strip(),
+                "ai_prompt_example": (
+                    raw_row.get("ai_prompt_example", "")
+                    or raw_row.get("AI Prompt Example", "")
+                ).strip(),
+                "ipa": (raw_row.get("ipa", "") or raw_row.get("IPA", "") or raw_row.get("pronunciation", "")).strip(),
+                "notes": (raw_row.get("notes", "") or raw_row.get("Notes", "")).strip(),
+            }
+        )
+        stats["updated"] += 1
+    return result, stats
 
 
 def import_enrichment_rows(conn: sqlite3.Connection, rows: list[dict[str, str]]) -> dict[str, int]:

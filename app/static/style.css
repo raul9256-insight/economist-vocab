@@ -2805,18 +2805,35 @@ input[type="file"] {
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
-.ai-power-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.72rem 0.85rem;
-  border-radius: 999px;
+.ai-power-chip-card {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  padding: 0.9rem;
+  border-radius: 18px;
   border: 1px solid rgba(112, 125, 184, 0.14);
   background: rgba(255, 255, 255, 0.88);
-  color: #44506d;
-  font-size: 0.92rem;
-  font-weight: 600;
-  text-align: center;
+}
+
+.ai-power-chip-card strong {
+  color: #26314d;
+  font-size: 0.98rem;
+}
+
+.ai-power-chip-card span,
+.ai-power-chip-card small,
+.ai-power-chip-card p {
+  margin: 0;
+  color: #5f6a84;
+}
+
+.ai-power-chip-card small {
+  font-size: 0.82rem;
+}
+
+.ai-power-chip-card p {
+  font-size: 0.9rem;
+  line-height: 1.42;
 }
 
 .ai-power-note {
