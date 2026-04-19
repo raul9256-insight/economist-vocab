@@ -3207,12 +3207,31 @@ input[type="file"] {
 }
 
 .motto-band-label {
-  color: #5e667d;
-  font-size: 0.8rem;
-  font-weight: 600;
   text-align: center;
-  line-height: 1.25;
-  max-width: 6ch;
+  line-height: 1.2;
+  max-width: 12ch;
+  display: grid;
+  gap: 0.14rem;
+  justify-items: center;
+}
+
+.motto-band-label strong {
+  color: #2b3042;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.motto-band-label small {
+  color: #7d859d;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.motto-band-label span {
+  color: #5e667d;
+  font-size: 0.74rem;
+  font-weight: 600;
 }
 
 .motto-chart-foot {

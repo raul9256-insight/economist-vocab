@@ -20,7 +20,13 @@
           <div class="motto-band-column-track">
             <div class="motto-band-column-fill" style="height: {{ band.percent }}%"></div>
           </div>
-          <span class="motto-band-label">{{ band.label }}</span>
+          <div class="motto-band-label">
+            <strong>{{ band.title }}</strong>
+            {% if band.subtitle %}
+            <small>{{ band.subtitle }}</small>
+            {% endif %}
+            <span>{{ band.label | replace("~", "+") if band.label == "2000~" else band.label }}</span>
+          </div>
         </div>
         {% endfor %}
       </div>

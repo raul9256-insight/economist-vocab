@@ -1202,6 +1202,17 @@ def recommendation_cards(persona: str | None) -> list[dict[str, str]]:
     ]
 
 
+def hero_band_identity(range_label: str) -> dict[str, str]:
+    identities = {
+        "2000~": {"title": "基石", "subtitle": "The Foundation"},
+        "500~1999": {"title": "深度洞察", "subtitle": "Insight"},
+        "200~499": {"title": "精準修辭", "subtitle": "Precision"},
+        "100~199": {"title": "智識擴張", "subtitle": "Intellectual"},
+        "50~99": {"title": "菁英語庫", "subtitle": "The Elite Lexicon"},
+    }
+    return identities.get(range_label, {"title": range_label, "subtitle": ""})
+
+
 def render(request: Request, template_name: str, **context) -> HTMLResponse:
     lang = getattr(request.state, "lang", get_lang(request))
     context.update(
@@ -2170,6 +2181,8 @@ def home(request: Request) -> HTMLResponse:
     hero_band_chart = [
         {
             "label": band["range_label"],
+            "title": hero_band_identity(band["range_label"])["title"],
+            "subtitle": hero_band_identity(band["range_label"])["subtitle"],
             "count": band["workbook_total"],
             "percent": max(18, round((band["workbook_total"] / max_band_total) * 100)),
         }
