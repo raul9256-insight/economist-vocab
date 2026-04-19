@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}{{ entry.english }} | Economist Vocabulary Lab{% endblock %}
+{% block content %}
+<section class="word-detail-shell">
+  <article class="panel dashboard-v2-card word-detail-hero">
+    <div class="word-detail-topbar">
+      <a class="word-back-link" href="/ai-power-vocabulary/category/{{ category.slug }}">← {{ t("ai_power_back_category") }}</a>
+      <span class="word-band-pill">{{ category.title }}</span>
+    </div>
+
+    <div class="word-detail-main">
+      <div class="word-detail-heading">
+        <div class="word-heading-row">
+          <div class="bilingual-word-pair detail">
+            <h1>{{ entry.english }}</h1>
+            {% if entry.traditional_chinese %}
+            <h1>{{ zh_text(entry.traditional_chinese) }}</h1>
+            {% endif %}
+          </div>
+          <button class="pronounce-button" type="button" data-pronounce="{{ entry.english }}" aria-label="{{ t('pronunciation_label') }} {{ entry.english }}">🔊</button>
+        </div>
+        <p class="word-pronunciation">
+          {% if entry.ipa %}<span>{{ entry.ipa }}</span>{% endif %}
+          <span>{{ entry.type_of_word or t("unknown_type") }}</span>
+        </p>
+      </div>
+
+      <div class="word-detail-stats">
+        <div class="word-stat-card">
+          <span>{{ t("ai_power_label") }}</span>
+          <strong>{{ category.title }}</strong>
+        </div>
+        <div class="word-stat-card">
+          <span>{{ t("ai_power_item_trad") }}</span>
+          <strong>{{ zh_text(entry.traditional_chinese) if entry.traditional_chinese else t("unknown") }}</strong>
+        </div>
+        <div class="word-stat-card">
+          <span>{{ t("ai_power_item_simp") }}</span>
+          <strong>{{ entry.simplified_chinese or t("unknown") }}</strong>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <section class="word-detail-grid">
+    <div class="word-detail-content">
+      <article class="panel dashboard-v2-card word-section-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("definition_section") }}</p>
+            <h2>{{ t("core_meaning") }}</h2>
+          </div>
+        </div>
+        <div class="word-definition-grid">
+          <section class="word-info-card primary">
+            <span class="focus-label">{{ t("english_definition") }}</span>
+            <p>{{ entry.english_definition or t("no_english_definition") }}</p>
+          </section>
+          <section class="word-info-card">
+            <span class="focus-label">{{ t("chinese_definition") }}</span>
+            <ul class="clean-list">
+              <li>{{ zh_text(entry.traditional_chinese) if entry.traditional_chinese else t("no_chinese_definition") }}</li>
+              {% if entry.simplified_chinese %}
+              <li>{{ entry.simplified_chinese }}</li>
+              {% endif %}
+            </ul>
+          </section>
+        </div>
+      </article>
+
+      <article class="panel dashboard-v2-card word-section-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("ai_power_normal_usage") }}</p>
+            <h2>{{ t("example_sentence") }}</h2>
+          </div>
+        </div>
+        <section class="word-info-card">
+          <p>{{ entry.example_sentence or t("no_example_sentence") }}</p>
+        </section>
+      </article>
+
+      <article class="panel dashboard-v2-card word-section-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("ai_power_prompt_usage") }}</p>
+            <h2>{{ t("ai_power_item_prompt") }}</h2>
+          </div>
+        </div>
+        <section class="word-info-card primary">
+          <p>{{ entry.ai_prompt_example or t("unknown") }}</p>
+        </section>
+      </article>
+    </div>
+  </section>
+</section>
+{% endblock %}

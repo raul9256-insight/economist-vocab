@@ -2801,10 +2801,17 @@ input[type="file"] {
   margin: 1rem 0;
 }
 
+.ai-power-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
 .ai-power-chip-grid {
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
+.ai-power-entry-card,
 .ai-power-chip-card {
   display: grid;
   gap: 0.3rem;
@@ -2815,11 +2822,26 @@ input[type="file"] {
   background: rgba(255, 255, 255, 0.88);
 }
 
+.ai-power-entry-card {
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.ai-power-entry-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(95, 115, 255, 0.24);
+  box-shadow: 0 14px 28px rgba(95, 115, 255, 0.08);
+}
+
+.ai-power-entry-card strong,
 .ai-power-chip-card strong {
   color: #26314d;
   font-size: 0.98rem;
 }
 
+.ai-power-entry-card span,
+.ai-power-entry-card small,
+.ai-power-entry-card p,
 .ai-power-chip-card span,
 .ai-power-chip-card small,
 .ai-power-chip-card p {
@@ -2827,10 +2849,12 @@ input[type="file"] {
   color: #5f6a84;
 }
 
+.ai-power-entry-card small,
 .ai-power-chip-card small {
   font-size: 0.82rem;
 }
 
+.ai-power-entry-card p,
 .ai-power-chip-card p {
   font-size: 0.9rem;
   line-height: 1.42;
@@ -3546,6 +3570,7 @@ input[type="file"] {
   .learning-result-grid,
   .ai-power-category-grid,
   .ai-power-example-grid,
+  .ai-power-entry-grid,
   .review-hero-top,
   .dictionary-refined-head,
   .dictionary-result-body,

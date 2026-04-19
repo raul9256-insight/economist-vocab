@@ -36,8 +36,8 @@
         <strong>{{ ai_power.starter_count }}</strong>
       </div>
       <div class="learning-stat-card">
-        <span>{{ t("ai_power_label") }}</span>
-        <strong>{{ t("nav_ai_power") }}</strong>
+        <span>{{ t("ai_power_progress") }}</span>
+        <strong>{{ ai_power.progress_label }}</strong>
       </div>
     </div>
   </article>
@@ -63,43 +63,6 @@
     </form>
   </article>
 
-  <section class="learning-support-grid">
-    <article class="panel dashboard-v2-card learning-support-card">
-      <p class="eyebrow">{{ t("ai_power_structure_title") }}</p>
-      <h2>{{ t("ai_power_examples_title") }}</h2>
-      <p class="section-subtle">{{ t("ai_power_structure_lede") }}</p>
-      <div class="learning-mini-list">
-        <div class="learning-mini-item">
-          <strong>{{ t("ai_power_item_english") }}</strong>
-          <p>{{ t("ai_power_item_trad") }} + {{ t("ai_power_item_simp") }}</p>
-        </div>
-        <div class="learning-mini-item">
-          <strong>{{ t("ai_power_item_sentence") }}</strong>
-          <p>{{ t("ai_power_examples_lede") }}</p>
-        </div>
-        <div class="learning-mini-item">
-          <strong>{{ t("ai_power_item_prompt") }}</strong>
-          <p>{{ t("ai_power_home_note") }}</p>
-        </div>
-      </div>
-    </article>
-
-    <article class="panel dashboard-v2-card learning-support-card accent">
-      <p class="eyebrow">{{ t("ai_power_template_title") }}</p>
-      <h2>{{ t("ai_power_download_template") }}</h2>
-      <p class="section-subtle">{{ t("ai_power_template_lede") }}</p>
-      <p class="section-note">{{ t("ai_power_template_note") }}</p>
-      <a class="button secondary" href="/ai-power-vocabulary/template">{{ t("ai_power_download_template") }}</a>
-      <form method="post" action="/ai-power-vocabulary/upload" enctype="multipart/form-data" class="stack-form">
-        <label>
-          <span>{{ t("ai_power_upload_title") }}</span>
-          <input type="file" name="file" accept=".xlsx,.csv" required>
-        </label>
-        <button class="button" type="submit">{{ t("ai_power_upload_button") }}</button>
-      </form>
-    </article>
-  </section>
-
   <section class="ai-power-category-grid">
     {% for category in ai_power.categories %}
     <article class="panel dashboard-v2-card ai-power-category-card">
@@ -114,7 +77,7 @@
         <div class="dictionary-hero-note ai-power-note">
           <span class="dictionary-note-label">{{ t("ai_power_target") }}</span>
           <strong>{{ category.target_count }}</strong>
-          <small>{{ t("ai_power_category_terms", count=category.starter_count) }}</small>
+          <small>{{ t("ai_power_words_ready", count=category.completed_count) }}</small>
         </div>
       </div>
 
@@ -122,33 +85,19 @@
 
       <div class="ai-power-example-grid">
         <div class="dictionary-result-box">
-          <strong>{{ t("ai_power_item_sentence") }}</strong>
+          <strong>{{ t("ai_power_normal_usage") }}</strong>
           <p>{{ category.normal_example }}</p>
         </div>
         <div class="dictionary-result-box">
-          <strong>{{ t("ai_power_item_prompt") }}</strong>
+          <strong>{{ t("ai_power_prompt_usage") }}</strong>
           <p>{{ category.prompt_example }}</p>
         </div>
       </div>
 
-      <div class="ai-power-chip-grid">
-        {% for entry in category.entries %}
-        <div class="ai-power-chip-card">
-          <strong>{{ entry.english }}</strong>
-          {% if entry.traditional_chinese %}
-          <span>{{ zh_text(entry.traditional_chinese) }}</span>
-          {% endif %}
-          {% if entry.type_of_word or entry.ipa %}
-          <small>{% if entry.type_of_word %}{{ entry.type_of_word }}{% endif %}{% if entry.type_of_word and entry.ipa %} · {% endif %}{% if entry.ipa %}{{ entry.ipa }}{% endif %}</small>
-          {% endif %}
-          {% if entry.english_definition %}
-          <p>{{ entry.english_definition }}</p>
-          {% endif %}
-        </div>
-        {% endfor %}
-      </div>
+      <a class="button secondary" href="/ai-power-vocabulary/category/{{ category.slug }}">{{ t("ai_power_open_category") }}</a>
     </article>
     {% endfor %}
+
     {% if not ai_power.categories %}
     <article class="panel dashboard-v2-card ai-power-category-card">
       <div class="card-head tight">

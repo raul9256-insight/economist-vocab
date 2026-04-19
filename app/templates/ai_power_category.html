@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ category.title }} | Economist Vocabulary Lab{% endblock %}
+{% block content %}
+<section class="ai-power-shell">
+  <article class="panel dashboard-v2-card ai-power-hero">
+    <div class="card-head tight">
+      <div>
+        <a class="word-back-link" href="/ai-power-vocabulary">← {{ t("ai_power_back") }}</a>
+        <p class="eyebrow">{{ t("ai_power_category_cta") }}</p>
+        <h1>{{ category.title }}</h1>
+        {% if category.title != category.english_title %}
+        <p class="lede">{{ category.english_title }}</p>
+        {% endif %}
+      </div>
+      <div class="dictionary-hero-note ai-power-note">
+        <span class="dictionary-note-label">{{ t("ai_power_target") }}</span>
+        <strong>{{ category.target_count }}</strong>
+        <small>{{ t("ai_power_words_ready", count=category.completed_count) }}</small>
+      </div>
+    </div>
+
+    <div class="ai-power-example-grid">
+      <div class="dictionary-result-box">
+        <strong>{{ t("ai_power_normal_usage") }}</strong>
+        <p>{{ category.normal_example }}</p>
+      </div>
+      <div class="dictionary-result-box">
+        <strong>{{ t("ai_power_prompt_usage") }}</strong>
+        <p>{{ category.prompt_example }}</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel dashboard-v2-card ai-power-search-panel">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">{{ t("ai_power_all_words") }}</p>
+        <h2>{{ category.title }}</h2>
+      </div>
+      <span class="section-subtle">{{ category.entries|length }} words</span>
+    </div>
+
+    <div class="ai-power-entry-grid">
+      {% for entry in category.entries %}
+      <a class="ai-power-entry-card" href="/ai-power-vocabulary/category/{{ category.slug }}/{{ entry.slug }}">
+        <strong>{{ entry.english }}</strong>
+        {% if entry.traditional_chinese %}
+        <span>{{ zh_text(entry.traditional_chinese) }}</span>
+        {% endif %}
+        {% if entry.type_of_word or entry.ipa %}
+        <small>{% if entry.type_of_word %}{{ entry.type_of_word }}{% endif %}{% if entry.type_of_word and entry.ipa %} · {% endif %}{% if entry.ipa %}{{ entry.ipa }}{% endif %}</small>
+        {% endif %}
+        {% if entry.english_definition %}
+        <p>{{ entry.english_definition }}</p>
+        {% else %}
+        <p>{{ t("open_word_add_details") }}</p>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

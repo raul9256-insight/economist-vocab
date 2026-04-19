@@ -616,7 +616,14 @@ TRANSLATIONS["en"].update(
         "ai_power_search_title": "Find AI Power vocabulary fast",
         "ai_power_search_placeholder": "Search English, Chinese, type, IPA, or definition",
         "ai_power_category_all": "All categories",
-        "ai_power_results": "{count} entries shown",
+        "ai_power_results": "{count} categories shown",
+        "ai_power_open_category": "Open category",
+        "ai_power_words_ready": "{count} words ready",
+        "ai_power_back": "Back to AI Power Vocabulary",
+        "ai_power_all_words": "All words in this category",
+        "ai_power_prompt_usage": "Prompt usage",
+        "ai_power_normal_usage": "Normal usage",
+        "ai_power_back_category": "Back to category",
     }
 )
 
@@ -851,7 +858,14 @@ TRANSLATIONS["zh-Hant"].update(
         "ai_power_search_title": "快速找出 AI Power 詞彙",
         "ai_power_search_placeholder": "搜尋英文、中文、詞性、IPA 或英文定義",
         "ai_power_category_all": "全部分類",
-        "ai_power_results": "目前顯示 {count} 筆",
+        "ai_power_results": "目前顯示 {count} 個分類",
+        "ai_power_open_category": "打開分類",
+        "ai_power_words_ready": "已補齊 {count} 個詞",
+        "ai_power_back": "返回 AI 強化詞彙",
+        "ai_power_all_words": "此分類全部詞彙",
+        "ai_power_prompt_usage": "提示用法",
+        "ai_power_normal_usage": "一般用法",
+        "ai_power_back_category": "返回分類",
     }
 )
 
@@ -1300,7 +1314,14 @@ TRANSLATIONS["zh-Hans"].update(
         "ai_power_search_title": "快速找出 AI Power 词汇",
         "ai_power_search_placeholder": "搜索英文、中文、词性、IPA 或英文定义",
         "ai_power_category_all": "全部分类",
-        "ai_power_results": "当前显示 {count} 笔",
+        "ai_power_results": "当前显示 {count} 个分类",
+        "ai_power_open_category": "打开分类",
+        "ai_power_words_ready": "已补齐 {count} 个词",
+        "ai_power_back": "返回 AI 强化词汇",
+        "ai_power_all_words": "此分类全部词汇",
+        "ai_power_prompt_usage": "提示用法",
+        "ai_power_normal_usage": "一般用法",
+        "ai_power_back_category": "返回分类",
     }
 )
 
@@ -1436,6 +1457,11 @@ def hero_band_identity(range_label: str) -> dict[str, str]:
     return identities.get(range_label, {"title": range_label, "subtitle": ""})
 
 
+def slugify_ai_power_value(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.strip().lower())
+    return slug.strip("-")
+
+
 def load_ai_power_entries() -> list[dict[str, str]]:
     if not AI_POWER_DATA_PATH.exists():
         return []
@@ -1470,7 +1496,7 @@ def ai_power_track(lang: str = "en") -> dict:
         enriched_terms = []
         for term in sorted_terms:
             entry = imported_map.get(term.strip().lower(), {})
-            if any(
+            is_completed = any(
                 [
                     entry.get("type_of_word", "").strip(),
                     entry.get("english_definition", "").strip(),
@@ -1480,11 +1506,15 @@ def ai_power_track(lang: str = "en") -> dict:
                     entry.get("ai_prompt_example", "").strip(),
                     entry.get("ipa", "").strip(),
                 ]
+            )
+            if any(
+                [is_completed]
             ):
                 completed_count += 1
             enriched_terms.append(
                 {
                     "english": term,
+                    "slug": slugify_ai_power_value(term),
                     "type_of_word": entry.get("type_of_word", ""),
                     "english_definition": entry.get("english_definition", ""),
                     "traditional_chinese": entry.get("traditional_chinese", ""),
@@ -1492,9 +1522,11 @@ def ai_power_track(lang: str = "en") -> dict:
                     "example_sentence": entry.get("example_sentence", ""),
                     "ai_prompt_example": entry.get("ai_prompt_example", ""),
                     "ipa": entry.get("ipa", ""),
+                    "completed": is_completed,
                 }
             )
 
+        category_completed_count = sum(1 for entry in enriched_terms if entry["completed"])
         categories.append(
             {
                 "slug": item["slug"],
@@ -1505,6 +1537,7 @@ def ai_power_track(lang: str = "en") -> dict:
                 "starter_count": len(sorted_terms),
                 "terms": sorted_terms,
                 "entries": enriched_terms,
+                "completed_count": category_completed_count,
                 "normal_example": item["normal_example"],
                 "prompt_example": item["prompt_example"],
             }
@@ -1528,6 +1561,14 @@ def filter_ai_power_track(track: dict, query: str = "", category_slug: str = "")
         if category_slug and category["slug"] != category_slug:
             continue
 
+        category_haystack = " ".join(
+            [
+                category.get("title", ""),
+                category.get("english_title", ""),
+                category.get("description", ""),
+            ]
+        ).lower()
+
         filtered_entries = []
         for entry in category["entries"]:
             haystack = " ".join(
@@ -1546,20 +1587,38 @@ def filter_ai_power_track(track: dict, query: str = "", category_slug: str = "")
                 continue
             filtered_entries.append(entry)
 
-        if filtered_entries:
-            shown_count += len(filtered_entries)
+        if normalized_query and normalized_query in category_haystack:
             category_copy = dict(category)
-            category_copy["entries"] = filtered_entries
-            category_copy["starter_count"] = len(filtered_entries)
+            category_copy["matched_count"] = len(category["entries"])
             filtered_categories.append(category_copy)
+            shown_count += 1
+        elif filtered_entries:
+            category_copy = dict(category)
+            category_copy["matched_count"] = len(filtered_entries)
+            filtered_categories.append(category_copy)
+            shown_count += 1
         elif not normalized_query and not category_slug:
             filtered_categories.append(category)
-            shown_count += len(category["entries"])
+            shown_count += 1
 
     filtered_track = dict(track)
     filtered_track["categories"] = filtered_categories
     filtered_track["shown_count"] = shown_count
     return filtered_track
+
+
+def ai_power_category_by_slug(track: dict, slug: str) -> dict | None:
+    for category in track["categories"]:
+        if category["slug"] == slug:
+            return category
+    return None
+
+
+def ai_power_entry_by_slug(category: dict, entry_slug: str) -> dict | None:
+    for entry in category["entries"]:
+        if entry["slug"] == entry_slug:
+            return entry
+    return None
 
 
 def render(request: Request, template_name: str, **context) -> HTMLResponse:
@@ -2893,6 +2952,38 @@ async def ai_power_vocabulary_upload(file: UploadFile = File(...)) -> RedirectRe
     return RedirectResponse(
         url=f"/ai-power-vocabulary?imported=1&updated={stats['updated']}",
         status_code=303,
+    )
+
+
+@app.get("/ai-power-vocabulary/category/{category_slug}", response_class=HTMLResponse)
+def ai_power_category_page(request: Request, category_slug: str) -> HTMLResponse:
+    lang = getattr(request.state, "lang", get_lang(request))
+    track = ai_power_track(lang)
+    category = ai_power_category_by_slug(track, category_slug)
+    if category is None:
+        raise HTTPException(status_code=404, detail="AI Power category not found")
+    return render(
+        request,
+        "ai_power_category.html",
+        category=category,
+    )
+
+
+@app.get("/ai-power-vocabulary/category/{category_slug}/{entry_slug}", response_class=HTMLResponse)
+def ai_power_entry_page(request: Request, category_slug: str, entry_slug: str) -> HTMLResponse:
+    lang = getattr(request.state, "lang", get_lang(request))
+    track = ai_power_track(lang)
+    category = ai_power_category_by_slug(track, category_slug)
+    if category is None:
+        raise HTTPException(status_code=404, detail="AI Power category not found")
+    entry = ai_power_entry_by_slug(category, entry_slug)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="AI Power word not found")
+    return render(
+        request,
+        "ai_power_word.html",
+        category=category,
+        entry=entry,
     )
 
 
