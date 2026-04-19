@@ -1,6 +1,7 @@
 let currentAudio = null;
 let currentAudioUrl = null;
 let pronunciationNotice = null;
+let availableVoices = [];
 
 function cleanupCurrentAudio() {
   if (currentAudio) {
@@ -34,51 +35,91 @@ function showPronunciationNotice(message) {
   }, 2600);
 }
 
-async function playGeneratedAudio(text) {
-  const response = await fetch(`/api/pronounce?text=${encodeURIComponent(text)}`);
-  if (!response.ok) {
-    let message = `Pronunciation request failed with ${response.status}`;
-    try {
-      const payload = await response.json();
-      if (payload && typeof payload.detail === "string" && payload.detail.trim()) {
-        message = payload.detail.trim();
-      }
-    } catch (_error) {
-      // Ignore JSON parsing failures and use the status-based message.
-    }
-    throw new Error(message);
+function loadVoices() {
+  if (!("speechSynthesis" in window)) {
+    return [];
   }
-
-  const blob = await response.blob();
-  cleanupCurrentAudio();
-  currentAudioUrl = URL.createObjectURL(blob);
-  currentAudio = new Audio(currentAudioUrl);
-  currentAudio.addEventListener("ended", cleanupCurrentAudio, { once: true });
-  currentAudio.addEventListener("error", cleanupCurrentAudio, { once: true });
-  await currentAudio.play();
+  availableVoices = window.speechSynthesis.getVoices();
+  return availableVoices;
 }
 
-async function speakText(text) {
-  if (!text) {
+function pickEnglishVoice() {
+  const voices = availableVoices.length ? availableVoices : loadVoices();
+  if (!voices.length) {
+    return null;
+  }
+
+  const scoreVoice = (voice) => {
+    const lang = (voice.lang || "").toLowerCase();
+    const name = (voice.name || "").toLowerCase();
+    let score = 0;
+    if (lang.startsWith("en-us")) score += 5;
+    else if (lang.startsWith("en-gb")) score += 4;
+    else if (lang.startsWith("en")) score += 3;
+
+    if (name.includes("samantha")) score += 4;
+    if (name.includes("ava")) score += 4;
+    if (name.includes("allison")) score += 3;
+    if (name.includes("daniel")) score += 3;
+    if (name.includes("karen")) score += 3;
+    if (name.includes("serena")) score += 3;
+    if (name.includes("google us english")) score += 2;
+    if (name.includes("zira")) score += 2;
+    if (name.includes("david")) score += 2;
+    if (voice.default) score += 1;
+    if (name.includes("compact")) score -= 1;
+    return score;
+  };
+
+  const englishVoices = voices.filter((voice) => (voice.lang || "").toLowerCase().startsWith("en"));
+  if (!englishVoices.length) {
+    return null;
+  }
+  return englishVoices.sort((a, b) => scoreVoice(b) - scoreVoice(a))[0];
+}
+
+function speakWithBrowserVoice(text) {
+  if (!("speechSynthesis" in window) || !text) {
+    showPronunciationNotice("Browser pronunciation is not available on this device.");
     return;
   }
 
-  try {
-    await playGeneratedAudio(text);
-  } catch (error) {
-    cleanupCurrentAudio();
-    showPronunciationNotice(error?.message || "Pronunciation is temporarily unavailable.");
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  cleanupCurrentAudio();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.76;
+  utterance.pitch = 0.92;
+  utterance.volume = 1;
+
+  const preferredVoice = pickEnglishVoice();
+  if (preferredVoice) {
+    utterance.voice = preferredVoice;
+    utterance.lang = preferredVoice.lang || "en-US";
+  } else {
+    showPronunciationNotice("Using your browser's basic English voice.");
   }
+
+  synth.speak(utterance);
 }
 
 function bindPronunciationButtons() {
   document.querySelectorAll("[data-pronounce]").forEach((button) => {
-    button.addEventListener("click", async (event) => {
+    button.addEventListener("click", (event) => {
       event.preventDefault();
       const text = button.getAttribute("data-pronounce");
-      await speakText(text);
+      speakWithBrowserVoice(text);
     });
   });
+}
+
+if ("speechSynthesis" in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    loadVoices();
+  };
 }
 
 if (document.readyState === "loading") {
