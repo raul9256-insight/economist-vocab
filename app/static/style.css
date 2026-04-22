@@ -3097,12 +3097,37 @@ input[type="file"] {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  z-index: 2;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  opacity: 0;
+  z-index: 3;
+  cursor: pointer;
+}
+
+.persona-card-check {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  border: 2px solid rgba(125, 135, 168, 0.8);
+  background: #fff;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.persona-card input:checked + .persona-card-check {
+  border-color: #5a67f7;
+  background:
+    radial-gradient(circle at center, #5a67f7 0 42%, transparent 46% 100%),
+    #fff;
 }
 
 .persona-card-copy {
   display: block;
-  padding-right: 2.5rem;
+  padding-right: 3rem;
 }
 
 .persona-card-copy strong {
