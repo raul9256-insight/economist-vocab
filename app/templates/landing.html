@@ -9,37 +9,71 @@
 <body class="landing-body">
   <main class="landing-shell">
     <section class="landing-panel">
-      <div class="landing-copy">
-        <p class="eyebrow">{{ t("onboarding_step_1") }}</p>
-        <h1>{{ t("onboarding_title") }}</h1>
-        <p class="lede">{{ t("onboarding_lede") }}</p>
-      </div>
+      <section class="landing-hero">
+        <div class="landing-hero-copy">
+          <p class="eyebrow">{{ t("landing_hero_kicker") }}</p>
+          <h1>{{ t("landing_hero_title") }}</h1>
+          <p class="lede">{{ t("landing_hero_body") }}</p>
 
-      <div class="landing-mode-actions" role="tablist" aria-label="User type">
-        <a href="/{% if lang != 'en' %}?lang={{ lang }}{% endif %}" class="button landing-mode-button {% if landing_mode != 'registered' %}active{% endif %}">
-          {{ t("landing_mode_guest") }}
-        </a>
-        <a href="/?mode=registered{% if lang != 'en' %}&lang={{ lang }}{% endif %}" class="button landing-mode-button {% if landing_mode == 'registered' %}active{% endif %}">
-          {{ t("landing_mode_registered") }}
-        </a>
-      </div>
+          <div class="landing-feature-row">
+            <article class="landing-feature-card">
+              <strong>{{ t("landing_feature_identity_title") }}</strong>
+              <p>{{ t("landing_feature_identity_body") }}</p>
+            </article>
+            <article class="landing-feature-card">
+              <strong>{{ t("landing_feature_memory_title") }}</strong>
+              <p>{{ t("landing_feature_memory_body") }}</p>
+            </article>
+            <article class="landing-feature-card">
+              <strong>{{ t("landing_feature_transfer_title") }}</strong>
+              <p>{{ t("landing_feature_transfer_body") }}</p>
+            </article>
+          </div>
+        </div>
 
-      <div class="landing-mode-summary">
-        {% if landing_mode == 'registered' %}
-        <h2>{{ t("landing_registered_title") }}</h2>
-        <p class="section-subtle">{{ t("landing_registered_lede") }}</p>
-        {% else %}
-        <h2>{{ t("landing_guest_title") }}</h2>
-        <p class="section-subtle">{{ t("landing_guest_lede") }}</p>
+        <aside class="landing-passport-card">
+          <p class="eyebrow">{{ t("landing_passport_label") }}</p>
+          <h2>{{ t("landing_passport_title") }}</h2>
+          <ul class="landing-passport-list">
+            <li>{{ t("landing_passport_point_1") }}</li>
+            <li>{{ t("landing_passport_point_2") }}</li>
+            <li>{{ t("landing_passport_point_3") }}</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="landing-entry-panel">
+        <div class="landing-copy">
+          <p class="eyebrow">{{ t("onboarding_step_1") }}</p>
+          <h2>{{ t("onboarding_title") }}</h2>
+          <p class="lede">{{ t("onboarding_lede") }}</p>
+        </div>
+
+        <div class="landing-mode-actions" role="tablist" aria-label="User type">
+          <a href="/{% if lang != 'en' %}?lang={{ lang }}{% endif %}" class="button landing-mode-button {% if landing_mode != 'registered' %}active{% endif %}">
+            {{ t("landing_mode_guest") }}
+          </a>
+          <a href="/?mode=registered{% if lang != 'en' %}&lang={{ lang }}{% endif %}" class="button landing-mode-button {% if landing_mode == 'registered' %}active{% endif %}">
+            {{ t("landing_mode_registered") }}
+          </a>
+        </div>
+
+        <div class="landing-mode-summary">
+          {% if landing_mode == 'registered' %}
+          <h3>{{ t("landing_registered_title") }}</h3>
+          <p class="section-subtle">{{ t("landing_registered_lede") }}</p>
+          {% else %}
+          <h3>{{ t("landing_guest_title") }}</h3>
+          <p class="section-subtle">{{ t("landing_guest_lede") }}</p>
+          {% endif %}
+        </div>
+
+        {% if auth_error %}
+        <div class="landing-auth-error">{{ t(auth_error) }}</div>
         {% endif %}
-      </div>
 
-      {% if auth_error %}
-      <div class="landing-auth-error">{{ t(auth_error) }}</div>
-      {% endif %}
-
-      {% if landing_mode == 'registered' %}
-      <section class="landing-auth-grid">
+        {% if landing_mode == 'registered' %}
+        <section class="landing-auth-grid">
         <div class="landing-auth-card">
           <div class="card-head tight">
             <div>
@@ -151,9 +185,9 @@
             <button class="button onboarding-submit" type="submit">{{ t("login_submit") }}</button>
           </form>
         </div>
-      </section>
-      {% else %}
-      <form class="stack-form onboarding-form" method="post" action="/onboarding{% if lang != 'en' %}?lang={{ lang }}{% endif %}">
+        </section>
+        {% else %}
+        <form class="stack-form onboarding-form" method="post" action="/onboarding{% if lang != 'en' %}?lang={{ lang }}{% endif %}">
         <label>
           <span>{{ t("onboarding_name_label") }}</span>
           <input type="text" name="first_name" placeholder="{{ t('onboarding_name_placeholder') }}" maxlength="40">
@@ -220,8 +254,9 @@
         </div>
 
         <button class="button onboarding-submit" type="submit">{{ t("onboarding_submit") }}</button>
-      </form>
-      {% endif %}
+        </form>
+        {% endif %}
+      </section>
     </section>
   </main>
 </body>
