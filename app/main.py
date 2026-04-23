@@ -738,6 +738,7 @@ TRANSLATIONS["en"].update(
         "band_breakdown": "Band Breakdown",
         "band_performance": "How you performed by range",
         "band_accuracy_note": "{percent}% accuracy in this band.",
+        "test_result_saved_summary_note": "This is a saved historical result. Detailed question breakdown was not stored for this older test session.",
         "try_again": "Try Again",
         "go_to_learning": "Go To Learning",
         "review_queue_title": "Missed words",
@@ -1044,6 +1045,7 @@ TRANSLATIONS["zh-Hant"].update(
         "band_breakdown": "各組表現",
         "band_performance": "你在不同詞彙分類的表現",
         "band_accuracy_note": "這一組詞彙的正確率是 {percent}%。",
+        "test_result_saved_summary_note": "這是先前保存的歷史測驗結果。較舊的測驗紀錄未保留完整題目明細，所以這裡只顯示摘要結果。",
         "try_again": "再測一次",
         "go_to_learning": "前往學習",
         "review_queue_title": "錯題複習",
@@ -1605,6 +1607,7 @@ TRANSLATIONS["zh-Hans"].update(
         "band_breakdown": "各组表现",
         "band_performance": "你在不同词汇分类的表现",
         "band_accuracy_note": "这一组词汇的正确率是 {percent}%。",
+        "test_result_saved_summary_note": "这是先前保存的历史检测结果。较旧的检测记录未保留完整题目明细，所以这里只显示摘要结果。",
         "try_again": "再测一次",
         "go_to_learning": "前往学习",
         "review_queue_title": "错题复习",
@@ -3291,6 +3294,32 @@ def current_learning_question(conn: sqlite3.Connection, session_id: int) -> sqli
 
 
 def finish_test_session(conn: sqlite3.Connection, session_id: int) -> None:
+    summary = summarize_test_session(conn, session_id)
+    conn.execute(
+        """
+        UPDATE assessment_sessions
+        SET status = 'completed',
+            completed_at = CURRENT_TIMESTAMP,
+            score = ?,
+            estimated_band_rank = ?,
+            estimated_band_label = ?
+        WHERE id = ?
+        """,
+        (
+            summary["total_correct"],
+            summary["estimated_rank"],
+            summary["estimated_label"],
+            session_id,
+        ),
+    )
+    conn.commit()
+    return {
+        "accuracy_percent": summary["accuracy_percent"],
+        "weighted_percent": summary["weighted_percent"],
+    }
+
+
+def summarize_test_session(conn: sqlite3.Connection, session_id: int) -> dict:
     rows = conn.execute(
         """
         SELECT band_rank, band_label, is_correct
@@ -3322,20 +3351,14 @@ def finish_test_session(conn: sqlite3.Connection, session_id: int) -> None:
             estimated_label = labels[band_rank]
     accuracy_percent = round((total_correct / len(rows)) * 100) if rows else 0
     weighted_percent = round((weighted_score / weighted_total) * 100) if weighted_total else 0
-    conn.execute(
-        """
-        UPDATE assessment_sessions
-        SET status = 'completed',
-            completed_at = CURRENT_TIMESTAMP,
-            score = ?,
-            estimated_band_rank = ?,
-            estimated_band_label = ?
-        WHERE id = ?
-        """,
-        (total_correct, estimated_rank, estimated_label, session_id),
-    )
-    conn.commit()
-    return {"accuracy_percent": accuracy_percent, "weighted_percent": weighted_percent}
+    return {
+        "accuracy_percent": accuracy_percent,
+        "weighted_percent": weighted_percent,
+        "estimated_rank": estimated_rank,
+        "estimated_label": estimated_label,
+        "total_correct": total_correct,
+        "question_count": len(rows),
+    }
 
 
 def finish_learning_session(conn: sqlite3.Connection, session_id: int) -> None:
@@ -3710,20 +3733,38 @@ def test_review(request: Request, session_id: int) -> HTMLResponse:
 @app.get("/test/{session_id}/result", response_class=HTMLResponse)
 def test_result(request: Request, session_id: int) -> HTMLResponse:
     conn = db_conn()
-    summary = finish_test_session(conn, session_id)
     session = conn.execute("SELECT * FROM assessment_sessions WHERE id = ?", (session_id,)).fetchone()
     if session is None:
         raise HTTPException(status_code=404, detail="Test session not found")
+    question_count = conn.execute(
+        "SELECT COUNT(*) FROM assessment_questions WHERE session_id = ?",
+        (session_id,),
+    ).fetchone()[0]
+    if session["status"] != "completed":
+        summary = finish_test_session(conn, session_id)
+        session = conn.execute("SELECT * FROM assessment_sessions WHERE id = ?", (session_id,)).fetchone()
+        has_detailed_results = question_count > 0
+    elif question_count > 0:
+        summary = summarize_test_session(conn, session_id)
+        has_detailed_results = True
+    else:
+        summary = {
+            "accuracy_percent": None,
+            "weighted_percent": None,
+        }
+        has_detailed_results = False
     band_rows = band_accuracy_rows(conn, session_id)
     lang = getattr(request.state, "lang", get_lang(request))
-    level_name = progress_label((summary["accuracy_percent"] or 0) / 100, lang)
-    recommendation = level_recommendation(session["estimated_band_label"], (summary["accuracy_percent"] or 0) / 100, lang)
+    accuracy_ratio = (summary["accuracy_percent"] / 100) if summary["accuracy_percent"] is not None else 0
+    level_name = progress_label(accuracy_ratio, lang)
+    recommendation = level_recommendation(session["estimated_band_label"], accuracy_ratio, lang)
     return render(
         request,
         "test_result.html",
         session=session,
         band_results=band_rows,
         summary=summary,
+        has_detailed_results=has_detailed_results,
         level_name=level_name,
         recommendation=recommendation,
     )

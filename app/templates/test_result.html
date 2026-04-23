@@ -11,8 +11,8 @@
       <div class="test-result-ring-card">
         <div class="result-ring">
           <div>
-            <strong>{{ summary.accuracy_percent }}%</strong>
-            <span>{{ t("accuracy_label") }}</span>
+            <strong>{% if has_detailed_results %}{{ summary.accuracy_percent }}%{% else %}{{ session.score }}{% endif %}</strong>
+            <span>{% if has_detailed_results %}{{ t("accuracy_label") }}{% else %}{{ t("score_label") }}{% endif %}</span>
           </div>
         </div>
       </div>
@@ -20,9 +20,11 @@
         <div class="info-badges">
           <span class="info-chip">{{ t("estimated_band_chip", band=session.estimated_band_label or t("getting_started")) }}</span>
           <span class="info-chip">{{ t("correct_chip", score=session.score) }}</span>
+          {% if has_detailed_results %}
           <span class="info-chip">{{ t("weighted_chip", percent=summary.weighted_percent) }}</span>
+          {% endif %}
         </div>
-        <p class="section-subtle">{{ t("test_result_note") }}</p>
+        <p class="section-subtle">{% if has_detailed_results %}{{ t("test_result_note") }}{% else %}{{ t("test_result_saved_summary_note") }}{% endif %}</p>
         <div class="callout learning-result-callout">
           <strong>{{ t("what_to_do_next") }}</strong> {{ recommendation }}
         </div>
@@ -30,6 +32,7 @@
     </div>
   </article>
 
+  {% if has_detailed_results %}
   <article class="panel dashboard-v2-card test-band-breakdown-card">
     <div class="card-head tight">
       <div>
@@ -57,5 +60,17 @@
       <a class="button" href="/learning">{{ t("go_to_learning") }}</a>
     </div>
   </article>
+  {% else %}
+  <article class="panel dashboard-v2-card test-band-breakdown-card">
+    <div class="callout learning-result-callout">
+      {{ t("test_result_saved_summary_note") }}
+    </div>
+    <div class="action-row">
+      <a class="button secondary" href="/statistics">{{ t("view_statistics") }}</a>
+      <a class="button secondary" href="/test">{{ t("try_again") }}</a>
+      <a class="button" href="/learning">{{ t("go_to_learning") }}</a>
+    </div>
+  </article>
+  {% endif %}
 </section>
 {% endblock %}
