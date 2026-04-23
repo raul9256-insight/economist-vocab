@@ -14,6 +14,27 @@
       </div>
     </div>
 
+    <div class="ai-power-home-grid">
+      <div class="learning-stat-card">
+        <span>{{ t("statistics_latest_test") }}</span>
+        <strong>{{ latest_test_history.estimated_band_label if latest_test_history else t("statistics_no_test_yet") }}</strong>
+        {% if latest_test_history %}
+        <small>{{ t("score_label") }} {{ latest_test_history.score }}</small>
+        {% endif %}
+      </div>
+      <div class="learning-stat-card">
+        <span>{{ t("statistics_best_result") }}</span>
+        <strong>{{ best_test_history.estimated_band_label if best_test_history else t("statistics_no_test_yet") }}</strong>
+        {% if best_test_history %}
+        <small>{{ t("score_label") }} {{ best_test_history.score }}</small>
+        {% endif %}
+      </div>
+      <div class="learning-stat-card">
+        <span>{{ t("statistics_tests_taken") }}</span>
+        <strong>{{ tests_taken_count }}</strong>
+      </div>
+    </div>
+
     <div class="refined-recommend-grid">
       <a class="recommend-card recommend-card-blue" href="/test/history">
         <span class="recommend-tag">{{ t("level_test_title") }}</span>

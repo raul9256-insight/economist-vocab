@@ -713,6 +713,10 @@ TRANSLATIONS["en"].update(
         "accuracy_short": "Accuracy",
         "statistics_title": "Statistics",
         "statistics_lede": "Review your saved learning data in one place, then open the section you want to inspect in detail.",
+        "statistics_latest_test": "Latest Test",
+        "statistics_best_result": "Best Result",
+        "statistics_tests_taken": "Tests Taken",
+        "statistics_no_test_yet": "No test yet",
         "statistics_test_history_title": "Test History",
         "statistics_test_history_body": "Review past placement results, compare scores, and track how your starting band changes over time.",
         "statistics_more_coming": "More statistics modules coming soon.",
@@ -1009,6 +1013,10 @@ TRANSLATIONS["zh-Hant"].update(
         "accuracy_short": "正確率",
         "statistics_title": "統計數據",
         "statistics_lede": "把目前累積的學習資料集中在同一頁，再進入你想細看的統計功能。",
+        "statistics_latest_test": "最近一次測驗",
+        "statistics_best_result": "最佳結果",
+        "statistics_tests_taken": "測驗次數",
+        "statistics_no_test_yet": "尚未有測驗紀錄",
         "statistics_test_history_title": "測驗紀錄",
         "statistics_test_history_body": "回看過往程度檢測結果，比較分數，追蹤建議起始範圍如何變化。",
         "statistics_more_coming": "之後會再加入更多統計模組。",
@@ -1558,6 +1566,10 @@ TRANSLATIONS["zh-Hans"].update(
         "accuracy_short": "正确率",
         "statistics_title": "统计数据",
         "statistics_lede": "把目前积累的学习资料集中在同一页，再进入你想细看的统计功能。",
+        "statistics_latest_test": "最近一次检测",
+        "statistics_best_result": "最佳结果",
+        "statistics_tests_taken": "检测次数",
+        "statistics_no_test_yet": "尚未有检测记录",
         "statistics_test_history_title": "检测记录",
         "statistics_test_history_body": "回看过往程度检测结果，比较分数，追踪建议起始范围如何变化。",
         "statistics_more_coming": "之后会再加入更多统计模块。",
@@ -3506,7 +3518,24 @@ def statistics_page(request: Request) -> HTMLResponse:
     conn = db_conn()
     history = test_history_rows(conn, limit=5)
     latest = history[0] if history else None
-    return render(request, "statistics.html", history=history, latest_test_history=latest)
+    best = None
+    if history:
+        best = max(
+            history,
+            key=lambda item: (
+                item["score"] or 0,
+                item["accuracy_percent"] if item["accuracy_percent"] is not None else -1,
+                item["id"],
+            ),
+        )
+    return render(
+        request,
+        "statistics.html",
+        history=history,
+        latest_test_history=latest,
+        best_test_history=best,
+        tests_taken_count=len(history),
+    )
 
 
 @app.post("/test/start")
