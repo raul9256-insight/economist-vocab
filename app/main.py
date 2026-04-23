@@ -3571,6 +3571,22 @@ def statistics_page(request: Request) -> HTMLResponse:
             }
         )
 
+    recent_line_points = ""
+    recent_line_dots: list[dict[str, int | str]] = []
+    if recent_chart:
+        if len(recent_chart) == 1:
+            item = recent_chart[0]
+            x = 50
+            y = max(6, 46 - round((int(item["percent"]) / 100) * 36))
+            recent_line_points = f"{x},{y}"
+            recent_line_dots.append({"x": x, "y": y, "label": item["label"], "score": item["score"]})
+        else:
+            for idx, item in enumerate(recent_chart):
+                x = round((idx / (len(recent_chart) - 1)) * 100)
+                y = max(6, 46 - round((int(item["percent"]) / 100) * 36))
+                recent_line_dots.append({"x": x, "y": y, "label": item["label"], "score": item["score"]})
+            recent_line_points = " ".join(f"{item['x']},{item['y']}" for item in recent_line_dots)
+
     return render(
         request,
         "statistics.html",
@@ -3582,6 +3598,8 @@ def statistics_page(request: Request) -> HTMLResponse:
         best_test_percent=score_percent(best),
         score_scale_max=score_scale_max,
         recent_chart=recent_chart,
+        recent_line_points=recent_line_points,
+        recent_line_dots=recent_line_dots,
     )
 
 

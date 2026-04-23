@@ -17,24 +17,30 @@
     <div class="ai-power-home-grid">
       <div class="learning-stat-card statistics-score-card">
         <span>{{ t("statistics_latest_test") }}</span>
-        <strong>{% if latest_test_history %}{{ latest_test_history.score }}{% else %}--{% endif %}</strong>
+        <div class="statistics-ring-card">
+          <div class="statistics-ring" style="--ring-percent: {{ latest_test_percent }};">
+            <div class="statistics-ring-inner">
+              <strong>{% if latest_test_history %}{{ latest_test_history.score }}{% else %}--{% endif %}</strong>
+            </div>
+          </div>
+        </div>
         {% if latest_test_history %}
         <small>{{ t("score_label") }} / {{ t("statistics_out_of") }} {{ score_scale_max }}</small>
-        <div class="statistics-meter" aria-hidden="true">
-          <span style="width: {{ latest_test_percent }}%"></span>
-        </div>
         {% else %}
         <small>{{ t("statistics_no_test_yet") }}</small>
         {% endif %}
       </div>
       <div class="learning-stat-card statistics-score-card">
         <span>{{ t("statistics_best_result") }}</span>
-        <strong>{% if best_test_history %}{{ best_test_history.score }}{% else %}--{% endif %}</strong>
+        <div class="statistics-ring-card">
+          <div class="statistics-ring statistics-ring-secondary" style="--ring-percent: {{ best_test_percent }};">
+            <div class="statistics-ring-inner">
+              <strong>{% if best_test_history %}{{ best_test_history.score }}{% else %}--{% endif %}</strong>
+            </div>
+          </div>
+        </div>
         {% if best_test_history %}
         <small>{{ t("score_label") }} / {{ t("statistics_out_of") }} {{ score_scale_max }}</small>
-        <div class="statistics-meter" aria-hidden="true">
-          <span style="width: {{ best_test_percent }}%"></span>
-        </div>
         {% else %}
         <small>{{ t("statistics_no_test_yet") }}</small>
         {% endif %}
@@ -56,16 +62,22 @@
             <span>{{ t("statistics_score_trend") }}</span>
             <small>{{ t("statistics_recent_tests") }}</small>
           </div>
-          <div class="statistics-bar-chart" aria-hidden="true">
-            {% for item in recent_chart %}
-            <div class="statistics-bar-group">
-              <span class="statistics-bar-value">{{ item.score }}</span>
-              <div class="statistics-bar-track">
-                <span class="statistics-bar-fill" style="height: {{ item.height }}%"></span>
+          <div class="statistics-line-chart-card" aria-hidden="true">
+            <svg class="statistics-line-chart" viewBox="0 0 100 52" preserveAspectRatio="none">
+              <line x1="0" y1="46" x2="100" y2="46" class="statistics-axis-line"></line>
+              <polyline points="{{ recent_line_points }}" class="statistics-line-path"></polyline>
+              {% for item in recent_line_dots %}
+              <circle cx="{{ item.x }}" cy="{{ item.y }}" r="2.8" class="statistics-line-dot"></circle>
+              {% endfor %}
+            </svg>
+            <div class="statistics-line-labels">
+              {% for item in recent_line_dots %}
+              <div class="statistics-line-label-group">
+                <strong>{{ item.score }}</strong>
+                <span>{{ item.label }}</span>
               </div>
-              <span class="statistics-bar-label">{{ item.label }}</span>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
         </div>
         {% else %}
