@@ -2110,6 +2110,34 @@ input[type="file"] {
   background: linear-gradient(180deg, rgba(255, 246, 232, 0.96), rgba(255, 255, 255, 0.98));
 }
 
+.statistics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 0.95rem;
+}
+
+.statistics-side-stack {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.statistics-primary-card {
+  min-height: 220px;
+  align-content: start;
+}
+
+.statistics-secondary-card {
+  min-height: 160px;
+  align-content: start;
+}
+
+.statistics-muted-card {
+  min-height: 120px;
+  align-content: start;
+  opacity: 0.9;
+  background: linear-gradient(180deg, rgba(246, 247, 251, 0.92), rgba(255, 255, 255, 0.98));
+}
+
 .refined-band-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
@@ -4021,6 +4049,7 @@ input[type="file"] {
   .ai-power-home-grid,
   .refined-words-grid,
   .refined-recommend-grid,
+  .statistics-grid,
   .hero-actions-grid,
   .today-words-grid,
   .snapshot-grid {
@@ -4055,10 +4084,15 @@ input[type="file"] {
   .refined-stats-grid,
   .refined-words-grid,
   .refined-recommend-grid,
+  .statistics-grid,
   .today-words-grid,
   .snapshot-grid,
   .summary-grid,
   .hero-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .statistics-side-stack {
     grid-template-columns: 1fr;
   }
 

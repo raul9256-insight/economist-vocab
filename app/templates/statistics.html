@@ -35,8 +35,8 @@
       </div>
     </div>
 
-    <div class="refined-recommend-grid">
-      <a class="recommend-card recommend-card-blue" href="/test/history">
+    <div class="statistics-grid">
+      <a class="recommend-card recommend-card-blue statistics-primary-card" href="/test/history">
         <span class="recommend-tag">{{ t("level_test_title") }}</span>
         <strong>{{ t("statistics_test_history_title") }}</strong>
         <p>{{ t("statistics_test_history_body") }}</p>
@@ -45,20 +45,22 @@
         {% endif %}
       </a>
 
-      <article class="recommend-card recommend-card-sand">
-        <span class="recommend-tag">Soon</span>
-        <strong>{{ t("statistics_more_coming") }}</strong>
-        <p>{{ t("statistics_more_coming") }}</p>
-      </article>
+      <div class="statistics-side-stack">
+        <article class="recommend-card recommend-card-sand statistics-secondary-card">
+          <span class="recommend-tag">{{ t("bulk_import_tools") }}</span>
+          <strong>{{ t("bulk_import_tools") }}</strong>
+          <p>{{ t("bulk_import_tools_note") }}</p>
+          <div class="action-row">
+            <a class="button secondary" href="/bulk-import">{{ t("open_bulk_import") }}</a>
+          </div>
+        </article>
 
-      <article class="recommend-card recommend-card-sand">
-        <span class="recommend-tag">{{ t("bulk_import_tools") }}</span>
-        <strong>{{ t("bulk_import_tools") }}</strong>
-        <p>{{ t("bulk_import_tools_note") }}</p>
-        <div class="action-row">
-          <a class="button secondary" href="/bulk-import">{{ t("open_bulk_import") }}</a>
-        </div>
-      </article>
+        <article class="recommend-card statistics-muted-card">
+          <span class="recommend-tag">Soon</span>
+          <strong>{{ t("statistics_more_coming") }}</strong>
+          <p>{{ t("statistics_more_coming") }}</p>
+        </article>
+      </div>
     </div>
   </article>
 </section>
