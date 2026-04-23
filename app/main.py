@@ -701,9 +701,16 @@ TRANSLATIONS["en"].update(
         "recognized_correctly": "You recognized this word correctly.",
         "revisit_later_note": "This is a useful word to revisit later in learning mode.",
         "see_test_result": "See Test Result",
+        "view_test_history": "View Test History",
         "result_label": "Result",
         "getting_started": "Getting Started",
         "test_result_lede": "You answered {score} correctly in this placement test. This result estimates where you should start learning next.",
+        "test_history_title": "Test History",
+        "test_history_lede": "Review your past placement results, compare scores, and see how your starting band has changed over time.",
+        "test_history_empty": "No completed level tests yet. Take your first test and your history will appear here.",
+        "completed_on": "Completed",
+        "score_label": "Score",
+        "accuracy_short": "Accuracy",
         "estimated_band_chip": "Estimated band: {band}",
         "correct_chip": "Correct: {score}",
         "weighted_chip": "Weighted: {percent}%",
@@ -985,9 +992,16 @@ TRANSLATIONS["zh-Hant"].update(
         "recognized_correctly": "你正確辨認了這個詞彙。",
         "revisit_later_note": "這是之後很適合放回學習模式再加強的詞彙。",
         "see_test_result": "查看檢測結果",
+        "view_test_history": "查看測驗紀錄",
         "result_label": "結果",
         "getting_started": "起步中",
         "test_result_lede": "你在這次程度檢測中答對了 {score} 題。根據結果，系統會建議你下一步適合從哪一組詞彙開始。",
+        "test_history_title": "測驗紀錄",
+        "test_history_lede": "回看你過往的程度檢測結果，比較分數，看看建議起始範圍如何隨時間變化。",
+        "test_history_empty": "你還未完成任何程度檢測。先做第一次測驗，這裡就會開始累積紀錄。",
+        "completed_on": "完成時間",
+        "score_label": "分數",
+        "accuracy_short": "正確率",
         "estimated_band_chip": "建議起點：{band}",
         "correct_chip": "答對：{score}",
         "weighted_chip": "加權：{percent}%",
@@ -1522,9 +1536,16 @@ TRANSLATIONS["zh-Hans"].update(
         "recognized_correctly": "你正确辨认了这个词汇。",
         "revisit_later_note": "这是之后很适合放回学习模式再加强的词汇。",
         "see_test_result": "查看检测结果",
+        "view_test_history": "查看检测记录",
         "result_label": "结果",
         "getting_started": "起步中",
         "test_result_lede": "你在这次程度检测中答对了 {score} 题。根据结果，系统会建议你下一步适合从哪一组词汇开始。",
+        "test_history_title": "检测记录",
+        "test_history_lede": "回看你过往的程度检测结果，比较分数，看看建议起始范围如何随时间变化。",
+        "test_history_empty": "你还未完成任何程度检测。先做第一次检测，这里就会开始积累记录。",
+        "completed_on": "完成时间",
+        "score_label": "分数",
+        "accuracy_short": "正确率",
         "estimated_band_chip": "建议起点：{band}",
         "correct_chip": "答对：{score}",
         "weighted_chip": "加权：{percent}%",
@@ -2552,6 +2573,45 @@ def latest_test_result(conn: sqlite3.Connection) -> sqlite3.Row | None:
     ).fetchone()
 
 
+def test_history_rows(conn: sqlite3.Connection, limit: int = 50) -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT
+            assessment_sessions.id,
+            assessment_sessions.started_at,
+            assessment_sessions.completed_at,
+            assessment_sessions.score,
+            assessment_sessions.estimated_band_label,
+            COUNT(assessment_questions.id) AS total_questions,
+            SUM(CASE WHEN assessment_questions.is_correct = 1 THEN 1 ELSE 0 END) AS correct_answers
+        FROM assessment_sessions
+        LEFT JOIN assessment_questions ON assessment_questions.session_id = assessment_sessions.id
+        WHERE assessment_sessions.status = 'completed'
+        GROUP BY assessment_sessions.id
+        ORDER BY assessment_sessions.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    history: list[dict] = []
+    for row in rows:
+        total_questions = int(row["total_questions"] or 0)
+        correct_answers = int(row["correct_answers"] or 0)
+        history.append(
+            {
+                "id": row["id"],
+                "started_at": row["started_at"],
+                "completed_at": row["completed_at"],
+                "score": row["score"],
+                "estimated_band_label": row["estimated_band_label"],
+                "total_questions": total_questions,
+                "correct_answers": correct_answers,
+                "accuracy_percent": round((correct_answers / total_questions) * 100) if total_questions else None,
+            }
+        )
+    return history
+
+
 def latest_learning_result(conn: sqlite3.Connection) -> sqlite3.Row | None:
     return conn.execute(
         """
@@ -3411,7 +3471,19 @@ def auth_logout(request: Request) -> RedirectResponse:
 @app.get("/test", response_class=HTMLResponse)
 def test_intro(request: Request) -> HTMLResponse:
     conn = db_conn()
-    return render(request, "test_intro.html", bands=decorate_band_rows(band_summary(conn)), question_count=TEST_VOCAB_COUNT * 2)
+    return render(
+        request,
+        "test_intro.html",
+        bands=decorate_band_rows(band_summary(conn)),
+        question_count=TEST_VOCAB_COUNT * 2,
+        has_test_history=latest_test_result(conn) is not None,
+    )
+
+
+@app.get("/test/history", response_class=HTMLResponse)
+def test_history(request: Request) -> HTMLResponse:
+    conn = db_conn()
+    return render(request, "test_history.html", history=test_history_rows(conn))
 
 
 @app.post("/test/start")

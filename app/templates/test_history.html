@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ t("test_history_title") }} | VocabLab AI{% endblock %}
+{% block content %}
+<section class="test-shell">
+  <article class="panel dashboard-v2-card test-hero">
+    <div class="test-hero-top">
+      <div>
+        <p class="eyebrow">{{ t("level_test_title") }}</p>
+        <h1>{{ t("test_history_title") }}</h1>
+        <p class="lede">{{ t("test_history_lede") }}</p>
+      </div>
+      <div class="action-row">
+        <a class="button secondary" href="/test">{{ t("begin_test") }}</a>
+      </div>
+    </div>
+
+    {% if history %}
+    <div class="test-band-breakdown-grid">
+      {% for item in history %}
+      <article class="test-band-breakdown-item">
+        <div class="band-result-head">
+          <h3>{{ item.estimated_band_label or t("getting_started") }}</h3>
+          <span>{% if item.total_questions %}{{ item.correct_answers }} / {{ item.total_questions }}{% else %}{{ t("score_label") }} {{ item.score }}{% endif %}</span>
+        </div>
+        {% if item.accuracy_percent is not none %}
+        <div class="progress-track">
+          <div class="progress-fill" style="width: {{ item.accuracy_percent }}%;"></div>
+        </div>
+        <p class="section-subtle">{{ t("accuracy_short") }} {{ item.accuracy_percent }}%</p>
+        {% endif %}
+        <p class="section-subtle">{{ t("completed_on") }}: {{ item.completed_at or item.started_at }}</p>
+        <div class="info-badges">
+          <span class="info-chip">{{ t("score_label") }} {{ item.score }}</span>
+        </div>
+        <div class="action-row">
+          <a class="button secondary" href="/test/{{ item.id }}/result">{{ t("see_test_result") }}</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="callout learning-result-callout">
+      {{ t("test_history_empty") }}
+    </div>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

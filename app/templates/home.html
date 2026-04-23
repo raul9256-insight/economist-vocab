@@ -89,6 +89,11 @@
         <a class="button" href="/test">{{ t("start_test") }}</a>
         <a class="button secondary" href="/learning">{{ t("continue_learning") }}</a>
       </div>
+      {% if stats.tests_taken %}
+      <div class="action-row">
+        <a class="text-link" href="/test/history">{{ t("view_test_history") }}</a>
+      </div>
+      {% endif %}
     </article>
 
     <article class="dashboard-hero-v3-summary">

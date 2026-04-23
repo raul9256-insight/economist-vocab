@@ -30,9 +30,14 @@
           <span class="mini-kicker">{{ t("placement_short") }}</span>
         </div>
         <p class="goal-note">{{ t("test_goal_note") }}</p>
-        <form method="post" action="/test/start">
-          <button class="button learning-start-button" type="submit">{{ t("begin_test") }}</button>
-        </form>
+        <div class="action-row">
+          <form method="post" action="/test/start">
+            <button class="button learning-start-button" type="submit">{{ t("begin_test") }}</button>
+          </form>
+          {% if has_test_history %}
+          <a class="button secondary" href="/test/history">{{ t("view_test_history") }}</a>
+          {% endif %}
+        </div>
       </article>
 
       <article class="test-bands-card">
