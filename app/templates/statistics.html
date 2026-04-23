@@ -15,18 +15,28 @@
     </div>
 
     <div class="ai-power-home-grid">
-      <div class="learning-stat-card">
+      <div class="learning-stat-card statistics-score-card">
         <span>{{ t("statistics_latest_test") }}</span>
-        <strong>{{ latest_test_history.estimated_band_label if latest_test_history else t("statistics_no_test_yet") }}</strong>
+        <strong>{% if latest_test_history %}{{ latest_test_history.score }}{% else %}--{% endif %}</strong>
         {% if latest_test_history %}
-        <small>{{ t("score_label") }} {{ latest_test_history.score }}</small>
+        <small>{{ t("score_label") }} / {{ t("statistics_out_of") }} {{ score_scale_max }}</small>
+        <div class="statistics-meter" aria-hidden="true">
+          <span style="width: {{ latest_test_percent }}%"></span>
+        </div>
+        {% else %}
+        <small>{{ t("statistics_no_test_yet") }}</small>
         {% endif %}
       </div>
-      <div class="learning-stat-card">
+      <div class="learning-stat-card statistics-score-card">
         <span>{{ t("statistics_best_result") }}</span>
-        <strong>{{ best_test_history.estimated_band_label if best_test_history else t("statistics_no_test_yet") }}</strong>
+        <strong>{% if best_test_history %}{{ best_test_history.score }}{% else %}--{% endif %}</strong>
         {% if best_test_history %}
-        <small>{{ t("score_label") }} {{ best_test_history.score }}</small>
+        <small>{{ t("score_label") }} / {{ t("statistics_out_of") }} {{ score_scale_max }}</small>
+        <div class="statistics-meter" aria-hidden="true">
+          <span style="width: {{ best_test_percent }}%"></span>
+        </div>
+        {% else %}
+        <small>{{ t("statistics_no_test_yet") }}</small>
         {% endif %}
       </div>
       <div class="learning-stat-card">
@@ -40,8 +50,26 @@
         <span class="recommend-tag">{{ t("level_test_title") }}</span>
         <strong>{{ t("statistics_test_history_title") }}</strong>
         <p>{{ t("statistics_test_history_body") }}</p>
-        {% if latest_test_history %}
-        <p class="section-subtle">{{ latest_test_history.estimated_band_label or t("getting_started") }} · {{ t("score_label") }} {{ latest_test_history.score }}</p>
+        {% if recent_chart %}
+        <div class="statistics-chart-card">
+          <div class="statistics-chart-head">
+            <span>{{ t("statistics_score_trend") }}</span>
+            <small>{{ t("statistics_recent_tests") }}</small>
+          </div>
+          <div class="statistics-bar-chart" aria-hidden="true">
+            {% for item in recent_chart %}
+            <div class="statistics-bar-group">
+              <span class="statistics-bar-value">{{ item.score }}</span>
+              <div class="statistics-bar-track">
+                <span class="statistics-bar-fill" style="height: {{ item.height }}%"></span>
+              </div>
+              <span class="statistics-bar-label">{{ item.label }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+        <p class="section-subtle">{{ t("statistics_no_test_yet") }}</p>
         {% endif %}
       </a>
 

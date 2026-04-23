@@ -719,6 +719,9 @@ TRANSLATIONS["en"].update(
         "statistics_best_result": "Best Result",
         "statistics_tests_taken": "Tests Taken",
         "statistics_no_test_yet": "No test yet",
+        "statistics_score_trend": "Score Trend",
+        "statistics_recent_tests": "Recent tests",
+        "statistics_out_of": "out of",
         "statistics_test_history_title": "Test History",
         "statistics_test_history_body": "Review past placement results, compare scores, and track how your starting band changes over time.",
         "statistics_more_coming": "More statistics modules coming soon.",
@@ -1022,6 +1025,9 @@ TRANSLATIONS["zh-Hant"].update(
         "statistics_best_result": "最佳結果",
         "statistics_tests_taken": "測驗次數",
         "statistics_no_test_yet": "尚未有測驗紀錄",
+        "statistics_score_trend": "分數趨勢",
+        "statistics_recent_tests": "最近幾次測驗",
+        "statistics_out_of": "滿分",
         "statistics_test_history_title": "測驗紀錄",
         "statistics_test_history_body": "回看過往程度檢測結果，比較分數，追蹤建議起始範圍如何變化。",
         "statistics_more_coming": "之後會再加入更多統計模組。",
@@ -1579,6 +1585,9 @@ TRANSLATIONS["zh-Hans"].update(
         "statistics_best_result": "最佳结果",
         "statistics_tests_taken": "检测次数",
         "statistics_no_test_yet": "尚未有检测记录",
+        "statistics_score_trend": "分数趋势",
+        "statistics_recent_tests": "最近几次检测",
+        "statistics_out_of": "满分",
         "statistics_test_history_title": "检测记录",
         "statistics_test_history_body": "回看过往程度检测结果，比较分数，追踪建议起始范围如何变化。",
         "statistics_more_coming": "之后会再加入更多统计模块。",
@@ -3531,6 +3540,8 @@ def statistics_page(request: Request) -> HTMLResponse:
     history = test_history_rows(conn, limit=5)
     latest = history[0] if history else None
     best = None
+    max_question_total = max((item["total_questions"] or 0) for item in history) if history else 0
+    score_scale_max = max_question_total or max((item["score"] or 0) for item in history) or 1
     if history:
         best = max(
             history,
@@ -3540,6 +3551,26 @@ def statistics_page(request: Request) -> HTMLResponse:
                 item["id"],
             ),
         )
+
+    def score_percent(item: dict | None) -> int:
+        if not item:
+            return 0
+        score = int(item["score"] or 0)
+        total = int(item["total_questions"] or 0) or score_scale_max
+        return round((score / max(total, 1)) * 100)
+
+    recent_chart: list[dict[str, int | str]] = []
+    for index, item in enumerate(reversed(history), start=1):
+        percent = score_percent(item)
+        recent_chart.append(
+            {
+                "label": f"T{index}",
+                "score": int(item["score"] or 0),
+                "percent": percent,
+                "height": max(18, percent),
+            }
+        )
+
     return render(
         request,
         "statistics.html",
@@ -3547,6 +3578,10 @@ def statistics_page(request: Request) -> HTMLResponse:
         latest_test_history=latest,
         best_test_history=best,
         tests_taken_count=len(history),
+        latest_test_percent=score_percent(latest),
+        best_test_percent=score_percent(best),
+        score_scale_max=score_scale_max,
+        recent_chart=recent_chart,
     )
 
 
