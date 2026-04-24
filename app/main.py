@@ -3691,6 +3691,12 @@ def test_answer(session_id: int, answer: str = Form(...)) -> RedirectResponse:
         (is_correct, session_id),
     )
     conn.commit()
+    total_questions = conn.execute(
+        "SELECT COUNT(*) FROM assessment_questions WHERE session_id = ?",
+        (session_id,),
+    ).fetchone()[0]
+    if int(question["position"] or 0) >= int(total_questions or 0):
+        finish_test_session(conn, session_id)
     return RedirectResponse(url=f"/test/{session_id}/review", status_code=303)
 
 
