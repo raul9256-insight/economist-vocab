@@ -2817,6 +2817,17 @@ def previous_test_question(conn: sqlite3.Connection, session_id: int) -> sqlite3
     ).fetchone()
 
 
+def test_question_by_id(conn: sqlite3.Connection, session_id: int, question_id: int) -> sqlite3.Row | None:
+    return conn.execute(
+        """
+        SELECT *
+        FROM assessment_questions
+        WHERE session_id = ? AND id = ?
+        """,
+        (session_id, question_id),
+    ).fetchone()
+
+
 def previous_learning_question(conn: sqlite3.Connection, session_id: int) -> sqlite3.Row | None:
     session = conn.execute("SELECT * FROM learning_sessions WHERE id = ?", (session_id,)).fetchone()
     if session is None or session["current_index"] < 1:
@@ -3697,11 +3708,11 @@ def test_answer(session_id: int, answer: str = Form(...)) -> RedirectResponse:
     ).fetchone()[0]
     if int(question["position"] or 0) >= int(total_questions or 0):
         finish_test_session(conn, session_id)
-    return RedirectResponse(url=f"/test/{session_id}/review", status_code=303)
+    return RedirectResponse(url=f"/test/{session_id}/review?question_id={question['id']}", status_code=303)
 
 
 @app.get("/test/{session_id}/review", response_class=HTMLResponse)
-def test_review(request: Request, session_id: int) -> HTMLResponse:
+def test_review(request: Request, session_id: int, question_id: int | None = Query(None)) -> HTMLResponse:
     conn = db_conn()
     session = conn.execute(
         """
@@ -3715,7 +3726,7 @@ def test_review(request: Request, session_id: int) -> HTMLResponse:
     ).fetchone()
     if session is None:
         raise HTTPException(status_code=404, detail="Test session not found")
-    question = previous_test_question(conn, session_id)
+    question = test_question_by_id(conn, session_id, question_id) if question_id is not None else previous_test_question(conn, session_id)
     if question is None:
         return RedirectResponse(url=f"/test/{session_id}", status_code=303)
     payload = word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))
