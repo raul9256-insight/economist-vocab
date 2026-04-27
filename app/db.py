@@ -39,6 +39,9 @@ CREATE TABLE IF NOT EXISTS assessment_sessions (
     completed_at TEXT,
     current_index INTEGER NOT NULL DEFAULT 0,
     score INTEGER NOT NULL DEFAULT 0,
+    question_count INTEGER,
+    accuracy_percent INTEGER,
+    weighted_percent INTEGER,
     estimated_band_rank INTEGER,
     estimated_band_label TEXT
 );
@@ -149,6 +152,9 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
     ensure_column(conn, "word_enrichment", "ai_business_example", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "word_enrichment", "ai_prompt_example", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "word_enrichment", "ai_usage_warning", "TEXT NOT NULL DEFAULT ''")
+    ensure_column(conn, "assessment_sessions", "question_count", "INTEGER")
+    ensure_column(conn, "assessment_sessions", "accuracy_percent", "INTEGER")
+    ensure_column(conn, "assessment_sessions", "weighted_percent", "INTEGER")
     ensure_column(conn, "users", "email", "TEXT")
     ensure_column(conn, "users", "password_hash", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "users", "display_name", "TEXT NOT NULL DEFAULT ''")

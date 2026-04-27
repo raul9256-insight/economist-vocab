@@ -9,10 +9,22 @@
 
     <div class="test-result-summary-grid">
       <div class="test-result-ring-card">
-        <div class="result-ring" style="background: radial-gradient(circle at center, var(--paper) 52%, transparent 53%), conic-gradient({{ result_color.solid }} calc({{ summary.accuracy_percent if has_detailed_results else session.score }} * 1%), {{ result_color.track }} 0);">
+        <div class="result-ring" style="{% if has_accuracy_visual %}background: radial-gradient(circle at center, var(--paper) 52%, transparent 53%), conic-gradient({{ result_color.solid }} calc({{ display_accuracy_percent }} * 1%), {{ result_color.track }} 0);{% else %}background: radial-gradient(circle at center, var(--paper) 52%, transparent 53%), conic-gradient({{ result_color.track }} 0deg 360deg);{% endif %}">
           <div>
-            <strong>{% if has_detailed_results %}{{ summary.accuracy_percent }}%{% else %}{{ session.score }}{% endif %}</strong>
-            <span>{% if has_detailed_results %}{{ t("accuracy_label") }}{% else %}{{ t("score_label") }}{% endif %}</span>
+            <strong>
+              {% if has_accuracy_visual %}
+                {{ display_accuracy_percent }}%
+              {% else %}
+                {{ session.score }}
+              {% endif %}
+            </strong>
+            <span>
+              {% if has_accuracy_visual %}
+                {{ t("accuracy_label") }}
+              {% else %}
+                {{ t("score_label") }}
+              {% endif %}
+            </span>
           </div>
         </div>
       </div>
@@ -20,6 +32,12 @@
         <div class="info-badges">
           <span class="info-chip">{{ t("estimated_band_chip", band=display_band_label or t("getting_started")) }}</span>
           <span class="info-chip">{{ t("correct_chip", score=session.score) }}</span>
+          {% if display_total_questions %}
+          <span class="info-chip">{{ t("total_questions_chip", total=display_total_questions) }}</span>
+          {% endif %}
+          {% if display_accuracy_percent is not none %}
+          <span class="info-chip">{{ t("accuracy_chip", percent=display_accuracy_percent) }}</span>
+          {% endif %}
           {% if has_detailed_results %}
           <span class="info-chip">{{ t("weighted_chip", percent=summary.weighted_percent) }}</span>
           {% endif %}

@@ -732,6 +732,8 @@ TRANSLATIONS["en"].update(
         "open_bulk_import": "Open Bulk Import",
         "estimated_band_chip": "Estimated band: {band}",
         "correct_chip": "Correct: {score}",
+        "total_questions_chip": "Total questions: {total}",
+        "accuracy_chip": "Accuracy: {percent}%",
         "weighted_chip": "Weighted: {percent}%",
         "test_result_note": "This result combines your total accuracy and how well you handled harder frequency bands.",
         "what_to_do_next": "What to do next:",
@@ -1039,6 +1041,8 @@ TRANSLATIONS["zh-Hant"].update(
         "open_bulk_import": "開啟批次匯入",
         "estimated_band_chip": "建議起點：{band}",
         "correct_chip": "答對：{score}",
+        "total_questions_chip": "總題數：{total}",
+        "accuracy_chip": "正確率：{percent}%",
         "weighted_chip": "加權：{percent}%",
         "test_result_note": "這個結果不只看總分，也會一起參考你在較難詞彙上的表現。",
         "what_to_do_next": "接下來可以：",
@@ -1601,6 +1605,8 @@ TRANSLATIONS["zh-Hans"].update(
         "open_bulk_import": "打开批量导入",
         "estimated_band_chip": "建议起点：{band}",
         "correct_chip": "答对：{score}",
+        "total_questions_chip": "总题数：{total}",
+        "accuracy_chip": "正确率：{percent}%",
         "weighted_chip": "加权：{percent}%",
         "test_result_note": "这个结果不只看总分，也会一起参考你在较难词汇上的表现。",
         "what_to_do_next": "接下来可以：",
@@ -3365,12 +3371,18 @@ def finish_test_session(conn: sqlite3.Connection, session_id: int) -> None:
         SET status = 'completed',
             completed_at = CURRENT_TIMESTAMP,
             score = ?,
+            question_count = ?,
+            accuracy_percent = ?,
+            weighted_percent = ?,
             estimated_band_rank = ?,
             estimated_band_label = ?
         WHERE id = ?
         """,
         (
             summary["total_correct"],
+            summary["question_count"],
+            summary["accuracy_percent"],
+            summary["weighted_percent"],
             summary["estimated_rank"],
             summary["estimated_label"],
             session_id,
@@ -3820,33 +3832,47 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         has_detailed_results = True
     else:
         summary = {
-            "accuracy_percent": None,
-            "weighted_percent": None,
+            "accuracy_percent": session["accuracy_percent"],
+            "weighted_percent": session["weighted_percent"],
             "estimated_rank": session["estimated_band_rank"],
             "estimated_label": session["estimated_band_label"] or "Getting Started",
+            "question_count": session["question_count"],
         }
         has_detailed_results = False
     if has_detailed_results and (
-        session["estimated_band_rank"] != summary["estimated_rank"]
+        session["question_count"] != summary["question_count"]
+        or session["accuracy_percent"] != summary["accuracy_percent"]
+        or session["weighted_percent"] != summary["weighted_percent"]
+        or session["estimated_band_rank"] != summary["estimated_rank"]
         or session["estimated_band_label"] != summary["estimated_label"]
     ):
         conn.execute(
             """
             UPDATE assessment_sessions
-            SET estimated_band_rank = ?, estimated_band_label = ?
+            SET question_count = ?, accuracy_percent = ?, weighted_percent = ?, estimated_band_rank = ?, estimated_band_label = ?
             WHERE id = ?
             """,
-            (summary["estimated_rank"], summary["estimated_label"], session_id),
+            (
+                summary["question_count"],
+                summary["accuracy_percent"],
+                summary["weighted_percent"],
+                summary["estimated_rank"],
+                summary["estimated_label"],
+                session_id,
+            ),
         )
         conn.commit()
         session = conn.execute("SELECT * FROM assessment_sessions WHERE id = ?", (session_id,)).fetchone()
     band_rows = band_accuracy_rows(conn, session_id)
     lang = getattr(request.state, "lang", get_lang(request))
-    accuracy_ratio = (summary["accuracy_percent"] / 100) if summary["accuracy_percent"] is not None else 0
+    display_total_questions = summary["question_count"] if summary.get("question_count") else session["question_count"]
+    display_accuracy_percent = summary["accuracy_percent"] if summary["accuracy_percent"] is not None else session["accuracy_percent"]
+    accuracy_ratio = (display_accuracy_percent / 100) if display_accuracy_percent is not None else 0
     level_name = progress_label(accuracy_ratio, lang)
     display_band_label = summary["estimated_label"] if has_detailed_results else (session["estimated_band_label"] or "Getting Started")
     display_band_rank = summary["estimated_rank"] if has_detailed_results else session["estimated_band_rank"]
     recommendation = level_recommendation(display_band_label, display_band_rank, accuracy_ratio, lang)
+    has_accuracy_visual = display_accuracy_percent is not None
     return render(
         request,
         "test_result.html",
@@ -3854,10 +3880,13 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         band_results=band_rows,
         summary=summary,
         has_detailed_results=has_detailed_results,
+        display_total_questions=display_total_questions,
+        display_accuracy_percent=display_accuracy_percent,
+        has_accuracy_visual=has_accuracy_visual,
         level_name=level_name,
         display_band_label=display_band_label,
         recommendation=recommendation,
-        result_color=accuracy_color(summary["accuracy_percent"] if summary["accuracy_percent"] is not None else session["score"]),
+        result_color=accuracy_color(display_accuracy_percent if display_accuracy_percent is not None else None),
     )
 
 
