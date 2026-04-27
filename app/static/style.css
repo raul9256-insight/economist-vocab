@@ -912,9 +912,6 @@ h1 {
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at center, var(--paper) 52%, transparent 53%),
-    conic-gradient(var(--result-color, var(--accent)) 0deg 360deg);
   display: grid;
   place-items: center;
   box-shadow: var(--shadow);
@@ -954,14 +951,12 @@ h1 {
   height: 12px;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--band-tint, rgba(31, 92, 77, 0.12));
   margin: 0.85rem 0 0.65rem;
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: var(--band-color, var(--accent));
 }
 
 .band-pill,

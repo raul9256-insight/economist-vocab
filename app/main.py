@@ -2233,6 +2233,7 @@ def accuracy_color(percent: int | float | None) -> dict[str, str]:
     return {
         "solid": f"hsl({hue} 58% 42%)",
         "tint": f"hsl({hue} 58% 42% / 0.14)",
+        "track": "rgba(214, 224, 232, 0.9)",
     }
 
 
@@ -3404,12 +3405,13 @@ def summarize_test_session(conn: sqlite3.Connection, session_id: int) -> dict:
     estimated_label = "Getting Started"
     weighted_score = 0
     weighted_total = 0
-    for band_rank in sorted(band_scores):
+    ordered_ranks = sorted(band_scores)
+    for band_rank in ordered_ranks:
         answers = band_scores[band_rank]
-        weight = 1 + len(band_scores) - list(sorted(band_scores)).index(band_rank)
+        weight = 1 + len(band_scores) - ordered_ranks.index(band_rank)
         weighted_score += sum(answers) * weight
         weighted_total += len(answers) * weight
-        if estimated_rank is None and answers and sum(answers) / len(answers) >= 0.6:
+        if answers and sum(answers) / len(answers) >= 0.6:
             estimated_rank = band_rank
             estimated_label = labels[band_rank]
     accuracy_percent = round((total_correct / len(rows)) * 100) if rows else 0
