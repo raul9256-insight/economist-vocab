@@ -9,7 +9,7 @@
 
     <div class="test-result-summary-grid">
       <div class="test-result-ring-card">
-        <div class="result-ring">
+        <div class="result-ring" style="--result-color: {{ result_color.solid }}; --result-tint: {{ result_color.tint }};">
           <div>
             <strong>{% if has_detailed_results %}{{ summary.accuracy_percent }}%{% else %}{{ session.score }}{% endif %}</strong>
             <span>{% if has_detailed_results %}{{ t("accuracy_label") }}{% else %}{{ t("score_label") }}{% endif %}</span>
@@ -47,8 +47,8 @@
           <h3>{{ row.band_label }}</h3>
           <span>{{ row.correct }} / {{ row.total }}</span>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" style="width: {{ row.accuracy }}%;"></div>
+        <div class="progress-track" style="--band-tint: {{ row.tint }};">
+          <div class="progress-fill" style="width: {{ row.accuracy }}%; --band-color: {{ row.color }};"></div>
         </div>
         <p class="section-subtle">{{ t("band_accuracy_note", percent=row.accuracy) }}</p>
       </article>

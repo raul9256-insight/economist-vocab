@@ -2227,24 +2227,65 @@ def progress_label(percent: float, lang: str = "en") -> str:
     return bucket[4]
 
 
-def level_recommendation(estimated_band_label: str | None, percent: float, lang: str = "en") -> str:
+def accuracy_color(percent: int | float | None) -> dict[str, str]:
+    value = max(0, min(100, round(float(percent or 0))))
+    hue = round((value / 100) * 120)
+    return {
+        "solid": f"hsl({hue} 58% 42%)",
+        "tint": f"hsl({hue} 58% 42% / 0.14)",
+    }
+
+
+def easier_band_label_from_rank(band_rank: int | None) -> str | None:
+    if band_rank is None:
+        return None
+    ordered = [50, 100, 200, 500, 2000]
+    if band_rank not in ordered:
+        return None
+    idx = ordered.index(band_rank)
+    if idx >= len(ordered) - 1:
+        return None
+    next_rank = ordered[idx + 1]
+    return BAND_LABELS.get(next_rank)
+
+
+def level_recommendation(estimated_band_label: str | None, estimated_band_rank: int | None, percent: float, lang: str = "en") -> str:
+    easier_band = easier_band_label_from_rank(estimated_band_rank)
     if lang == "zh-Hant":
         if not estimated_band_label:
             return "先從 50~99 這組詞彙開始，再優先替你最常答錯的詞彙補上筆記與例句。"
+        if percent >= 0.95:
+            if easier_band:
+                return f"你這次已經穩定掌握到 {estimated_band_label}，建議直接從這一組開始，並把 {easier_band} 當作快速複習範圍。"
+            return f"你這次已經穩定掌握整份檢測，建議直接從 {estimated_band_label} 這組較高階詞彙開始，再把其餘常見詞彙當作快速複習。"
         if percent >= 0.7:
             return f"你目前可以穩定從 {estimated_band_label} 附近開始。接下來可以到詞典看更高一級的詞彙分類，並補強不熟的詞彙。"
-        return f"接下來幾次學習，先集中在 {estimated_band_label} 和再低一級的詞彙分類，直到答案更自然為止。"
+        if easier_band:
+            return f"接下來幾次學習，先集中在 {estimated_band_label} 和較容易一級的 {easier_band}，直到答案更自然為止。"
+        return f"接下來幾次學習，先集中在 {estimated_band_label}，直到答案更自然為止。"
     if lang == "zh-Hans":
         if not estimated_band_label:
             return "先从 50~99 这一组词汇开始，再优先替你最常答错的词汇补上笔记与例句。"
+        if percent >= 0.95:
+            if easier_band:
+                return f"你这次已经稳定掌握到 {estimated_band_label}，建议直接从这一组开始，并把 {easier_band} 当作快速复习范围。"
+            return f"你这次已经稳定掌握整份检测，建议直接从 {estimated_band_label} 这组较高阶词汇开始，再把其余常见词汇当作快速复习。"
         if percent >= 0.7:
             return f"你目前可以稳定从 {estimated_band_label} 附近开始。接下来可以到词典看更高一级的词汇分类，并补强不熟的词汇。"
-        return f"接下来几次学习，先集中在 {estimated_band_label} 和再低一级的词汇分类，直到答案更自然为止。"
+        if easier_band:
+            return f"接下来几次学习，先集中在 {estimated_band_label} 和较容易一级的 {easier_band}，直到答案更自然为止。"
+        return f"接下来几次学习，先集中在 {estimated_band_label}，直到答案更自然为止。"
     if not estimated_band_label:
         return "Start with the 50~99 band, then add notes and examples to words you miss most often."
+    if percent >= 0.95:
+        if easier_band:
+            return f"You've stably mastered up through {estimated_band_label}. Start directly from that band and use {easier_band} as a quick review range."
+        return f"You've stably mastered the whole placement set. Start directly from {estimated_band_label} and treat the more common bands as quick review."
     if percent >= 0.7:
         return f"You can comfortably work around {estimated_band_label}. Move into the next harder band in Dictionary and enrich unfamiliar words."
-    return f"Focus your next learning sessions around {estimated_band_label} and the band just below it until the answers feel automatic."
+    if easier_band:
+        return f"Focus your next learning sessions around {estimated_band_label} and the easier {easier_band} band until the answers feel automatic."
+    return f"Focus your next learning sessions around {estimated_band_label} until the answers feel automatic."
 
 
 def learning_recommendation(correct: int, total: int, enriched_words: int, lang: str = "en") -> str:
@@ -2541,6 +2582,8 @@ def band_accuracy_rows(conn: sqlite3.Connection, session_id: int) -> list[dict]:
                 "correct": correct,
                 "total": total,
                 "accuracy": round(accuracy * 100),
+                "color": accuracy_color(round(accuracy * 100))["solid"],
+                "tint": accuracy_color(round(accuracy * 100))["tint"],
             }
         )
     return result
@@ -3357,7 +3400,7 @@ def summarize_test_session(conn: sqlite3.Connection, session_id: int) -> dict:
         weight = 1 + len(band_scores) - list(sorted(band_scores)).index(band_rank)
         weighted_score += sum(answers) * weight
         weighted_total += len(answers) * weight
-        if answers and sum(answers) / len(answers) >= 0.6:
+        if estimated_rank is None and answers and sum(answers) / len(answers) >= 0.6:
             estimated_rank = band_rank
             estimated_label = labels[band_rank]
     accuracy_percent = round((total_correct / len(rows)) * 100) if rows else 0
@@ -3774,7 +3817,7 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
     lang = getattr(request.state, "lang", get_lang(request))
     accuracy_ratio = (summary["accuracy_percent"] / 100) if summary["accuracy_percent"] is not None else 0
     level_name = progress_label(accuracy_ratio, lang)
-    recommendation = level_recommendation(session["estimated_band_label"], accuracy_ratio, lang)
+    recommendation = level_recommendation(session["estimated_band_label"], session["estimated_band_rank"], accuracy_ratio, lang)
     return render(
         request,
         "test_result.html",
@@ -3784,6 +3827,7 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         has_detailed_results=has_detailed_results,
         level_name=level_name,
         recommendation=recommendation,
+        result_color=accuracy_color(summary["accuracy_percent"] if summary["accuracy_percent"] is not None else session["score"]),
     )
 
 
