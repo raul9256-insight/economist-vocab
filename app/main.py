@@ -4751,29 +4751,49 @@ def landing_page(request: Request) -> HTMLResponse:
 
 @app.get("/dashboard", response_class=HTMLResponse)
 def home(request: Request) -> HTMLResponse:
-    conn = db_conn()
     lang = getattr(request.state, "lang", get_lang(request))
-    profile_name = get_profile_name(request)
-    profile_persona = get_profile_persona(request)
-    if profile_persona is None:
-        return RedirectResponse(url=build_home_url(lang), status_code=303)
-    stats = fetch_stats(conn)
-    latest_test = latest_test_result(conn)
-    latest_learning = latest_learning_result(conn)
-    recommended_band = latest_test["estimated_band_label"] if latest_test else "50~99 (3924)"
-    bands = decorate_band_rows(band_summary(conn))
-    max_band_total = max((band["workbook_total"] for band in bands), default=1)
-    hero_band_chart = [
-        {
-            "label": band["range_label"],
-            "title": hero_band_identity(band["range_label"])["title"],
-            "subtitle": hero_band_identity(band["range_label"])["subtitle"],
-            "tone": hero_band_identity(band["range_label"])["tone"],
-            "count": band["workbook_total"],
-            "percent": max(18, round((band["workbook_total"] / max_band_total) * 100)),
+    try:
+        conn = db_conn()
+        profile_name = get_profile_name(request)
+        profile_persona = get_profile_persona(request)
+        if profile_persona is None:
+            return RedirectResponse(url=build_home_url(lang), status_code=303)
+        stats = fetch_stats(conn)
+        latest_test = latest_test_result(conn)
+        latest_learning = latest_learning_result(conn)
+        recommended_band = latest_test["estimated_band_label"] if latest_test else "50~99 (3924)"
+        bands = decorate_band_rows(band_summary(conn))
+        max_band_total = max((band["workbook_total"] for band in bands), default=1)
+        hero_band_chart = [
+            {
+                "label": band["range_label"],
+                "title": hero_band_identity(band["range_label"])["title"],
+                "subtitle": hero_band_identity(band["range_label"])["subtitle"],
+                "tone": hero_band_identity(band["range_label"])["tone"],
+                "count": band["workbook_total"],
+                "percent": max(18, round((band["workbook_total"] / max_band_total) * 100)),
+            }
+            for band in bands[:5]
+        ]
+        missed_words_count = len(missed_words(conn, limit=10))
+        spotlight_words = dashboard_spotlight_words(conn)
+    except Exception:
+        profile_name = (request.cookies.get("profile_name") or "Lawrence").strip()[:40] or "Lawrence"
+        profile_persona = request.cookies.get("profile_persona") if request.cookies.get("profile_persona") in SUPPORTED_PERSONAS else "lifelong_learner"
+        stats = {
+            "total_words": 0,
+            "words_with_synonyms": 0,
+            "words_with_examples": 0,
+            "tests_taken": 0,
+            "learning_runs": 0,
         }
-        for band in bands[:5]
-    ]
+        latest_test = None
+        latest_learning = None
+        recommended_band = "50~99 (3924)"
+        bands = []
+        hero_band_chart = []
+        missed_words_count = 0
+        spotlight_words = []
     dashboard_quote = random.choice(HOME_QUOTES)
     return render(
         request,
@@ -4787,8 +4807,8 @@ def home(request: Request) -> HTMLResponse:
         latest_test=latest_test,
         latest_learning=latest_learning,
         recommended_band=recommended_band,
-        missed_words_count=len(missed_words(conn, limit=10)),
-        spotlight_words=dashboard_spotlight_words(conn),
+        missed_words_count=missed_words_count,
+        spotlight_words=spotlight_words,
         hero_band_chart=hero_band_chart,
         dashboard_quote=dashboard_quote,
         ai_power=ai_power_track(lang),
