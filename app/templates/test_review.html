@@ -5,7 +5,9 @@
   <div class="learning-session-meta">
     <span class="session-meta-pill active">{{ t("level_test_title") }}</span>
     <span class="session-meta-pill">{{ t("answered_counter", answered=progress.answered, total=progress.total) }}</span>
-    <span class="session-meta-pill">{{ question.band_label }}</span>
+    <span class="session-meta-pill band-identity-pill band-card-tone-{{ band_identity.tone }}">
+      <span class="band-type-name">{{ band_identity.display_label }}</span>
+    </span>
   </div>
 
   <section class="learning-session-grid test-session-grid">
@@ -66,7 +68,9 @@
         </div>
         <div class="learning-info-block">
           <span class="focus-label">{{ t("frequency_band_label") }}</span>
-          <p>{{ question.band_label }}</p>
+          <p class="band-inline-label band-card-tone-{{ band_identity.tone }}">
+            <span class="band-type-name">{{ band_identity.display_label }}</span>
+          </p>
         </div>
       </div>
     </aside>

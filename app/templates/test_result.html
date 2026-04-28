@@ -4,7 +4,16 @@
 <section class="test-shell">
   <article class="panel dashboard-v2-card test-result-hero">
     <p class="eyebrow">{{ t("result_label") }}</p>
-    <h1>{{ level_name }}: {{ display_band_label or t("getting_started") }}</h1>
+    <h1>
+      {{ level_name }}:
+      {% if display_band_identity %}
+        <span class="band-result-title band-card-tone-{{ display_band_identity.tone }}">
+          <span class="band-type-name">{{ display_band_identity.display_label }}</span>
+        </span>
+      {% else %}
+        {{ t("getting_started") }}
+      {% endif %}
+    </h1>
     <p class="lede">{{ t("test_result_lede", score=session.score) }}</p>
 
     <div class="test-result-summary-grid">
@@ -30,7 +39,9 @@
       </div>
       <div class="test-result-info-card">
         <div class="info-badges">
-          <span class="info-chip">{{ t("estimated_band_chip", band=display_band_label or t("getting_started")) }}</span>
+          <span class="info-chip{% if display_band_identity %} band-identity-chip band-card-tone-{{ display_band_identity.tone }}{% endif %}">
+            {{ t("estimated_band_chip", band=display_band_identity.display_label if display_band_identity else t("getting_started")) }}
+          </span>
           <span class="info-chip">{{ t("correct_chip", score=session.score) }}</span>
           {% if display_total_questions %}
           <span class="info-chip">{{ t("total_questions_chip", total=display_total_questions) }}</span>
@@ -102,7 +113,9 @@
       {% for row in band_results %}
       <article class="test-band-breakdown-item">
         <div class="band-result-head">
-          <h3>{{ row.band_label }}</h3>
+          <h3 class="band-inline-label band-card-tone-{{ row.band_tone }}">
+            <span class="band-type-name">{{ row.band_display_label }}</span>
+          </h3>
           <span>{{ row.correct }} / {{ row.total }}</span>
         </div>
         <div class="progress-track" style="background: {{ row.tint }};">
@@ -138,7 +151,11 @@
           {% for item in word_report_rows %}
           <tr>
             <td><strong>{{ item.lemma }}</strong></td>
-            <td>{{ item.band_label }}</td>
+            <td>
+              <span class="band-mini-label band-card-tone-{{ item.band_tone }}">
+                <span class="band-type-name">{{ item.band_display_label }}</span>
+              </span>
+            </td>
             <td>
               <span class="test-report-meaning">{{ zh_text(item.chinese_definition) }}</span>
               {% if item.english_definition %}

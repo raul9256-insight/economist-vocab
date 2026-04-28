@@ -6,7 +6,9 @@
     <span class="session-meta-pill active">{{ t("level_test_title") }}</span>
     <span class="session-meta-pill">{{ t("question_counter", current=progress.current, total=progress.total) }}</span>
     <span class="session-meta-pill">{{ t("percent_complete", percent=progress.percent) }}</span>
-    <span class="session-meta-pill">{{ question.band_label }}</span>
+    <span class="session-meta-pill band-identity-pill band-card-tone-{{ band_identity.tone }}">
+      <span class="band-type-name">{{ band_identity.display_label }}</span>
+    </span>
   </div>
 
   <section class="learning-session-grid test-session-grid">
@@ -33,21 +35,20 @@
       <div class="card-head tight">
         <div>
           <p class="eyebrow">{{ t("before_answering") }}</p>
-          <h2>{{ question.band_label }}</h2>
+          <h2 class="band-identity-title band-card-tone-{{ band_identity.tone }}">
+            <span class="band-type-subtitle">{{ band_identity.subtitle }}</span>
+            <span class="band-type-name">{{ band_identity.title }}</span>
+          </h2>
         </div>
       </div>
       <div class="learning-side-stack">
         <div class="learning-info-block">
           <span class="focus-label">{{ t("what_this_means") }}</span>
-          <p>{{ t("sampled_from_band", band=question.band_label) }}</p>
+          <p>{{ t("sampled_from_band", range=band_identity.range_label) }}</p>
         </div>
         <div class="learning-info-block">
           <span class="focus-label">{{ t("goal_label") }}</span>
           <p>{{ t("test_goal_fast") }}</p>
-        </div>
-        <div class="learning-info-block">
-          <span class="focus-label">{{ t("what_stays_hidden") }}</span>
-          <p>{{ t("hidden_test_note") }}</p>
         </div>
       </div>
     </aside>

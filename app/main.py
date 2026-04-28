@@ -822,7 +822,7 @@ TRANSLATIONS["en"].update(
         "band_coverage": "Band Coverage",
         "sampled_ranges": "Sampled ranges",
         "what_this_means": "What this means",
-        "sampled_from_band": "This question is sampled from the {band} frequency band.",
+        "sampled_from_band": "This vocabulary band appeared about {range} times in The Economist over the past ten years.",
         "goal_label": "Goal",
         "test_goal_fast": "Each vocabulary item appears in five layers: Chinese definition, English definition, example use, similar word, and opposite word.",
         "hidden_test_note": "Definitions, usage clues, and full word details appear only after you submit, so the placement result stays fair.",
@@ -1157,7 +1157,7 @@ TRANSLATIONS["zh-Hant"].update(
         "band_coverage": "出題範圍",
         "sampled_ranges": "抽樣分類",
         "what_this_means": "這代表什麼",
-        "sampled_from_band": "這一題是從 {band} 這一組詞彙抽出的。",
+        "sampled_from_band": "這一組詞彙在過去十年的《經濟學人》雜誌出現次數約 {range} 次。",
         "goal_label": "目標",
         "test_goal_fast": "每個詞會出現五層題型：中文意思、英文定義、例句應用、相近英文詞與相反英文詞。",
         "hidden_test_note": "在你送出答案前，完整定義、用法線索和詞彙細節都不會先顯示，這樣結果才比較準。",
@@ -1747,7 +1747,7 @@ TRANSLATIONS["zh-Hans"].update(
         "band_coverage": "出题范围",
         "sampled_ranges": "抽样分类",
         "what_this_means": "这代表什么",
-        "sampled_from_band": "这一题是从 {band} 这一组词汇抽出的。",
+        "sampled_from_band": "这一组词汇在过去十年的《经济学人》杂志出现次数约 {range} 次。",
         "goal_label": "目标",
         "test_goal_fast": "每个词会出现五层题型：中文意思、英文定义、例句应用、相近英文词与相反英文词。",
         "hidden_test_note": "在你提交答案前，完整定义、用法线索和词汇细节都不会先显示，这样结果才更准确。",
@@ -2108,6 +2108,32 @@ def hero_band_identity(range_label: str) -> dict[str, str]:
         "50~99": {"title": "菁英語庫", "subtitle": "The Elite Lexicon", "tone": "elite"},
     }
     return identities.get(range_label, {"title": range_label, "subtitle": "", "tone": "default"})
+
+
+def band_range_from_label(label: str | None) -> str:
+    return (label or "").split(" (", 1)[0]
+
+
+def band_display_identity(label: str | None, lang: str = "en") -> dict[str, str]:
+    range_label = band_range_from_label(label)
+    identity = hero_band_identity(range_label)
+    simplified_titles = {
+        "基石": "基石",
+        "深度洞察": "深度洞察",
+        "精準修辭": "精准修辞",
+        "智識擴張": "智识扩张",
+        "菁英語庫": "菁英语库",
+    }
+    title = simplified_titles.get(identity["title"], identity["title"]) if lang == "zh-Hans" else identity["title"]
+    display_label = f"{identity['subtitle']} / {title}" if identity["subtitle"] else title or (label or "")
+    return {
+        "raw_label": label or "",
+        "range_label": range_label,
+        "title": title,
+        "subtitle": identity["subtitle"],
+        "tone": identity["tone"],
+        "display_label": display_label,
+    }
 
 
 def slugify_ai_power_value(value: str) -> str:
@@ -2552,41 +2578,43 @@ def easier_band_label_from_rank(band_rank: int | None) -> str | None:
 
 def level_recommendation(estimated_band_label: str | None, estimated_band_rank: int | None, percent: float, lang: str = "en") -> str:
     easier_band = easier_band_label_from_rank(estimated_band_rank)
+    estimated_display = band_display_identity(estimated_band_label, lang)["display_label"] if estimated_band_label else ""
+    easier_display = band_display_identity(easier_band, lang)["display_label"] if easier_band else ""
     if lang == "zh-Hant":
         if not estimated_band_label:
             return "先從 2000~ 這組最常用詞彙開始，再優先替你最常答錯的詞彙補上筆記與例句。"
         if percent >= 0.95:
             if easier_band:
-                return f"你這次已經穩定掌握到 {estimated_band_label}。建議從下一級較難詞彙開始，同時把 {easier_band} 當作快速複習範圍。"
-            return f"你這次已經穩定掌握整份檢測，建議直接挑戰 {estimated_band_label} 這組低頻高階詞彙。"
+                return f"你這次已經穩定掌握到 {estimated_display}。建議從下一級較難詞彙開始，同時把 {easier_display} 當作快速複習範圍。"
+            return f"你這次已經穩定掌握整份檢測，建議直接挑戰 {estimated_display} 這組低頻高階詞彙。"
         if percent >= 0.7:
-            return f"你目前可以穩定從 {estimated_band_label} 附近開始。接下來可以往較低頻、更高階的詞彙分類前進。"
+            return f"你目前可以穩定從 {estimated_display} 附近開始。接下來可以往較低頻、更高階的詞彙分類前進。"
         if easier_band:
-            return f"接下來幾次學習，先集中在 {estimated_band_label} 和較容易一級的 {easier_band}，直到答案更自然為止。"
-        return f"接下來幾次學習，先集中在 {estimated_band_label}，直到答案更自然為止。"
+            return f"接下來幾次學習，先集中在 {estimated_display} 和較容易一級的 {easier_display}，直到答案更自然為止。"
+        return f"接下來幾次學習，先集中在 {estimated_display}，直到答案更自然為止。"
     if lang == "zh-Hans":
         if not estimated_band_label:
             return "先从 2000~ 这一组最常用词汇开始，再优先替你最常答错的词汇补上笔记与例句。"
         if percent >= 0.95:
             if easier_band:
-                return f"你这次已经稳定掌握到 {estimated_band_label}。建议从下一级较难词汇开始，同时把 {easier_band} 当作快速复习范围。"
-            return f"你这次已经稳定掌握整份检测，建议直接挑战 {estimated_band_label} 这组低频高阶词汇。"
+                return f"你这次已经稳定掌握到 {estimated_display}。建议从下一级较难词汇开始，同时把 {easier_display} 当作快速复习范围。"
+            return f"你这次已经稳定掌握整份检测，建议直接挑战 {estimated_display} 这组低频高阶词汇。"
         if percent >= 0.7:
-            return f"你目前可以稳定从 {estimated_band_label} 附近开始。接下来可以往较低频、更高阶的词汇分类前进。"
+            return f"你目前可以稳定从 {estimated_display} 附近开始。接下来可以往较低频、更高阶的词汇分类前进。"
         if easier_band:
-            return f"接下来几次学习，先集中在 {estimated_band_label} 和较容易一级的 {easier_band}，直到答案更自然为止。"
-        return f"接下来几次学习，先集中在 {estimated_band_label}，直到答案更自然为止。"
+            return f"接下来几次学习，先集中在 {estimated_display} 和较容易一级的 {easier_display}，直到答案更自然为止。"
+        return f"接下来几次学习，先集中在 {estimated_display}，直到答案更自然为止。"
     if not estimated_band_label:
         return "Start with the 2000~ band, the most common foundation range, then add notes and examples to words you miss most often."
     if percent >= 0.95:
         if easier_band:
-            return f"You've stably mastered {estimated_band_label}. Move toward the next rarer band, and use {easier_band} as a quick review range."
-        return f"You've stably mastered the whole placement set. Challenge yourself with {estimated_band_label}, the rarer advanced range."
+            return f"You've stably mastered {estimated_display}. Move toward the next rarer band, and use {easier_display} as a quick review range."
+        return f"You've stably mastered the whole placement set. Challenge yourself with {estimated_display}, the rarer advanced range."
     if percent >= 0.7:
-        return f"You can comfortably work around {estimated_band_label}. Move toward rarer, harder bands in Dictionary and enrich unfamiliar words."
+        return f"You can comfortably work around {estimated_display}. Move toward rarer, harder bands in Dictionary and enrich unfamiliar words."
     if easier_band:
-        return f"Focus your next learning sessions around {estimated_band_label} and the easier {easier_band} band until the answers feel automatic."
-    return f"Focus your next learning sessions around {estimated_band_label} until the answers feel automatic."
+        return f"Focus your next learning sessions around {estimated_display} and the easier {easier_display} band until the answers feel automatic."
+    return f"Focus your next learning sessions around {estimated_display} until the answers feel automatic."
 
 
 def learning_recommendation(correct: int, total: int, enriched_words: int, lang: str = "en") -> str:
@@ -2859,7 +2887,7 @@ def word_payload(conn: sqlite3.Connection, word_id: int, lang: str = "en") -> di
     }
 
 
-def band_accuracy_rows(conn: sqlite3.Connection, session_id: int) -> list[dict]:
+def band_accuracy_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en") -> list[dict]:
     rows = conn.execute(
         """
         SELECT band_label, band_rank,
@@ -2877,9 +2905,12 @@ def band_accuracy_rows(conn: sqlite3.Connection, session_id: int) -> list[dict]:
         total = row["total"] or 0
         correct = row["correct"] or 0
         accuracy = (correct / total) if total else 0
+        identity = band_display_identity(row["band_label"], lang)
         result.append(
             {
                 "band_label": row["band_label"],
+                "band_display_label": identity["display_label"],
+                "band_tone": identity["tone"],
                 "correct": correct,
                 "total": total,
                 "accuracy": round(accuracy * 100),
@@ -2960,10 +2991,13 @@ def word_report_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en"
         word_id = row["word_id"]
         if word_id not in buckets:
             payload = word_payload(conn, word_id, lang)
+            identity = band_display_identity(row["band_label"], lang)
             buckets[word_id] = {
                 "word_id": word_id,
                 "lemma": row["lemma"],
                 "band_label": row["band_label"],
+                "band_display_label": identity["display_label"],
+                "band_tone": identity["tone"],
                 "chinese_definition": payload["chinese_headword"],
                 "english_definition": payload["english_definition"],
                 "layers": {question_type: None for question_type in ordered_types},
@@ -4012,7 +4046,7 @@ def current_learning_question(conn: sqlite3.Connection, session_id: int) -> sqli
     ).fetchone()
 
 
-def finish_test_session(conn: sqlite3.Connection, session_id: int) -> None:
+def finish_test_session(conn: sqlite3.Connection, session_id: int) -> dict:
     summary = summarize_test_session(conn, session_id)
     conn.execute(
         """
@@ -4038,10 +4072,7 @@ def finish_test_session(conn: sqlite3.Connection, session_id: int) -> None:
         ),
     )
     conn.commit()
-    return {
-        "accuracy_percent": summary["accuracy_percent"],
-        "weighted_percent": summary["weighted_percent"],
-    }
+    return summary
 
 
 def summarize_test_session(conn: sqlite3.Connection, session_id: int) -> dict:
@@ -4443,12 +4474,15 @@ def test_question(request: Request, session_id: int) -> HTMLResponse:
     if question is None:
         finish_test_session(conn, session_id)
         return RedirectResponse(url=f"/test/{session_id}/result", status_code=303)
+    lang = getattr(request.state, "lang", get_lang(request))
+    band_identity = band_display_identity(question["band_label"], lang)
     return render(
         request,
         "test_question.html",
         session=session,
         question=question,
-        word=word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))["word"],
+        word=word_payload(conn, question["word_id"], lang)["word"],
+        band_identity=band_identity,
         options=json_loads(question["options_json"]),
         progress=test_progress(session),
     )
@@ -4510,7 +4544,9 @@ def test_review(request: Request, session_id: int, question_id: int | None = Que
     question = test_question_by_id(conn, session_id, question_id) if question_id is not None else previous_test_question(conn, session_id)
     if question is None:
         return RedirectResponse(url=f"/test/{session_id}", status_code=303)
-    payload = word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))
+    lang = getattr(request.state, "lang", get_lang(request))
+    payload = word_payload(conn, question["word_id"], lang)
+    band_identity = band_display_identity(question["band_label"], lang)
     is_last = session["current_index"] >= session["question_total"]
     return render(
         request,
@@ -4524,6 +4560,7 @@ def test_review(request: Request, session_id: int, question_id: int | None = Que
         pronunciation=payload["pronunciation"],
         options=json_loads(question["options_json"]),
         word_score=test_word_score(conn, session_id, question["word_id"]),
+        band_identity=band_identity,
         is_last=is_last,
         progress=test_progress(session),
     )
@@ -4580,7 +4617,7 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         conn.commit()
         session = conn.execute("SELECT * FROM assessment_sessions WHERE id = ?", (session_id,)).fetchone()
     lang = getattr(request.state, "lang", get_lang(request))
-    band_rows = band_accuracy_rows(conn, session_id)
+    band_rows = band_accuracy_rows(conn, session_id, lang)
     layer_rows = layer_accuracy_rows(conn, session_id, lang)
     word_rows = word_report_rows(conn, session_id, lang) if has_detailed_results else []
     focus_rows = report_focus_rows(layer_rows)
@@ -4589,6 +4626,7 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
     accuracy_ratio = (display_accuracy_percent / 100) if display_accuracy_percent is not None else 0
     display_band_label = summary["estimated_label"] if has_detailed_results else (session["estimated_band_label"] or "Getting Started")
     display_band_rank = summary["estimated_rank"] if has_detailed_results else session["estimated_band_rank"]
+    display_band_identity = band_display_identity(display_band_label, lang) if display_band_label != "Getting Started" else None
     level_name = band_level_label(display_band_rank, lang)
     recommendation = level_recommendation(display_band_label, display_band_rank, accuracy_ratio, lang)
     has_accuracy_visual = display_accuracy_percent is not None
@@ -4607,6 +4645,7 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         has_accuracy_visual=has_accuracy_visual,
         level_name=level_name,
         display_band_label=display_band_label,
+        display_band_identity=display_band_identity,
         recommendation=recommendation,
         result_color=accuracy_color(display_accuracy_percent if display_accuracy_percent is not None else None),
     )

@@ -3166,6 +3166,50 @@ input[type="file"] {
   color: #5666f1;
 }
 
+.band-identity-pill,
+.band-identity-chip,
+.band-inline-label,
+.band-mini-label {
+  border-style: solid;
+  border-width: 1px;
+}
+
+.band-identity-title {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.1rem 0;
+  background: transparent;
+  border: 0;
+}
+
+.band-result-title {
+  display: inline-flex;
+  align-items: baseline;
+  padding: 0.05rem 0.2rem;
+  background: transparent;
+  border: 0;
+}
+
+.band-inline-label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: 0;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.band-mini-label {
+  display: inline-flex;
+  align-items: center;
+  max-width: 14rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
 .learning-session-grid {
   grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
 }
