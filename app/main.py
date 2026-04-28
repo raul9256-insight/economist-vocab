@@ -3413,7 +3413,7 @@ def example_sentence_distractors(conn: sqlite3.Connection, word_id: int, limit: 
     options: list[str] = []
     rows = conn.execute(
         """
-        SELECT DISTINCT words.id
+        SELECT DISTINCT words.id, words.lemma
         FROM words
         JOIN source_entries ON source_entries.word_id = words.id
         WHERE words.id != ?
@@ -3424,8 +3424,9 @@ def example_sentence_distractors(conn: sqlite3.Connection, word_id: int, limit: 
     ).fetchall()
     for row in rows:
         sentence = example_sentence_for_word(conn, row["id"])
-        if sentence and sentence not in options:
-            options.append(sentence)
+        blanked = blank_word_in_sentence(sentence, row["lemma"])
+        if blanked and blanked not in options:
+            options.append(blanked)
         if len(options) >= limit:
             return options
     return options
@@ -3490,7 +3491,8 @@ def build_english_definition_question(conn: sqlite3.Connection, word: sqlite3.Ro
 
 
 def build_example_application_question(conn: sqlite3.Connection, word: sqlite3.Row, position: int) -> dict | None:
-    correct = example_sentence_for_word(conn, word["id"])
+    sentence = example_sentence_for_word(conn, word["id"])
+    correct = blank_word_in_sentence(sentence, word["lemma"])
     if not correct:
         return None
     options = build_level_test_options(correct, example_sentence_distractors(conn, word["id"]))
@@ -3505,7 +3507,7 @@ def build_example_application_question(conn: sqlite3.Connection, word: sqlite3.R
         "prompt_text": word["lemma"],
         "correct_option": correct,
         "options_json": json.dumps(options, ensure_ascii=False),
-        "explanation": "Layer 3: select the sentence that uses the word correctly.",
+        "explanation": "Layer 3: select the sentence where this word fits naturally in the blank.",
     }
 
 
