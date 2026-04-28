@@ -4243,9 +4243,9 @@ def statistics_page(request: Request) -> HTMLResponse:
     best = None
     best_learning = None
     max_question_total = max((item["total_questions"] or 0) for item in history) if history else 0
-    score_scale_max = max_question_total or max((item["score"] or 0) for item in history) or 1
+    score_scale_max = max_question_total or (max((item["score"] or 0) for item in history) if history else 0) or 1
     learning_scale_max = max((item["total_questions"] or 0) for item in learning_history) if learning_history else 0
-    learning_scale_max = learning_scale_max or max((item["score"] or 0) for item in learning_history) or 1
+    learning_scale_max = learning_scale_max or (max((item["score"] or 0) for item in learning_history) if learning_history else 0) or 1
     if history:
         best = max(
             history,
