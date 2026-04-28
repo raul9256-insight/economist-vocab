@@ -4235,6 +4235,29 @@ def test_history(request: Request) -> HTMLResponse:
 
 @app.get("/statistics", response_class=HTMLResponse)
 def statistics_page(request: Request) -> HTMLResponse:
+    try:
+        return statistics_page_impl(request)
+    except Exception:
+        lang = getattr(request.state, "lang", get_lang(request))
+        return HTMLResponse(
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Statistics | VocabLab AI</title></head>
+            <body style="font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 760px; margin: 48px auto; padding: 0 20px; line-height: 1.5;">
+              <h1>Statistics</h1>
+              <p>The statistics dashboard is available, but some saved history data could not be loaded on this deployment.</p>
+              <p>統計頁可以使用，但這次部署有部分歷史紀錄暫時無法讀取。</p>
+              <p><a href="/test/history">Open Level Test History</a> · <a href="/test">Start Level Test</a> · <a href="/learning">Open Learning</a></p>
+            </body>
+            </html>
+            """,
+            status_code=200,
+            headers={"content-language": lang},
+        )
+
+
+def statistics_page_impl(request: Request) -> HTMLResponse:
     conn = db_conn()
     try:
         history = test_history_rows(conn, limit=5)
