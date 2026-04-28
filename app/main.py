@@ -199,6 +199,319 @@ LEVEL_TEST_ANTONYMS = {
     "arbitrary": "systematic",
 }
 
+LEVEL_TEST_SYNONYMS.update(
+    {
+        "abdicate": "relinquish",
+        "abduction": "kidnapping",
+        "abhorrent": "detestable",
+        "ablaze": "burning",
+        "abreast": "informed",
+        "abscond": "flee",
+        "abstraction": "concept",
+        "acidic": "sour",
+        "acquire": "obtain",
+        "acquisitive": "greedy",
+        "adaptable": "flexible",
+        "adhesive": "sticky",
+        "admonish": "scold",
+        "adolescence": "youth",
+        "affectionate": "loving",
+        "aficionado": "enthusiast",
+        "agnostic": "skeptic",
+        "alacrity": "eagerness",
+        "alias": "pseudonym",
+        "alibi": "excuse",
+        "allotment": "allocation",
+        "amalgam": "mixture",
+        "amenity": "convenience",
+        "amicably": "cordially",
+        "amiss": "wrong",
+        "amorphous": "shapeless",
+        "analogous": "comparable",
+        "ancillary": "auxiliary",
+        "abject": "miserable",
+        "abrasive": "harsh",
+        "absurdity": "nonsense",
+        "abusive": "cruel",
+        "accentuate": "emphasize",
+        "accessory": "add-on",
+        "accomplice": "partner",
+        "acumen": "insight",
+        "adage": "proverb",
+        "addictive": "habit-forming",
+        "adherence": "loyalty",
+        "adrift": "wandering",
+        "adventurous": "daring",
+        "adversity": "hardship",
+        "affinity": "rapport",
+        "affront": "insult",
+        "aghast": "horrified",
+        "agrarian": "rural",
+        "alarmist": "scaremonger",
+        "alienation": "estrangement",
+        "allude": "imply",
+        "alluring": "attractive",
+        "amenable": "cooperative",
+        "amiable": "pleasant",
+        "abate": "subside",
+        "abduct": "kidnap",
+        "abstain": "refrain",
+        "abstract": "theoretical",
+        "accrue": "accumulate",
+        "accuracy": "precision",
+        "acquit": "clear",
+        "adhere": "stick",
+        "adjacent": "nearby",
+        "admirable": "commendable",
+        "adore": "cherish",
+        "adversary": "opponent",
+        "affirm": "assert",
+        "agitate": "disturb",
+        "agony": "anguish",
+        "allegiance": "loyalty",
+        "allure": "entice",
+        "altitude": "elevation",
+        "amass": "accumulate",
+        "ambivalence": "uncertainty",
+        "amuse": "entertain",
+        "anarchy": "chaos",
+        "anecdotal": "informal",
+        "angst": "anxiety",
+        "abolish": "eliminate",
+        "absorb": "soak",
+        "accelerate": "hasten",
+        "accommodate": "house",
+        "accompany": "escort",
+        "accumulate": "collect",
+        "accusation": "allegation",
+        "aggregate": "total",
+        "aggression": "hostility",
+        "align": "arrange",
+        "allocate": "assign",
+        "amateur": "novice",
+        "amend": "revise",
+        "amnesty": "pardon",
+        "ancestor": "forebear",
+        "anchor": "secure",
+        "annoy": "irritate",
+        "anonymous": "unnamed",
+        "anticipate": "expect",
+        "appropriate": "suitable",
+        "ability": "capacity",
+        "abuse": "mistreatment",
+        "academic": "scholarly",
+        "accept": "receive",
+        "access": "entry",
+        "accident": "mishap",
+        "achieve": "attain",
+        "acknowledge": "recognize",
+        "add": "include",
+        "adjust": "modify",
+        "adopt": "embrace",
+        "advance": "progress",
+        "advertise": "promote",
+        "advice": "guidance",
+        "advocate": "support",
+        "affect": "influence",
+        "afford": "manage",
+        "agency": "organization",
+        "agenda": "schedule",
+        "agricultural": "farming",
+        "aid": "help",
+        "aim": "goal",
+        "alarm": "warning",
+        "alliance": "partnership",
+        "alternative": "option",
+        "ambition": "aspiration",
+        "anger": "rage",
+        "annual": "yearly",
+        "answer": "reply",
+        "apparent": "obvious",
+        "appoint": "assign",
+        "approve": "endorse",
+        "argue": "contend",
+    }
+)
+
+LEVEL_TEST_ANTONYMS.update(
+    {
+        "abdicate": "retain",
+        "abduction": "release",
+        "abhorrent": "admirable",
+        "ablaze": "extinguished",
+        "abreast": "unaware",
+        "abscond": "remain",
+        "abstraction": "reality",
+        "acidic": "alkaline",
+        "acquire": "lose",
+        "acquisitive": "generous",
+        "adaptable": "rigid",
+        "adhesive": "slippery",
+        "admonish": "praise",
+        "adolescence": "adulthood",
+        "affectionate": "cold",
+        "aficionado": "novice",
+        "agnostic": "believer",
+        "alacrity": "reluctance",
+        "alias": "realname",
+        "alibi": "culpability",
+        "allotment": "whole",
+        "amalgam": "purity",
+        "amenity": "nuisance",
+        "amicably": "hostilely",
+        "amiss": "correct",
+        "amorphous": "defined",
+        "analogous": "different",
+        "ancillary": "primary",
+        "abject": "proud",
+        "abrasive": "gentle",
+        "absurdity": "logic",
+        "abusive": "kind",
+        "accentuate": "minimize",
+        "accessory": "essential",
+        "accomplice": "opponent",
+        "acumen": "stupidity",
+        "adage": "novelty",
+        "addictive": "repellent",
+        "adherence": "defiance",
+        "adrift": "anchored",
+        "adventurous": "cautious",
+        "adversity": "prosperity",
+        "affinity": "aversion",
+        "affront": "compliment",
+        "aghast": "calm",
+        "agrarian": "urban",
+        "alarmist": "reassurer",
+        "alienation": "belonging",
+        "allude": "state",
+        "alluring": "repellent",
+        "amenable": "resistant",
+        "amiable": "hostile",
+        "abate": "intensify",
+        "abduct": "release",
+        "abstain": "indulge",
+        "abstract": "concrete",
+        "accrue": "dwindle",
+        "accuracy": "error",
+        "acquit": "convict",
+        "adhere": "detach",
+        "adjacent": "distant",
+        "admirable": "shameful",
+        "adore": "detest",
+        "adversary": "ally",
+        "affirm": "deny",
+        "agitate": "calm",
+        "agony": "comfort",
+        "allegiance": "disloyalty",
+        "allure": "repel",
+        "altitude": "depth",
+        "amass": "disperse",
+        "ambivalence": "certainty",
+        "amuse": "bore",
+        "anarchy": "order",
+        "anecdotal": "systematic",
+        "angst": "calm",
+        "abolish": "establish",
+        "absorb": "emit",
+        "accelerate": "slow",
+        "accommodate": "evict",
+        "accompany": "leave",
+        "accumulate": "disperse",
+        "accusation": "exoneration",
+        "aggregate": "individual",
+        "aggression": "peacefulness",
+        "align": "disorganize",
+        "allocate": "withhold",
+        "amateur": "professional",
+        "amend": "damage",
+        "amnesty": "punishment",
+        "ancestor": "descendant",
+        "anchor": "release",
+        "annoy": "please",
+        "anonymous": "identified",
+        "anticipate": "doubt",
+        "appropriate": "unsuitable",
+        "ability": "incapacity",
+        "abuse": "care",
+        "academic": "practical",
+        "accept": "reject",
+        "access": "barrier",
+        "accident": "plan",
+        "achieve": "fail",
+        "acknowledge": "deny",
+        "add": "remove",
+        "adjust": "fix",
+        "adopt": "reject",
+        "advance": "retreat",
+        "advertise": "conceal",
+        "advice": "misinformation",
+        "advocate": "oppose",
+        "affect": "ignore",
+        "afford": "lack",
+        "agency": "inaction",
+        "agenda": "chaos",
+        "agricultural": "industrial",
+        "aid": "hinder",
+        "aim": "wander",
+        "alarm": "reassurance",
+        "alliance": "rivalry",
+        "alternative": "necessity",
+        "ambition": "apathy",
+        "anger": "calm",
+        "annual": "rare",
+        "answer": "question",
+        "apparent": "hidden",
+        "appoint": "dismiss",
+        "approve": "reject",
+        "argue": "agree",
+    }
+)
+
+LEVEL_TEST_EXAMPLE_SENTENCES = {
+    "abhor": "Many voters abhor corruption in public office.",
+    "abscond": "The treasurer tried to abscond with the charity funds.",
+    "absurd": "The committee rejected the absurd proposal immediately.",
+    "acceptable": "The revised contract was acceptable to both sides.",
+    "accept": "The board decided to accept the proposal after a long debate.",
+    "accede": "The minister refused to accede to the protesters' demands.",
+    "accentuate": "The lighting can accentuate the museum's dramatic architecture.",
+    "accessory": "The phone case is a useful accessory for frequent travellers.",
+    "accompany": "A short note should accompany the financial report.",
+    "accomplish": "The team hopes to accomplish the merger by June.",
+    "accumulate": "Small errors can accumulate into a serious accounting problem.",
+    "accurate": "The analyst needs accurate data before making a forecast.",
+    "accusation": "The company denied the accusation of price-fixing.",
+    "acknowledge": "The chief executive should acknowledge the mistake publicly.",
+    "acquiesce": "The board may acquiesce if investors keep applying pressure.",
+    "acquire": "The group plans to acquire a smaller rival next year.",
+    "admirable": "Her patience during the negotiations was admirable.",
+    "admire": "Many analysts admire the founder's discipline.",
+    "admit": "The minister refused to admit that the policy had failed.",
+    "admonish": "The judge had to admonish the witness for interrupting.",
+    "adopt": "Several banks will adopt the new security standard.",
+    "affirm": "The court will affirm the earlier ruling.",
+    "aggression": "The treaty was designed to deter aggression.",
+    "agitate": "The speech may agitate an already nervous market.",
+    "aim": "The reformers aim to simplify the tax code.",
+    "align": "Managers must align incentives with long-term goals.",
+    "allocate": "The agency will allocate more funds to rural schools.",
+    "allow": "The new rules allow firms to raise capital faster.",
+    "allude": "The article seemed to allude to a pending investigation.",
+    "amass": "The startup hopes to amass enough data to train its model.",
+    "ambiguous": "The contract used ambiguous language about liability.",
+    "amenity": "Fast internet has become an essential amenity for tenants.",
+    "amuse": "The joke failed to amuse the audience.",
+    "ancestor": "The steam engine was an ancestor of modern machinery.",
+    "angst": "The election result added to investors' angst.",
+    "anticipate": "Economists anticipate slower growth next quarter.",
+    "appear": "New risks may appear as interest rates rise.",
+    "appoint": "The board will appoint a new chair next month.",
+    "appreciate": "Investors may appreciate the currency after reforms.",
+    "approve": "Regulators are expected to approve the deal.",
+    "arbitrary": "The court criticised the arbitrary use of power.",
+    "argue": "Critics argue that the plan is too expensive.",
+}
+
 AI_POWER_TRACK = [
     {
         "slug": "core-instruction",
@@ -3446,6 +3759,11 @@ def english_definition_for_word(conn: sqlite3.Connection, word_id: int) -> str:
 
 
 def example_sentence_for_word(conn: sqlite3.Connection, word_id: int) -> str:
+    word = conn.execute("SELECT lemma FROM words WHERE id = ?", (word_id,)).fetchone()
+    if word is not None:
+        seeded_sentence = LEVEL_TEST_EXAMPLE_SENTENCES.get(word["lemma"].strip().lower(), "")
+        if seeded_sentence:
+            return seeded_sentence
     enrichment = conn.execute(
         "SELECT example_sentence FROM word_enrichment WHERE word_id = ?",
         (word_id,),
@@ -3453,6 +3771,39 @@ def example_sentence_for_word(conn: sqlite3.Connection, word_id: int) -> str:
     if enrichment is not None and enrichment["example_sentence"]:
         return enrichment["example_sentence"].strip()
     return source_fallback_for_word(conn, word_id)["example_sentence"].strip()
+
+
+def first_quality_relation(values: list[str], lemma: str) -> str:
+    for value in values:
+        clean = str(value).strip()
+        if clean and not shares_obvious_root(lemma, clean):
+            return clean
+    return ""
+
+
+def level_test_synonym_for_word(conn: sqlite3.Connection, word: sqlite3.Row) -> str:
+    enrichment = conn.execute(
+        "SELECT synonyms_json FROM word_enrichment WHERE word_id = ?",
+        (word["id"],),
+    ).fetchone()
+    if enrichment is not None:
+        candidate = first_quality_relation(json_loads(enrichment["synonyms_json"]), word["lemma"])
+        if candidate:
+            return candidate
+    return LEVEL_TEST_SYNONYMS.get(word["lemma"].strip().lower(), "")
+
+
+def level_test_antonym_for_word(conn: sqlite3.Connection, word: sqlite3.Row) -> str:
+    if "antonyms_json" in {row["name"] for row in conn.execute("PRAGMA table_info(word_enrichment)").fetchall()}:
+        enrichment = conn.execute(
+            "SELECT antonyms_json FROM word_enrichment WHERE word_id = ?",
+            (word["id"],),
+        ).fetchone()
+        if enrichment is not None:
+            candidate = first_quality_relation(json_loads(enrichment["antonyms_json"]), word["lemma"])
+            if candidate:
+                return candidate
+    return LEVEL_TEST_ANTONYMS.get(word["lemma"].strip().lower(), "")
 
 
 NEGATIVE_PREFIXES = ("dis", "un", "in", "im", "il", "ir", "non", "anti", "de", "mis")
@@ -3745,7 +4096,7 @@ def build_example_application_question(conn: sqlite3.Connection, word: sqlite3.R
 
 
 def build_similar_word_question(conn: sqlite3.Connection, word: sqlite3.Row, position: int) -> dict | None:
-    correct = LEVEL_TEST_SYNONYMS.get(word["lemma"].strip().lower(), "")
+    correct = level_test_synonym_for_word(conn, word)
     if not correct or shares_obvious_root(word["lemma"], correct):
         return None
     options = build_level_test_options(
@@ -3769,7 +4120,7 @@ def build_similar_word_question(conn: sqlite3.Connection, word: sqlite3.Row, pos
 
 
 def build_opposite_word_question(conn: sqlite3.Connection, word: sqlite3.Row, position: int) -> dict | None:
-    correct = LEVEL_TEST_ANTONYMS.get(word["lemma"].strip().lower(), "")
+    correct = level_test_antonym_for_word(conn, word)
     if not correct or shares_obvious_root(word["lemma"], correct):
         return None
     options = build_level_test_options(
@@ -3980,18 +4331,19 @@ def create_test_session(conn: sqlite3.Connection) -> int:
     for band in band_rows:
         rows = conn.execute(
             """
-            SELECT *
+            SELECT words.*, COUNT(assessment_questions.id) AS test_use_count
             FROM words
-            WHERE best_band_rank = ?
-            ORDER BY RANDOM()
+            LEFT JOIN assessment_questions ON assessment_questions.word_id = words.id
+            WHERE words.best_band_rank = ?
+            GROUP BY words.id
+            ORDER BY test_use_count ASC, RANDOM()
             """,
             (band["best_band_rank"],),
         ).fetchall()
         for word in rows:
             if word["id"] in used_word_ids:
                 continue
-            lemma_key = word["lemma"].strip().lower()
-            if lemma_key not in LEVEL_TEST_SYNONYMS or lemma_key not in LEVEL_TEST_ANTONYMS:
+            if not level_test_synonym_for_word(conn, word) or not level_test_antonym_for_word(conn, word):
                 continue
             word_questions: list[dict] = []
             for offset, builder in enumerate(LEVEL_TEST_BUILDERS):

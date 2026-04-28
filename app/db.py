@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS word_enrichment (
     english_definition TEXT NOT NULL DEFAULT '',
     pronunciation TEXT NOT NULL DEFAULT '',
     synonyms_json TEXT NOT NULL DEFAULT '[]',
+    antonyms_json TEXT NOT NULL DEFAULT '[]',
     example_sentence TEXT NOT NULL DEFAULT '',
     sentence_distractors_json TEXT NOT NULL DEFAULT '[]',
     ai_simple_explanation_en TEXT NOT NULL DEFAULT '',
@@ -145,6 +146,7 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
     conn.executescript(WEB_SCHEMA)
     ensure_column(conn, "word_enrichment", "english_definition", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "word_enrichment", "pronunciation", "TEXT NOT NULL DEFAULT ''")
+    ensure_column(conn, "word_enrichment", "antonyms_json", "TEXT NOT NULL DEFAULT '[]'")
     ensure_column(conn, "word_enrichment", "ai_simple_explanation_en", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "word_enrichment", "ai_simple_explanation_zh", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "word_enrichment", "ai_nuance_note", "TEXT NOT NULL DEFAULT ''")
