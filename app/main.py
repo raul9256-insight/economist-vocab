@@ -4236,8 +4236,14 @@ def test_history(request: Request) -> HTMLResponse:
 @app.get("/statistics", response_class=HTMLResponse)
 def statistics_page(request: Request) -> HTMLResponse:
     conn = db_conn()
-    history = test_history_rows(conn, limit=5)
-    learning_history = learning_history_rows(conn, limit=5)
+    try:
+        history = test_history_rows(conn, limit=5)
+    except sqlite3.Error:
+        history = []
+    try:
+        learning_history = learning_history_rows(conn, limit=5)
+    except sqlite3.Error:
+        learning_history = []
     latest = history[0] if history else None
     latest_learning = learning_history[0] if learning_history else None
     best = None
