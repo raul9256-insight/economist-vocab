@@ -3455,22 +3455,99 @@ def example_sentence_for_word(conn: sqlite3.Connection, word_id: int) -> str:
     return source_fallback_for_word(conn, word_id)["example_sentence"].strip()
 
 
-def option_words(conn: sqlite3.Connection, word_id: int, correct: str, limit: int = 3) -> list[str]:
+NEGATIVE_PREFIXES = ("dis", "un", "in", "im", "il", "ir", "non", "anti", "de", "mis")
+COMMON_SUFFIXES = ("ing", "ed", "ly", "ness", "ment", "tion", "sion", "able", "ible", "al", "ous", "ive", "er", "est", "y", "s")
+
+
+def normalized_choice(value: str) -> str:
+    return re.sub(r"[^a-z]", "", (value or "").lower())
+
+
+def light_stem(value: str) -> str:
+    word = normalized_choice(value)
+    for prefix in NEGATIVE_PREFIXES:
+        if word.startswith(prefix) and len(word) - len(prefix) >= 4:
+            word = word[len(prefix):]
+            break
+    for suffix in COMMON_SUFFIXES:
+        if word.endswith(suffix) and len(word) - len(suffix) >= 4:
+            word = word[: -len(suffix)]
+            break
+    return word
+
+
+def shares_obvious_root(left: str, right: str) -> bool:
+    first = normalized_choice(left)
+    second = normalized_choice(right)
+    if not first or not second:
+        return False
+    if first == second:
+        return True
+    if len(first) >= 4 and len(second) >= 4 and (first in second or second in first):
+        return True
+    return light_stem(first) == light_stem(second)
+
+
+def valid_blanked_sentence(value: str) -> bool:
+    clean = (value or "").strip()
+    return clean.count("____") == 1 and len(clean.split()) >= 5
+
+
+def word_choice_is_quality(target: str, correct: str, candidate: str) -> bool:
+    clean = (candidate or "").strip()
+    if not clean:
+        return False
+    candidate_key = clean.lower()
+    if candidate_key in {target.lower(), correct.lower()}:
+        return False
+    if shares_obvious_root(target, clean) or shares_obvious_root(correct, clean):
+        return False
+    return True
+
+
+def option_words(conn: sqlite3.Connection, word: sqlite3.Row, correct: str, limit: int = 3) -> list[str]:
     options: list[str] = []
+    target_pos = parts_of_speech_for_word(conn, word["id"])
+    pos_clause = ""
+    params: list[object] = [word["id"], correct, word["best_band_rank"]]
+    if target_pos:
+        placeholders = ",".join("?" for _ in target_pos)
+        pos_clause = f"AND source_entries.pos IN ({placeholders})"
+        params.extend(target_pos)
     rows = conn.execute(
+        f"""
+        SELECT DISTINCT words.lemma
+        FROM words
+        LEFT JOIN source_entries ON source_entries.word_id = words.id
+        WHERE words.id != ?
+          AND lower(lemma) != lower(?)
+          AND words.best_band_rank = ?
+          {pos_clause}
+        ORDER BY RANDOM()
+        LIMIT 120
+        """,
+        tuple(params),
+    ).fetchall()
+    for row in rows:
+        value = row["lemma"].strip()
+        if word_choice_is_quality(word["lemma"], correct, value) and value not in options:
+            options.append(value)
+        if len(options) >= limit:
+            return options
+    fallback = conn.execute(
         """
         SELECT lemma
         FROM words
         WHERE id != ?
           AND lower(lemma) != lower(?)
         ORDER BY RANDOM()
-        LIMIT 80
+        LIMIT 160
         """,
-        (word_id, correct),
+        (word["id"], correct),
     ).fetchall()
-    for row in rows:
+    for row in fallback:
         value = row["lemma"].strip()
-        if value and value.lower() != correct.lower() and value not in options:
+        if word_choice_is_quality(word["lemma"], correct, value) and value not in options:
             options.append(value)
         if len(options) >= limit:
             return options
@@ -3479,18 +3556,47 @@ def option_words(conn: sqlite3.Connection, word_id: int, correct: str, limit: in
 
 def english_definition_distractors(conn: sqlite3.Connection, word_id: int, limit: int = 3) -> list[str]:
     options: list[str] = []
+    target = conn.execute("SELECT * FROM words WHERE id = ?", (word_id,)).fetchone()
+    target_pos = parts_of_speech_for_word(conn, word_id)
+    pos_clause = ""
+    params: list[object] = [word_id]
+    if target is not None and target["best_band_rank"]:
+        pos_clause += " AND words.best_band_rank = ?"
+        params.append(target["best_band_rank"])
+    if target_pos:
+        placeholders = ",".join("?" for _ in target_pos)
+        pos_clause += f" AND source_entries.pos IN ({placeholders})"
+        params.extend(target_pos)
     rows = conn.execute(
+        f"""
+        SELECT DISTINCT words.id
+        FROM words
+        JOIN source_entries ON source_entries.word_id = words.id
+        WHERE words.id != ?
+          {pos_clause}
+        ORDER BY RANDOM()
+        LIMIT 120
+        """,
+        tuple(params),
+    ).fetchall()
+    for row in rows:
+        definition = english_definition_for_word(conn, row["id"])
+        if definition and definition not in options:
+            options.append(definition)
+        if len(options) >= limit:
+            return options
+    fallback = conn.execute(
         """
         SELECT DISTINCT words.id
         FROM words
         JOIN source_entries ON source_entries.word_id = words.id
         WHERE words.id != ?
         ORDER BY RANDOM()
-        LIMIT 100
+        LIMIT 160
         """,
         (word_id,),
     ).fetchall()
-    for row in rows:
+    for row in fallback:
         definition = english_definition_for_word(conn, row["id"])
         if definition and definition not in options:
             options.append(definition)
@@ -3501,33 +3607,66 @@ def english_definition_distractors(conn: sqlite3.Connection, word_id: int, limit
 
 def example_sentence_distractors(conn: sqlite3.Connection, word_id: int, limit: int = 3) -> list[str]:
     options: list[str] = []
+    target = conn.execute("SELECT * FROM words WHERE id = ?", (word_id,)).fetchone()
+    target_pos = parts_of_speech_for_word(conn, word_id)
+    pos_clause = ""
+    params: list[object] = [word_id]
+    if target is not None and target["best_band_rank"]:
+        pos_clause += " AND words.best_band_rank = ?"
+        params.append(target["best_band_rank"])
+    if target_pos:
+        placeholders = ",".join("?" for _ in target_pos)
+        pos_clause += f" AND source_entries.pos IN ({placeholders})"
+        params.extend(target_pos)
     rows = conn.execute(
+        f"""
+        SELECT DISTINCT words.id, words.lemma
+        FROM words
+        JOIN source_entries ON source_entries.word_id = words.id
+        WHERE words.id != ?
+          {pos_clause}
+        ORDER BY RANDOM()
+        LIMIT 160
+        """,
+        tuple(params),
+    ).fetchall()
+    for row in rows:
+        sentence = example_sentence_for_word(conn, row["id"])
+        blanked = blank_word_in_sentence(sentence, row["lemma"])
+        if blanked and valid_blanked_sentence(blanked) and blanked not in options:
+            options.append(blanked)
+        if len(options) >= limit:
+            return options
+    fallback = conn.execute(
         """
         SELECT DISTINCT words.id, words.lemma
         FROM words
         JOIN source_entries ON source_entries.word_id = words.id
         WHERE words.id != ?
         ORDER BY RANDOM()
-        LIMIT 120
+        LIMIT 200
         """,
         (word_id,),
     ).fetchall()
-    for row in rows:
+    for row in fallback:
         sentence = example_sentence_for_word(conn, row["id"])
         blanked = blank_word_in_sentence(sentence, row["lemma"])
-        if blanked and blanked not in options:
+        if blanked and valid_blanked_sentence(blanked) and blanked not in options:
             options.append(blanked)
         if len(options) >= limit:
             return options
     return options
 
 
-def build_level_test_options(correct: str, distractors: list[str]) -> list[str] | None:
+def build_level_test_options(correct: str, distractors: list[str], validator=None) -> list[str] | None:
     options = [correct]
+    seen = {str(correct).strip().lower()}
     for value in distractors:
         clean = str(value).strip()
-        if clean and clean not in options:
+        key = clean.lower()
+        if clean and key not in seen and (validator is None or validator(clean)):
             options.append(clean)
+            seen.add(key)
         if len(options) >= 4:
             break
     if len(options) < 4:
@@ -3583,9 +3722,13 @@ def build_english_definition_question(conn: sqlite3.Connection, word: sqlite3.Ro
 def build_example_application_question(conn: sqlite3.Connection, word: sqlite3.Row, position: int) -> dict | None:
     sentence = example_sentence_for_word(conn, word["id"])
     correct = blank_word_in_sentence(sentence, word["lemma"])
-    if not correct:
+    if not correct or not valid_blanked_sentence(correct):
         return None
-    options = build_level_test_options(correct, example_sentence_distractors(conn, word["id"]))
+    options = build_level_test_options(
+        correct,
+        example_sentence_distractors(conn, word["id"]),
+        validator=valid_blanked_sentence,
+    )
     if options is None:
         return None
     return {
@@ -3603,9 +3746,13 @@ def build_example_application_question(conn: sqlite3.Connection, word: sqlite3.R
 
 def build_similar_word_question(conn: sqlite3.Connection, word: sqlite3.Row, position: int) -> dict | None:
     correct = LEVEL_TEST_SYNONYMS.get(word["lemma"].strip().lower(), "")
-    if not correct:
+    if not correct or shares_obvious_root(word["lemma"], correct):
         return None
-    options = build_level_test_options(correct, option_words(conn, word["id"], correct))
+    options = build_level_test_options(
+        correct,
+        option_words(conn, word, correct),
+        validator=lambda value: word_choice_is_quality(word["lemma"], correct, value),
+    )
     if options is None:
         return None
     return {
@@ -3623,9 +3770,13 @@ def build_similar_word_question(conn: sqlite3.Connection, word: sqlite3.Row, pos
 
 def build_opposite_word_question(conn: sqlite3.Connection, word: sqlite3.Row, position: int) -> dict | None:
     correct = LEVEL_TEST_ANTONYMS.get(word["lemma"].strip().lower(), "")
-    if not correct:
+    if not correct or shares_obvious_root(word["lemma"], correct):
         return None
-    options = build_level_test_options(correct, option_words(conn, word["id"], correct))
+    options = build_level_test_options(
+        correct,
+        option_words(conn, word, correct),
+        validator=lambda value: word_choice_is_quality(word["lemma"], correct, value),
+    )
     if options is None:
         return None
     return {
