@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import sqlite3
 from pathlib import Path
 
@@ -141,8 +143,28 @@ def ensure_column(conn: sqlite3.Connection, table: str, column: str, definition:
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
 
+def configured_db_path(db_path: Path | None = None) -> Path:
+    if db_path is not None:
+        return Path(db_path)
+    env_path = os.getenv("DATABASE_PATH") or os.getenv("SQLITE_DB_PATH")
+    if env_path:
+        return Path(env_path).expanduser()
+    return DEFAULT_DB_PATH
+
+
+def prepare_database_file(db_path: Path) -> None:
+    if db_path.parent != Path("."):
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+    bundled_path = DEFAULT_DB_PATH.resolve()
+    target_path = db_path.resolve()
+    if target_path != bundled_path and not db_path.exists() and DEFAULT_DB_PATH.exists():
+        shutil.copy2(DEFAULT_DB_PATH, db_path)
+
+
 def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
-    conn = connect(db_path or DEFAULT_DB_PATH)
+    resolved_path = configured_db_path(db_path)
+    prepare_database_file(resolved_path)
+    conn = connect(resolved_path)
     conn.executescript(WEB_SCHEMA)
     ensure_column(conn, "word_enrichment", "english_definition", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "word_enrichment", "pronunciation", "TEXT NOT NULL DEFAULT ''")

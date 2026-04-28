@@ -2193,7 +2193,7 @@ TRANSLATIONS["zh-Hans"].update(
 
 
 def db_conn() -> sqlite3.Connection:
-    return get_connection(DEFAULT_DB_PATH)
+    return get_connection()
 
 
 def get_lang(request: Request) -> str:
