@@ -851,6 +851,16 @@ TRANSLATIONS["en"].update(
         "statistics_out_of": "out of",
         "statistics_test_history_title": "Test History",
         "statistics_test_history_body": "Review past placement results, compare scores, and track how your starting band changes over time.",
+        "statistics_level_test_section": "Level Test Results",
+        "statistics_learning_section": "Learning Session Results",
+        "statistics_latest_report": "Latest Full Report",
+        "statistics_latest_report_body": "Open the newest Level Test report with band, layer, and word-by-word analysis.",
+        "statistics_no_learning_yet": "No learning session yet",
+        "statistics_latest_learning": "Latest Learning",
+        "statistics_best_learning": "Best Learning",
+        "statistics_learning_runs": "Learning Runs",
+        "view_full_report": "View Full Report",
+        "view_learning_result": "View Learning Result",
         "statistics_more_coming": "More statistics modules coming soon.",
         "bulk_import_tools": "Import Tools",
         "bulk_import_tools_note": "Manage workbook uploads, taxonomy imports, and AI enrichment in a lower-profile admin area.",
@@ -1173,6 +1183,16 @@ TRANSLATIONS["zh-Hant"].update(
         "statistics_out_of": "滿分",
         "statistics_test_history_title": "測驗紀錄",
         "statistics_test_history_body": "回看過往程度檢測結果，比較分數，追蹤建議起始範圍如何變化。",
+        "statistics_level_test_section": "Level Test 結果",
+        "statistics_learning_section": "Learning Session 結果",
+        "statistics_latest_report": "最近完整報告",
+        "statistics_latest_report_body": "打開最近一次 Level Test 的 band、五層題型與逐詞分析。",
+        "statistics_no_learning_yet": "尚未有學習紀錄",
+        "statistics_latest_learning": "最近一次學習",
+        "statistics_best_learning": "最佳學習結果",
+        "statistics_learning_runs": "學習次數",
+        "view_full_report": "查看完整報告",
+        "view_learning_result": "查看學習結果",
         "statistics_more_coming": "之後會再加入更多統計模組。",
         "bulk_import_tools": "匯入工具",
         "bulk_import_tools_note": "把工作簿上傳、taxonomy 匯入與 AI 補全整理到較低調的管理入口。",
@@ -1750,6 +1770,16 @@ TRANSLATIONS["zh-Hans"].update(
         "statistics_out_of": "满分",
         "statistics_test_history_title": "检测记录",
         "statistics_test_history_body": "回看过往程度检测结果，比较分数，追踪建议起始范围如何变化。",
+        "statistics_level_test_section": "Level Test 结果",
+        "statistics_learning_section": "Learning Session 结果",
+        "statistics_latest_report": "最近完整报告",
+        "statistics_latest_report_body": "打开最近一次 Level Test 的 band、五层题型与逐词分析。",
+        "statistics_no_learning_yet": "尚未有学习记录",
+        "statistics_latest_learning": "最近一次学习",
+        "statistics_best_learning": "最佳学习结果",
+        "statistics_learning_runs": "学习次数",
+        "view_full_report": "查看完整报告",
+        "view_learning_result": "查看学习结果",
         "statistics_more_coming": "之后会再加入更多统计模块。",
         "bulk_import_tools": "导入工具",
         "bulk_import_tools_note": "把工作簿上传、taxonomy 导入与 AI 补全整理到较低调的管理入口。",
@@ -3052,6 +3082,43 @@ def latest_learning_result(conn: sqlite3.Connection) -> sqlite3.Row | None:
     ).fetchone()
 
 
+def learning_history_rows(conn: sqlite3.Connection, limit: int = 5) -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT
+            learning_sessions.id,
+            learning_sessions.started_at,
+            learning_sessions.completed_at,
+            learning_sessions.score,
+            COUNT(learning_questions.id) AS total_questions,
+            SUM(CASE WHEN learning_questions.is_correct = 1 THEN 1 ELSE 0 END) AS correct_answers
+        FROM learning_sessions
+        LEFT JOIN learning_questions ON learning_questions.session_id = learning_sessions.id
+        WHERE learning_sessions.status = 'completed'
+        GROUP BY learning_sessions.id
+        ORDER BY learning_sessions.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+    history: list[dict] = []
+    for row in rows:
+        total_questions = int(row["total_questions"] or 0)
+        correct_answers = int(row["correct_answers"] or row["score"] or 0)
+        history.append(
+            {
+                "id": row["id"],
+                "started_at": row["started_at"],
+                "completed_at": row["completed_at"],
+                "score": int(row["score"] or 0),
+                "total_questions": total_questions,
+                "correct_answers": correct_answers,
+                "accuracy_percent": round((correct_answers / total_questions) * 100) if total_questions else None,
+            }
+        )
+    return history
+
+
 def search_words(
     conn: sqlite3.Connection,
     query: str,
@@ -4170,16 +4237,30 @@ def test_history(request: Request) -> HTMLResponse:
 def statistics_page(request: Request) -> HTMLResponse:
     conn = db_conn()
     history = test_history_rows(conn, limit=5)
+    learning_history = learning_history_rows(conn, limit=5)
     latest = history[0] if history else None
+    latest_learning = learning_history[0] if learning_history else None
     best = None
+    best_learning = None
     max_question_total = max((item["total_questions"] or 0) for item in history) if history else 0
     score_scale_max = max_question_total or max((item["score"] or 0) for item in history) or 1
+    learning_scale_max = max((item["total_questions"] or 0) for item in learning_history) if learning_history else 0
+    learning_scale_max = learning_scale_max or max((item["score"] or 0) for item in learning_history) or 1
     if history:
         best = max(
             history,
             key=lambda item: (
                 item["score"] or 0,
                 item["accuracy_percent"] if item["accuracy_percent"] is not None else -1,
+                item["id"],
+            ),
+        )
+    if learning_history:
+        best_learning = max(
+            learning_history,
+            key=lambda item: (
+                item["accuracy_percent"] if item["accuracy_percent"] is not None else -1,
+                item["score"] or 0,
                 item["id"],
             ),
         )
@@ -4217,18 +4298,32 @@ def statistics_page(request: Request) -> HTMLResponse:
                 x = round((idx / (len(recent_chart) - 1)) * 100)
                 y = max(6, 46 - round((int(item["percent"]) / 100) * 36))
                 recent_line_dots.append({"x": x, "y": y, "label": item["label"], "score": item["score"]})
-            recent_line_points = " ".join(f"{item['x']},{item['y']}" for item in recent_line_dots)
+        recent_line_points = " ".join(f"{item['x']},{item['y']}" for item in recent_line_dots)
+
+    def learning_percent(item: dict | None) -> int:
+        if not item:
+            return 0
+        score = int(item["score"] or 0)
+        total = int(item["total_questions"] or 0) or learning_scale_max
+        return round((score / max(total, 1)) * 100)
 
     return render(
         request,
         "statistics.html",
         history=history,
+        learning_history=learning_history,
         latest_test_history=latest,
+        latest_learning_history=latest_learning,
         best_test_history=best,
+        best_learning_history=best_learning,
         tests_taken_count=len(history),
+        learning_runs_count=len(learning_history),
         latest_test_percent=score_percent(latest),
+        latest_learning_percent=learning_percent(latest_learning),
         best_test_percent=score_percent(best),
+        best_learning_percent=learning_percent(best_learning),
         score_scale_max=score_scale_max,
+        learning_scale_max=learning_scale_max,
         recent_chart=recent_chart,
         recent_line_points=recent_line_points,
         recent_line_dots=recent_line_dots,

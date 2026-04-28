@@ -2137,6 +2137,12 @@ input[type="file"] {
   gap: 0.55rem;
 }
 
+.statistics-section-head {
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(112, 125, 184, 0.12);
+}
+
 .statistics-ring-card {
   display: flex;
   align-items: center;

@@ -14,6 +14,16 @@
       </div>
     </div>
 
+    <div class="card-head tight statistics-section-head">
+      <div>
+        <p class="eyebrow">{{ t("statistics_level_test_section") }}</p>
+        <h2>{{ t("level_test_title") }}</h2>
+      </div>
+      {% if latest_test_history %}
+      <a class="button secondary" href="/test/{{ latest_test_history.id }}/result">{{ t("view_full_report") }}</a>
+      {% endif %}
+    </div>
+
     <div class="ai-power-home-grid">
       <div class="learning-stat-card statistics-score-card">
         <span>{{ t("statistics_latest_test") }}</span>
@@ -48,6 +58,67 @@
       <div class="learning-stat-card">
         <span>{{ t("statistics_tests_taken") }}</span>
         <strong>{{ tests_taken_count }}</strong>
+      </div>
+      <div class="learning-stat-card">
+        <span>{{ t("statistics_latest_report") }}</span>
+        {% if latest_test_history %}
+        <strong>{{ latest_test_history.estimated_band_label or t("getting_started") }}</strong>
+        <small>{{ t("statistics_latest_report_body") }}</small>
+        <div class="action-row">
+          <a class="button secondary" href="/test/{{ latest_test_history.id }}/result">{{ t("view_full_report") }}</a>
+        </div>
+        {% else %}
+        <strong>--</strong>
+        <small>{{ t("statistics_no_test_yet") }}</small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card-head tight statistics-section-head">
+      <div>
+        <p class="eyebrow">{{ t("statistics_learning_section") }}</p>
+        <h2>{{ t("nav_learning") }}</h2>
+      </div>
+      <a class="button secondary" href="/learning">{{ t("open_learning") }}</a>
+    </div>
+
+    <div class="ai-power-home-grid">
+      <div class="learning-stat-card statistics-score-card">
+        <span>{{ t("statistics_latest_learning") }}</span>
+        <div class="statistics-ring-card">
+          <div class="statistics-ring" style="--ring-percent: {{ latest_learning_percent }};">
+            <div class="statistics-ring-inner">
+              <strong>{% if latest_learning_history %}{{ latest_learning_history.score }}{% else %}--{% endif %}</strong>
+            </div>
+          </div>
+        </div>
+        {% if latest_learning_history %}
+        <small>{{ t("score_label") }} / {{ t("statistics_out_of") }} {{ learning_scale_max }}</small>
+        <div class="action-row">
+          <a class="button secondary" href="/learning/{{ latest_learning_history.id }}/result">{{ t("view_learning_result") }}</a>
+        </div>
+        {% else %}
+        <small>{{ t("statistics_no_learning_yet") }}</small>
+        {% endif %}
+      </div>
+      <div class="learning-stat-card statistics-score-card">
+        <span>{{ t("statistics_best_learning") }}</span>
+        <div class="statistics-ring-card">
+          <div class="statistics-ring statistics-ring-secondary" style="--ring-percent: {{ best_learning_percent }};">
+            <div class="statistics-ring-inner">
+              <strong>{% if best_learning_history %}{{ best_learning_history.score }}{% else %}--{% endif %}</strong>
+            </div>
+          </div>
+        </div>
+        {% if best_learning_history %}
+        <small>{{ t("score_label") }} / {{ t("statistics_out_of") }} {{ learning_scale_max }}</small>
+        {% else %}
+        <small>{{ t("statistics_no_learning_yet") }}</small>
+        {% endif %}
+      </div>
+      <div class="learning-stat-card">
+        <span>{{ t("statistics_learning_runs") }}</span>
+        <strong>{{ learning_runs_count }}</strong>
       </div>
     </div>
 
@@ -96,9 +167,12 @@
         </article>
 
         <article class="recommend-card statistics-muted-card">
-          <span class="recommend-tag">Soon</span>
-          <strong>{{ t("statistics_more_coming") }}</strong>
-          <p>{{ t("statistics_more_coming") }}</p>
+          <span class="recommend-tag">{{ t("statistics_learning_section") }}</span>
+          <strong>{{ t("statistics_learning_runs") }}</strong>
+          <p>{{ t("statistics_learning_section") }}</p>
+          <div class="action-row">
+            <a class="button secondary" href="/learning">{{ t("open_learning") }}</a>
+          </div>
         </article>
       </div>
     </div>
