@@ -40,6 +40,10 @@
         <strong>{{ ai_power.progress_label }}</strong>
       </div>
     </div>
+    <div class="action-row">
+      <a class="button secondary" href="/ai-power-vocabulary/template?missing_only=1">Export Missing Rows</a>
+      <a class="button secondary" href="/ai-power-vocabulary/template">Export Full Template</a>
+    </div>
   </article>
 
   <article class="panel dashboard-v2-card ai-power-search-panel">
@@ -78,6 +82,7 @@
           <span class="dictionary-note-label">{{ t("ai_power_target") }}</span>
           <strong>{{ category.target_count }}</strong>
           <small>{{ t("ai_power_words_ready", count=category.completed_count) }}</small>
+          <small>{{ category.target_count - category.completed_count }} missing</small>
         </div>
       </div>
 

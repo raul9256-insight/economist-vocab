@@ -1910,7 +1910,31 @@ def load_ai_power_entries() -> list[dict[str, str]]:
 
 def save_ai_power_entries(rows: list[dict[str, str]]) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    AI_POWER_DATA_PATH.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+    existing_rows = load_ai_power_entries()
+    merged_map = {
+        row["english"].strip().lower(): dict(row)
+        for row in existing_rows
+        if row.get("english", "").strip()
+    }
+    order = [
+        row["english"].strip().lower()
+        for row in existing_rows
+        if row.get("english", "").strip()
+    ]
+    for row in rows:
+        key = row.get("english", "").strip().lower()
+        if not key:
+            continue
+        current = merged_map.get(key, {})
+        merged = dict(current)
+        for field, value in row.items():
+            if field == "english" or str(value).strip():
+                merged[field] = value
+        merged_map[key] = merged
+        if key not in order:
+            order.append(key)
+    merged_rows = [merged_map[key] for key in order if key in merged_map]
+    AI_POWER_DATA_PATH.write_text(json.dumps(merged_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def ai_power_track(lang: str = "en") -> dict:
@@ -4095,13 +4119,14 @@ def ai_power_vocabulary(
 
 
 @app.get("/ai-power-vocabulary/template")
-def ai_power_vocabulary_template() -> FileResponse:
-    output_path = EXPORT_DIR / "ai-power-vocabulary-template.xlsx"
-    export_ai_power_template(ai_power_track("en")["categories"], output_path)
+def ai_power_vocabulary_template(missing_only: int = Query(0)) -> FileResponse:
+    filename = "ai-power-vocabulary-missing-template.xlsx" if missing_only else "ai-power-vocabulary-template.xlsx"
+    output_path = EXPORT_DIR / filename
+    export_ai_power_template(ai_power_track("en")["categories"], output_path, missing_only=bool(missing_only))
     return FileResponse(
         output_path,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        filename="ai-power-vocabulary-template.xlsx",
+        filename=filename,
     )
 
 

@@ -27,6 +27,8 @@ EXPECTED_COLUMNS = [
 ]
 
 AI_POWER_EXPECTED_COLUMNS = [
+    "completion_status",
+    "missing_fields",
     "category_slug",
     "category_name",
     "english",
@@ -164,7 +166,18 @@ def export_template(
     return len(rows)
 
 
-def export_ai_power_template(categories: list[dict], output_path: Path) -> int:
+AI_POWER_COMPLETION_FIELDS = [
+    "type_of_word",
+    "english_definition",
+    "traditional_chinese",
+    "simplified_chinese",
+    "example_sentence",
+    "ai_prompt_example",
+    "ipa",
+]
+
+
+def export_ai_power_template(categories: list[dict], output_path: Path, *, missing_only: bool = False) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -173,18 +186,53 @@ def export_ai_power_template(categories: list[dict], output_path: Path) -> int:
 
     total_rows = 0
     for category in categories:
-        for term in sorted(category.get("terms", []), key=lambda value: value.lower()):
+        entries = category.get("entries")
+        if entries is None:
+            entries = [{"english": term} for term in category.get("terms", [])]
+        for entry in sorted(entries, key=lambda value: value.get("english", "").lower()):
+            missing_fields = [
+                field
+                for field in AI_POWER_COMPLETION_FIELDS
+                if not str(entry.get(field, "")).strip()
+            ]
+            if missing_only and not missing_fields:
+                continue
+            completion_status = "complete" if not missing_fields else "missing"
             ws.append(
                 [
+                    completion_status,
+                    ", ".join(missing_fields),
                     category.get("slug", ""),
                     category.get("english_title", category.get("title", "")),
-                    term,
+                    entry.get("english", ""),
+                    entry.get("type_of_word", ""),
+                    entry.get("english_definition", ""),
+                    entry.get("traditional_chinese", ""),
+                    entry.get("simplified_chinese", ""),
+                    entry.get("example_sentence", "") or category.get("normal_example", ""),
+                    entry.get("ai_prompt_example", "") or category.get("prompt_example", ""),
+                    entry.get("prompt_strategic", ""),
+                    entry.get("prompt_creative", ""),
+                    entry.get("prompt_technical", ""),
+                    entry.get("prompt_finance", ""),
+                    entry.get("prompt_education", ""),
+                    entry.get("ipa", ""),
+                    entry.get("notes", ""),
+                ]
+            )
+            total_rows += 1
+        new_term_slots = max(0, int(category.get("target_count", 0) or 0) - len(entries))
+        for _ in range(new_term_slots):
+            ws.append(
+                [
+                    "new_term_needed",
+                    "english, " + ", ".join(AI_POWER_COMPLETION_FIELDS),
+                    category.get("slug", ""),
+                    category.get("english_title", category.get("title", "")),
                     "",
                     "",
                     "",
                     "",
-                    category.get("normal_example", ""),
-                    category.get("prompt_example", ""),
                     "",
                     "",
                     "",
@@ -192,6 +240,9 @@ def export_ai_power_template(categories: list[dict], output_path: Path) -> int:
                     "",
                     "",
                     "",
+                    "",
+                    "",
+                    "Add one new AI Power vocabulary item for this category.",
                 ]
             )
             total_rows += 1
