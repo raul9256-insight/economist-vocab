@@ -2496,17 +2496,48 @@ TEST_BAND_LABELS = {
     2000: "2000~ (2330)",
 }
 
+TEST_BAND_EASIEST_TO_HARDEST = [2000, 500, 200, 100, 50]
+
+
+def band_level_label(band_rank: int | None, lang: str = "en") -> str:
+    labels = {
+        "en": {
+            2000: "Foundation",
+            500: "Lower Intermediate",
+            200: "Intermediate",
+            100: "Upper Intermediate",
+            50: "Advanced",
+        },
+        "zh-Hant": {
+            2000: "基礎常用",
+            500: "初中階",
+            200: "中階",
+            100: "中高階",
+            50: "進階",
+        },
+        "zh-Hans": {
+            2000: "基础常用",
+            500: "初中阶",
+            200: "中阶",
+            100: "中高阶",
+            50: "进阶",
+        },
+    }
+    if band_rank in labels.get(lang, labels["en"]):
+        return labels.get(lang, labels["en"])[band_rank]
+    return progress_label(0, lang)
+
 
 def easier_band_label_from_rank(band_rank: int | None) -> str | None:
     if band_rank is None:
         return None
-    ordered = [50, 100, 200, 500, 2000]
+    ordered = TEST_BAND_EASIEST_TO_HARDEST
     if band_rank not in ordered:
         return None
     idx = ordered.index(band_rank)
-    if idx >= len(ordered) - 1:
+    if idx <= 0:
         return None
-    next_rank = ordered[idx + 1]
+    next_rank = ordered[idx - 1]
     return TEST_BAND_LABELS.get(next_rank)
 
 
@@ -2514,36 +2545,36 @@ def level_recommendation(estimated_band_label: str | None, estimated_band_rank: 
     easier_band = easier_band_label_from_rank(estimated_band_rank)
     if lang == "zh-Hant":
         if not estimated_band_label:
-            return "先從 50~99 這組詞彙開始，再優先替你最常答錯的詞彙補上筆記與例句。"
+            return "先從 2000~ 這組最常用詞彙開始，再優先替你最常答錯的詞彙補上筆記與例句。"
         if percent >= 0.95:
             if easier_band:
-                return f"你這次已經穩定掌握到 {estimated_band_label}，建議直接從這一組開始，並把 {easier_band} 當作快速複習範圍。"
-            return f"你這次已經穩定掌握整份檢測，建議直接從 {estimated_band_label} 這組較高階詞彙開始，再把其餘常見詞彙當作快速複習。"
+                return f"你這次已經穩定掌握到 {estimated_band_label}。建議從下一級較難詞彙開始，同時把 {easier_band} 當作快速複習範圍。"
+            return f"你這次已經穩定掌握整份檢測，建議直接挑戰 {estimated_band_label} 這組低頻高階詞彙。"
         if percent >= 0.7:
-            return f"你目前可以穩定從 {estimated_band_label} 附近開始。接下來可以到詞典看更高一級的詞彙分類，並補強不熟的詞彙。"
+            return f"你目前可以穩定從 {estimated_band_label} 附近開始。接下來可以往較低頻、更高階的詞彙分類前進。"
         if easier_band:
             return f"接下來幾次學習，先集中在 {estimated_band_label} 和較容易一級的 {easier_band}，直到答案更自然為止。"
         return f"接下來幾次學習，先集中在 {estimated_band_label}，直到答案更自然為止。"
     if lang == "zh-Hans":
         if not estimated_band_label:
-            return "先从 50~99 这一组词汇开始，再优先替你最常答错的词汇补上笔记与例句。"
+            return "先从 2000~ 这一组最常用词汇开始，再优先替你最常答错的词汇补上笔记与例句。"
         if percent >= 0.95:
             if easier_band:
-                return f"你这次已经稳定掌握到 {estimated_band_label}，建议直接从这一组开始，并把 {easier_band} 当作快速复习范围。"
-            return f"你这次已经稳定掌握整份检测，建议直接从 {estimated_band_label} 这组较高阶词汇开始，再把其余常见词汇当作快速复习。"
+                return f"你这次已经稳定掌握到 {estimated_band_label}。建议从下一级较难词汇开始，同时把 {easier_band} 当作快速复习范围。"
+            return f"你这次已经稳定掌握整份检测，建议直接挑战 {estimated_band_label} 这组低频高阶词汇。"
         if percent >= 0.7:
-            return f"你目前可以稳定从 {estimated_band_label} 附近开始。接下来可以到词典看更高一级的词汇分类，并补强不熟的词汇。"
+            return f"你目前可以稳定从 {estimated_band_label} 附近开始。接下来可以往较低频、更高阶的词汇分类前进。"
         if easier_band:
             return f"接下来几次学习，先集中在 {estimated_band_label} 和较容易一级的 {easier_band}，直到答案更自然为止。"
         return f"接下来几次学习，先集中在 {estimated_band_label}，直到答案更自然为止。"
     if not estimated_band_label:
-        return "Start with the 50~99 band, then add notes and examples to words you miss most often."
+        return "Start with the 2000~ band, the most common foundation range, then add notes and examples to words you miss most often."
     if percent >= 0.95:
         if easier_band:
-            return f"You've stably mastered up through {estimated_band_label}. Start directly from that band and use {easier_band} as a quick review range."
-        return f"You've stably mastered the whole placement set. Start directly from {estimated_band_label} and treat the more common bands as quick review."
+            return f"You've stably mastered {estimated_band_label}. Move toward the next rarer band, and use {easier_band} as a quick review range."
+        return f"You've stably mastered the whole placement set. Challenge yourself with {estimated_band_label}, the rarer advanced range."
     if percent >= 0.7:
-        return f"You can comfortably work around {estimated_band_label}. Move into the next harder band in Dictionary and enrich unfamiliar words."
+        return f"You can comfortably work around {estimated_band_label}. Move toward rarer, harder bands in Dictionary and enrich unfamiliar words."
     if easier_band:
         return f"Focus your next learning sessions around {estimated_band_label} and the easier {easier_band} band until the answers feel automatic."
     return f"Focus your next learning sessions around {estimated_band_label} until the answers feel automatic."
@@ -4010,10 +4041,10 @@ def summarize_test_session(conn: sqlite3.Connection, session_id: int) -> dict:
     estimated_label = "Getting Started"
     weighted_score = 0
     weighted_total = 0
-    ordered_ranks = sorted(band_scores)
+    ordered_ranks = [rank for rank in TEST_BAND_EASIEST_TO_HARDEST if rank in band_scores]
     for band_rank in ordered_ranks:
         answers = band_scores[band_rank]
-        weight = 1 + len(band_scores) - ordered_ranks.index(band_rank)
+        weight = 1 + ordered_ranks.index(band_rank)
         weighted_score += sum(answers) * weight
         weighted_total += len(answers) * weight
         if answers and sum(answers) / len(answers) >= 0.6:
@@ -4526,9 +4557,9 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
     display_total_questions = summary["question_count"] if summary.get("question_count") else session["question_count"]
     display_accuracy_percent = summary["accuracy_percent"] if summary["accuracy_percent"] is not None else session["accuracy_percent"]
     accuracy_ratio = (display_accuracy_percent / 100) if display_accuracy_percent is not None else 0
-    level_name = progress_label(accuracy_ratio, lang)
     display_band_label = summary["estimated_label"] if has_detailed_results else (session["estimated_band_label"] or "Getting Started")
     display_band_rank = summary["estimated_rank"] if has_detailed_results else session["estimated_band_rank"]
+    level_name = band_level_label(display_band_rank, lang)
     recommendation = level_recommendation(display_band_label, display_band_rank, accuracy_ratio, lang)
     has_accuracy_visual = display_accuracy_percent is not None
     return render(
