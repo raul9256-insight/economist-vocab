@@ -1153,6 +1153,8 @@ TRANSLATIONS["en"].update(
         "test_history_title": "Test History",
         "test_history_lede": "Review your past placement results, compare scores, and see how your starting band has changed over time.",
         "test_history_empty": "No completed level tests yet. Take your first test and your history will appear here.",
+        "legacy_test_result": "Legacy partial result",
+        "legacy_test_result_note": "This older result was saved before the current 100-question level test format, so it is not counted in headline statistics.",
         "completed_on": "Completed",
         "score_label": "Score",
         "accuracy_short": "Accuracy",
@@ -1488,6 +1490,8 @@ TRANSLATIONS["zh-Hant"].update(
         "test_history_title": "測驗紀錄",
         "test_history_lede": "回看你過往的程度檢測結果，比較分數，看看建議起始範圍如何隨時間變化。",
         "test_history_empty": "你還未完成任何程度檢測。先做第一次測驗，這裡就會開始累積紀錄。",
+        "legacy_test_result": "舊版部分紀錄",
+        "legacy_test_result_note": "這筆較舊結果是在目前 100 題程度測驗格式前保存，因此不會納入主要統計。",
         "completed_on": "完成時間",
         "score_label": "分數",
         "accuracy_short": "正確率",
@@ -2078,6 +2082,8 @@ TRANSLATIONS["zh-Hans"].update(
         "test_history_title": "检测记录",
         "test_history_lede": "回看你过往的程度检测结果，比较分数，看看建议起始范围如何随时间变化。",
         "test_history_empty": "你还未完成任何程度检测。先做第一次检测，这里就会开始积累记录。",
+        "legacy_test_result": "旧版部分记录",
+        "legacy_test_result_note": "这笔较旧结果是在目前 100 题程度检测格式前保存，因此不会纳入主要统计。",
         "completed_on": "完成时间",
         "score_label": "分数",
         "accuracy_short": "正确率",
@@ -3406,21 +3412,27 @@ def dashboard_spotlight_words(conn: sqlite3.Connection, limit: int = 4, lang: st
     return items
 
 
-def latest_test_result(conn: sqlite3.Connection) -> sqlite3.Row | None:
+def latest_test_result(conn: sqlite3.Connection, full_only: bool = True) -> sqlite3.Row | None:
+    min_questions_clause = "AND COALESCE(question_count, 0) >= ?" if full_only else ""
+    params: tuple[object, ...] = (TEST_QUESTION_COUNT,) if full_only else ()
     return conn.execute(
-        """
+        f"""
         SELECT *
         FROM assessment_sessions
         WHERE status = 'completed'
+          {min_questions_clause}
         ORDER BY id DESC
         LIMIT 1
-        """
+        """,
+        params,
     ).fetchone()
 
 
-def test_history_rows(conn: sqlite3.Connection, limit: int = 50) -> list[dict]:
+def test_history_rows(conn: sqlite3.Connection, limit: int = 50, full_only: bool = False) -> list[dict]:
+    full_only_clause = "HAVING total_questions >= ?" if full_only else ""
+    params: tuple[object, ...] = (TEST_QUESTION_COUNT, limit) if full_only else (limit,)
     rows = conn.execute(
-        """
+        f"""
         SELECT
             assessment_sessions.id,
             assessment_sessions.started_at,
@@ -3433,15 +3445,17 @@ def test_history_rows(conn: sqlite3.Connection, limit: int = 50) -> list[dict]:
         LEFT JOIN assessment_questions ON assessment_questions.session_id = assessment_sessions.id
         WHERE assessment_sessions.status = 'completed'
         GROUP BY assessment_sessions.id
+        {full_only_clause}
         ORDER BY assessment_sessions.id DESC
         LIMIT ?
         """,
-        (limit,),
+        params,
     ).fetchall()
     history: list[dict] = []
     for row in rows:
         total_questions = int(row["total_questions"] or 0)
         correct_answers = int(row["correct_answers"] or 0)
+        is_full_test = total_questions >= TEST_QUESTION_COUNT
         history.append(
             {
                 "id": row["id"],
@@ -3452,6 +3466,8 @@ def test_history_rows(conn: sqlite3.Connection, limit: int = 50) -> list[dict]:
                 "total_questions": total_questions,
                 "correct_answers": correct_answers,
                 "accuracy_percent": round((correct_answers / total_questions) * 100) if total_questions else None,
+                "is_full_test": is_full_test,
+                "is_legacy": not is_full_test,
             }
         )
     return history
@@ -4852,7 +4868,7 @@ def statistics_page(request: Request) -> HTMLResponse:
 def statistics_page_impl(request: Request) -> HTMLResponse:
     conn = db_conn()
     try:
-        history = test_history_rows(conn, limit=5)
+        history = test_history_rows(conn, limit=5, full_only=True)
     except sqlite3.Error:
         history = []
     try:

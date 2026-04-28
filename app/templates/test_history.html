@@ -31,7 +31,13 @@
         <p class="section-subtle">{{ t("completed_on") }}: {{ item.completed_at or item.started_at }}</p>
         <div class="info-badges">
           <span class="info-chip">{{ t("score_label") }} {{ item.score }}</span>
+          {% if item.is_legacy %}
+          <span class="info-chip">{{ t("legacy_test_result") }}</span>
+          {% endif %}
         </div>
+        {% if item.is_legacy %}
+        <p class="section-subtle">{{ t("legacy_test_result_note") }}</p>
+        {% endif %}
         <div class="action-row">
           <a class="button secondary" href="/test/{{ item.id }}/result">{{ t("see_test_result") }}</a>
         </div>
