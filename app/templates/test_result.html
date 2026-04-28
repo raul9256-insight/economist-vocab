@@ -169,6 +169,12 @@
               <span class="report-mark {% if layer_value %}correct{% else %}wrong{% endif %}">
                 {% if layer_value %}{{ t("correct_mark") }}{% else %}{{ t("wrong_mark") }}{% endif %}
               </span>
+              {% if item.question_ids[row.question_type] %}
+              <form method="post" action="/test/{{ session.id }}/feedback" class="inline-feedback-form">
+                <input type="hidden" name="question_id" value="{{ item.question_ids[row.question_type] }}">
+                <button type="submit" name="reason" value="bad_distractor" aria-label="{{ t('report_question') }}">!</button>
+              </form>
+              {% endif %}
             </td>
             {% endfor %}
           </tr>

@@ -1155,6 +1155,21 @@ TRANSLATIONS["en"].update(
         "test_history_empty": "No completed level tests yet. Take your first test and your history will appear here.",
         "legacy_test_result": "Legacy partial result",
         "legacy_test_result_note": "This older result was saved before the current 100-question level test format, so it is not counted in headline statistics.",
+        "report_question": "Report Question",
+        "report_question_note": "Flag a question if the definition, sentence, synonym, antonym, or distractors feel wrong.",
+        "feedback_reason_wrong_definition": "Wrong definition",
+        "feedback_reason_bad_sentence": "Bad example sentence",
+        "feedback_reason_too_easy": "Too easy",
+        "feedback_reason_ambiguous": "Ambiguous",
+        "feedback_reason_bad_distractor": "Bad distractor",
+        "feedback_comment_placeholder": "Optional note",
+        "send_feedback": "Send Feedback",
+        "quality_feedback_title": "Question Feedback",
+        "quality_feedback_empty": "No reported questions yet.",
+        "quality_feedback_lede": "Review level-test questions reported as wrong, too easy, ambiguous, or unnatural.",
+        "quality_feedback_open": "Open",
+        "quality_feedback_reviewed": "Reviewed",
+        "mark_reviewed": "Mark Reviewed",
         "completed_on": "Completed",
         "score_label": "Score",
         "accuracy_short": "Accuracy",
@@ -1492,6 +1507,21 @@ TRANSLATIONS["zh-Hant"].update(
         "test_history_empty": "你還未完成任何程度檢測。先做第一次測驗，這裡就會開始累積紀錄。",
         "legacy_test_result": "舊版部分紀錄",
         "legacy_test_result_note": "這筆較舊結果是在目前 100 題程度測驗格式前保存，因此不會納入主要統計。",
+        "report_question": "回報題目",
+        "report_question_note": "如果定義、例句、相近詞、相反詞或錯誤選項不自然，可以先標記起來。",
+        "feedback_reason_wrong_definition": "定義有誤",
+        "feedback_reason_bad_sentence": "例句不自然",
+        "feedback_reason_too_easy": "太容易",
+        "feedback_reason_ambiguous": "有歧義",
+        "feedback_reason_bad_distractor": "錯誤選項不好",
+        "feedback_comment_placeholder": "補充說明，可留空",
+        "send_feedback": "送出回報",
+        "quality_feedback_title": "題目回報",
+        "quality_feedback_empty": "目前沒有被回報的題目。",
+        "quality_feedback_lede": "檢查被標記為錯誤、太簡單、有歧義或不自然的 Level Test 題目。",
+        "quality_feedback_open": "待處理",
+        "quality_feedback_reviewed": "已檢查",
+        "mark_reviewed": "標記已檢查",
         "completed_on": "完成時間",
         "score_label": "分數",
         "accuracy_short": "正確率",
@@ -2084,6 +2114,21 @@ TRANSLATIONS["zh-Hans"].update(
         "test_history_empty": "你还未完成任何程度检测。先做第一次检测，这里就会开始积累记录。",
         "legacy_test_result": "旧版部分记录",
         "legacy_test_result_note": "这笔较旧结果是在目前 100 题程度检测格式前保存，因此不会纳入主要统计。",
+        "report_question": "回报题目",
+        "report_question_note": "如果定义、例句、相近词、相反词或错误选项不自然，可以先标记起来。",
+        "feedback_reason_wrong_definition": "定义有误",
+        "feedback_reason_bad_sentence": "例句不自然",
+        "feedback_reason_too_easy": "太容易",
+        "feedback_reason_ambiguous": "有歧义",
+        "feedback_reason_bad_distractor": "错误选项不好",
+        "feedback_comment_placeholder": "补充说明，可留空",
+        "send_feedback": "送出回报",
+        "quality_feedback_title": "题目回报",
+        "quality_feedback_empty": "目前没有被回报的题目。",
+        "quality_feedback_lede": "检查被标记为错误、太简单、有歧义或不自然的 Level Test 题目。",
+        "quality_feedback_open": "待处理",
+        "quality_feedback_reviewed": "已检查",
+        "mark_reviewed": "标记已检查",
         "completed_on": "完成时间",
         "score_label": "分数",
         "accuracy_short": "正确率",
@@ -3287,6 +3332,7 @@ def word_report_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en"
             assessment_questions.word_id,
             assessment_questions.band_label,
             assessment_questions.question_type,
+            assessment_questions.id AS question_id,
             assessment_questions.is_correct,
             words.lemma
         FROM assessment_questions
@@ -3320,9 +3366,11 @@ def word_report_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en"
                 "chinese_definition": payload["chinese_headword"],
                 "english_definition": payload["english_definition"],
                 "layers": {question_type: None for question_type in ordered_types},
+                "question_ids": {},
             }
             order.append(word_id)
         buckets[word_id]["layers"][row["question_type"]] = bool(row["is_correct"])
+        buckets[word_id]["question_ids"][row["question_type"]] = row["question_id"]
     result = []
     for word_id in order:
         item = buckets[word_id]
@@ -3520,6 +3568,36 @@ def learning_history_rows(conn: sqlite3.Connection, limit: int = 5) -> list[dict
             }
         )
     return history
+
+
+def question_feedback_rows(conn: sqlite3.Connection, limit: int = 100, status: str = "open") -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT
+            question_feedback.*,
+            words.lemma,
+            assessment_questions.correct_option,
+            assessment_questions.options_json,
+            assessment_questions.prompt_text,
+            assessment_questions.band_label
+        FROM question_feedback
+        LEFT JOIN words ON words.id = question_feedback.word_id
+        LEFT JOIN assessment_questions ON assessment_questions.id = question_feedback.question_id
+        WHERE question_feedback.status = ?
+        ORDER BY question_feedback.id DESC
+        LIMIT ?
+        """,
+        (status, limit),
+    ).fetchall()
+    result = []
+    for row in rows:
+        result.append(
+            {
+                **dict(row),
+                "options": json_loads(row["options_json"]) if row["options_json"] else [],
+            }
+        )
+    return result
 
 
 def search_words(
@@ -4841,6 +4919,35 @@ def test_history(request: Request) -> HTMLResponse:
     return render(request, "test_history.html", history=test_history_rows(conn))
 
 
+@app.get("/quality/feedback", response_class=HTMLResponse)
+def quality_feedback(request: Request, status: str = Query("open")) -> HTMLResponse:
+    conn = db_conn()
+    safe_status = status if status in {"open", "reviewed"} else "open"
+    return render(
+        request,
+        "quality_feedback.html",
+        rows=question_feedback_rows(conn, status=safe_status),
+        status=safe_status,
+    )
+
+
+@app.post("/quality/feedback/{feedback_id}/reviewed")
+def quality_feedback_reviewed(request: Request, feedback_id: int) -> RedirectResponse:
+    conn = db_conn()
+    conn.execute(
+        """
+        UPDATE question_feedback
+        SET status = 'reviewed',
+            reviewed_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (feedback_id,),
+    )
+    conn.commit()
+    lang = getattr(request.state, "lang", get_lang(request))
+    return RedirectResponse(url=f"/quality/feedback?lang={lang}", status_code=303)
+
+
 @app.get("/statistics", response_class=HTMLResponse)
 def statistics_page(request: Request) -> HTMLResponse:
     try:
@@ -5043,6 +5150,42 @@ def test_answer(session_id: int, answer: str = Form(...)) -> RedirectResponse:
     if int(question["position"] or 0) % TEST_LAYERS_PER_WORD != 0:
         return RedirectResponse(url=f"/test/{session_id}", status_code=303)
     return RedirectResponse(url=f"/test/{session_id}/review?question_id={question['id']}", status_code=303)
+
+
+@app.post("/test/{session_id}/feedback")
+def test_feedback(
+    request: Request,
+    session_id: int,
+    question_id: int = Form(...),
+    reason: str = Form(...),
+    comment: str = Form(""),
+) -> RedirectResponse:
+    conn = db_conn()
+    question = test_question_by_id(conn, session_id, question_id)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if question is None:
+        return RedirectResponse(url=f"/test/{session_id}?lang={lang}", status_code=303)
+    safe_reason = reason.strip()[:80]
+    safe_comment = comment.strip()[:500]
+    conn.execute(
+        """
+        INSERT INTO question_feedback (
+            session_id, question_id, word_id, question_type, reason, comment
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            session_id,
+            question_id,
+            question["word_id"],
+            question["question_type"],
+            safe_reason,
+            safe_comment,
+        ),
+    )
+    conn.commit()
+    referer = request.headers.get("referer") or f"/test/{session_id}/review?question_id={question_id}"
+    return RedirectResponse(url=referer, status_code=303)
 
 
 @app.get("/test/{session_id}/review", response_class=HTMLResponse)

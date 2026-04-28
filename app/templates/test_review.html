@@ -41,6 +41,20 @@
         <a class="button" href="/test/{{ session.id }}">{{ t("next_question") }}</a>
         {% endif %}
       </div>
+
+      <form method="post" action="/test/{{ session.id }}/feedback" class="question-feedback-form">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <span class="focus-label">{{ t("report_question") }}</span>
+        <p class="section-subtle">{{ t("report_question_note") }}</p>
+        <div class="feedback-reason-grid">
+          <button class="button secondary" type="submit" name="reason" value="wrong_definition">{{ t("feedback_reason_wrong_definition") }}</button>
+          <button class="button secondary" type="submit" name="reason" value="bad_sentence">{{ t("feedback_reason_bad_sentence") }}</button>
+          <button class="button secondary" type="submit" name="reason" value="too_easy">{{ t("feedback_reason_too_easy") }}</button>
+          <button class="button secondary" type="submit" name="reason" value="ambiguous">{{ t("feedback_reason_ambiguous") }}</button>
+          <button class="button secondary" type="submit" name="reason" value="bad_distractor">{{ t("feedback_reason_bad_distractor") }}</button>
+        </div>
+        <textarea name="comment" rows="2" placeholder="{{ t('feedback_comment_placeholder') }}"></textarea>
+      </form>
     </article>
 
     <aside class="panel dashboard-v2-card learning-side-card">

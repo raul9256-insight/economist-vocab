@@ -66,6 +66,19 @@ CREATE TABLE IF NOT EXISTS assessment_questions (
     answered_at TEXT
 );
 
+CREATE TABLE IF NOT EXISTS question_feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER REFERENCES assessment_sessions(id) ON DELETE SET NULL,
+    question_id INTEGER REFERENCES assessment_questions(id) ON DELETE SET NULL,
+    word_id INTEGER REFERENCES words(id) ON DELETE SET NULL,
+    question_type TEXT NOT NULL DEFAULT '',
+    reason TEXT NOT NULL DEFAULT '',
+    comment TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'open',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at TEXT
+);
+
 CREATE TABLE IF NOT EXISTS learning_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

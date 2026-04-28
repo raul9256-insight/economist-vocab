@@ -1122,6 +1122,66 @@ textarea {
   background: #fff;
 }
 
+.question-feedback-form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.feedback-reason-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.feedback-reason-grid .button {
+  min-height: 2.4rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.86rem;
+}
+
+.inline-feedback-form {
+  display: inline-flex;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+}
+
+.inline-feedback-form button {
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+  border: 1px solid rgba(211, 139, 86, 0.35);
+  background: rgba(211, 139, 86, 0.1);
+  color: #9f5c2e;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.quality-feedback-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.quality-feedback-item h3 {
+  margin: 0.2rem 0 0;
+}
+
+.feedback-option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.feedback-option-list span {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(95, 115, 255, 0.08);
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
 input[type="file"] {
   background: #fff;
 }

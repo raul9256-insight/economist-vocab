@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ t("quality_feedback_title") }} | VocabLab AI{% endblock %}
+{% block content %}
+<section class="test-shell">
+  <article class="panel dashboard-v2-card test-hero">
+    <div class="test-hero-top">
+      <div>
+        <p class="eyebrow">{{ t("level_test_title") }}</p>
+        <h1>{{ t("quality_feedback_title") }}</h1>
+        <p class="lede">{{ t("quality_feedback_lede") }}</p>
+      </div>
+      <div class="action-row">
+        <a class="button secondary" href="/quality/feedback?status=open">{{ t("quality_feedback_open") }}</a>
+        <a class="button secondary" href="/quality/feedback?status=reviewed">{{ t("quality_feedback_reviewed") }}</a>
+      </div>
+    </div>
+
+    {% if rows %}
+    <div class="quality-feedback-list">
+      {% for item in rows %}
+      <article class="learning-info-block quality-feedback-item">
+        <div class="band-result-head">
+          <div>
+            <span class="focus-label">{{ item.reason }}</span>
+            <h3>{{ item.lemma or item.prompt_text or t("unknown") }}</h3>
+          </div>
+          <span>{{ item.question_type }}</span>
+        </div>
+        <p><strong>{{ t("frequency_band_label") }}</strong> {{ item.band_label or "--" }}</p>
+        <p><strong>{{ t("answer_label") }}</strong> {{ item.correct_option or "--" }}</p>
+        {% if item.options %}
+        <div class="feedback-option-list">
+          {% for option in item.options %}
+          <span>{{ option }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if item.comment %}
+        <p>{{ item.comment }}</p>
+        {% endif %}
+        <p class="section-subtle">{{ t("completed_on") }}: {{ item.created_at }}</p>
+        {% if item.status == "open" %}
+        <form method="post" action="/quality/feedback/{{ item.id }}/reviewed" class="action-row">
+          <button class="button secondary" type="submit">{{ t("mark_reviewed") }}</button>
+          {% if item.session_id %}
+          <a class="button secondary" href="/test/{{ item.session_id }}/result">{{ t("view_full_report") }}</a>
+          {% endif %}
+        </form>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="callout learning-result-callout">
+      {{ t("quality_feedback_empty") }}
+    </div>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}
