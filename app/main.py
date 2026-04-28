@@ -147,54 +147,54 @@ LEVEL_TEST_SYNONYMS = {
 
 LEVEL_TEST_ANTONYMS = {
     "abandon": "keep",
-    "abhor": "love",
+    "abhor": "admire",
     "abide": "reject",
-    "abnormal": "normal",
+    "abnormal": "typical",
     "abound": "lack",
     "abrupt": "gradual",
-    "absolute": "partial",
+    "absolute": "limited",
     "absolve": "condemn",
     "absurd": "reasonable",
     "abundant": "scarce",
     "abysmal": "excellent",
     "accede": "refuse",
-    "acceptable": "unacceptable",
-    "accessible": "inaccessible",
+    "acceptable": "flawed",
+    "accessible": "remote",
     "acclaim": "criticize",
     "accomplish": "fail",
-    "accurate": "inaccurate",
+    "accurate": "imprecise",
     "acquiesce": "resist",
-    "active": "passive",
+    "active": "idle",
     "acute": "mild",
     "adamant": "flexible",
     "adapt": "resist",
     "adept": "inept",
     "admire": "despise",
     "admit": "deny",
-    "advantage": "disadvantage",
-    "advantageous": "detrimental",
+    "advantage": "drawback",
+    "advantageous": "harmful",
     "adverse": "favorable",
-    "affable": "unfriendly",
+    "affable": "brusque",
     "affluent": "poor",
     "aggravate": "alleviate",
-    "agile": "clumsy",
-    "agree": "disagree",
+    "agile": "awkward",
+    "agree": "oppose",
     "alert": "inattentive",
     "alienate": "unite",
     "allay": "aggravate",
     "alleviate": "worsen",
-    "allow": "forbid",
+    "allow": "block",
     "aloof": "friendly",
     "alter": "preserve",
     "altruism": "selfishness",
-    "always": "never",
+    "always": "rarely",
     "ambiguous": "clear",
     "ameliorate": "worsen",
     "amicable": "hostile",
     "amplify": "reduce",
     "ancient": "modern",
     "anxious": "calm",
-    "appear": "disappear",
+    "appear": "vanish",
     "appreciate": "depreciate",
     "arbitrary": "systematic",
 }
@@ -828,6 +828,9 @@ TRANSLATIONS["en"].update(
         "hidden_test_note": "Definitions, usage clues, and full word details appear only after you submit, so the placement result stays fair.",
         "meaning_and_usage_items": "5 layers / 100 points",
         "recognized_correctly": "You recognized this word correctly.",
+        "word_round_complete": "Vocabulary item complete",
+        "word_round_score": "Score for this word",
+        "word_round_score_note": "You have completed all five layers for this vocabulary item. Detailed answers will appear in the final report.",
         "revisit_later_note": "This is a useful word to revisit later in learning mode.",
         "see_test_result": "See Test Result",
         "view_statistics": "Statistics",
@@ -1160,6 +1163,9 @@ TRANSLATIONS["zh-Hant"].update(
         "hidden_test_note": "在你送出答案前，完整定義、用法線索和詞彙細節都不會先顯示，這樣結果才比較準。",
         "meaning_and_usage_items": "5 層題型 / 100 分",
         "recognized_correctly": "你正確辨認了這個詞彙。",
+        "word_round_complete": "這個詞已完成",
+        "word_round_score": "這個詞的分數",
+        "word_round_score_note": "你已完成這個詞的五層題型。詳細答案會在最後完整報告中顯示。",
         "revisit_later_note": "這是之後很適合放回學習模式再加強的詞彙。",
         "see_test_result": "查看檢測結果",
         "view_statistics": "統計數據",
@@ -1747,6 +1753,9 @@ TRANSLATIONS["zh-Hans"].update(
         "hidden_test_note": "在你提交答案前，完整定义、用法线索和词汇细节都不会先显示，这样结果才更准确。",
         "meaning_and_usage_items": "5 层题型 / 100 分",
         "recognized_correctly": "你正确辨认了这个词汇。",
+        "word_round_complete": "这个词已完成",
+        "word_round_score": "这个词的分数",
+        "word_round_score_note": "你已完成这个词的五层题型。详细答案会在最后完整报告中显示。",
         "revisit_later_note": "这是之后很适合放回学习模式再加强的词汇。",
         "see_test_result": "查看检测结果",
         "view_statistics": "统计数据",
@@ -3289,6 +3298,22 @@ def previous_test_question(conn: sqlite3.Connection, session_id: int) -> sqlite3
     ).fetchone()
 
 
+def test_word_score(conn: sqlite3.Connection, session_id: int, word_id: int) -> dict[str, int]:
+    row = conn.execute(
+        """
+        SELECT
+            SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) AS correct,
+            COUNT(*) AS total
+        FROM assessment_questions
+        WHERE session_id = ? AND word_id = ? AND answered_at IS NOT NULL
+        """,
+        (session_id, word_id),
+    ).fetchone()
+    correct = int(row["correct"] or 0) if row else 0
+    total = int(row["total"] or 0) if row else 0
+    return {"correct": correct, "total": total}
+
+
 def test_question_by_id(conn: sqlite3.Connection, session_id: int, question_id: int) -> sqlite3.Row | None:
     return conn.execute(
         """
@@ -4423,6 +4448,7 @@ def test_question(request: Request, session_id: int) -> HTMLResponse:
         "test_question.html",
         session=session,
         question=question,
+        word=word_payload(conn, question["word_id"], getattr(request.state, "lang", get_lang(request)))["word"],
         options=json_loads(question["options_json"]),
         progress=test_progress(session),
     )
@@ -4460,6 +4486,9 @@ def test_answer(session_id: int, answer: str = Form(...)) -> RedirectResponse:
     ).fetchone()[0]
     if int(question["position"] or 0) >= int(total_questions or 0):
         finish_test_session(conn, session_id)
+        return RedirectResponse(url=f"/test/{session_id}/review?question_id={question['id']}", status_code=303)
+    if int(question["position"] or 0) % TEST_LAYERS_PER_WORD != 0:
+        return RedirectResponse(url=f"/test/{session_id}", status_code=303)
     return RedirectResponse(url=f"/test/{session_id}/review?question_id={question['id']}", status_code=303)
 
 
@@ -4494,6 +4523,7 @@ def test_review(request: Request, session_id: int, question_id: int | None = Que
         english_definition=payload["english_definition"],
         pronunciation=payload["pronunciation"],
         options=json_loads(question["options_json"]),
+        word_score=test_word_score(conn, session_id, question["word_id"]),
         is_last=is_last,
         progress=test_progress(session),
     )

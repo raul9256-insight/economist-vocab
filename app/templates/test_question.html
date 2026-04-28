@@ -12,7 +12,10 @@
   <section class="learning-session-grid test-session-grid">
     <article class="panel dashboard-v2-card learning-question-card">
       <p class="eyebrow">{{ qtype_label(question.question_type) }}</p>
-      <h1>{{ question.prompt_text }}</h1>
+      <div class="word-heading-row compact">
+        <h1>{{ question.prompt_text }}</h1>
+        <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
+      </div>
       <p class="section-subtle">{{ question.explanation }}</p>
 
       <form method="post" action="/test/{{ session.id }}/answer" class="options-form learning-options-form">

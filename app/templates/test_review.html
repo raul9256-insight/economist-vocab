@@ -10,17 +10,15 @@
 
   <section class="learning-session-grid test-session-grid">
     <article class="panel dashboard-v2-card learning-question-card">
-      <p class="eyebrow">{% if question.is_correct %}{{ t("correct_review") }}{% else %}{{ t("review_label") }}{% endif %}</p>
-      <h1>{{ question.prompt_text }}</h1>
+      <p class="eyebrow">{{ t("word_round_complete") }}</p>
+      <div class="word-heading-row compact">
+        <h1>{{ question.prompt_text }}</h1>
+        <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
+      </div>
 
-      <div class="feedback-card learning-feedback {% if question.is_correct %}feedback-good{% else %}feedback-bad{% endif %}">
-        <p><strong>{{ t("your_answer") }}</strong> {{ question.user_answer }}</p>
-        <p><strong>{{ t("correct_answer") }}</strong> {{ question.correct_option }}</p>
-        {% if question.is_correct %}
-        <p>{{ t("recognized_correctly") }}</p>
-        {% else %}
-        <p>{{ t("revisit_later_note") }}</p>
-        {% endif %}
+      <div class="feedback-card learning-feedback feedback-good">
+        <p><strong>{{ t("word_round_score") }}</strong> {{ word_score.correct }} / 5</p>
+        <p>{{ t("word_round_score_note") }}</p>
       </div>
 
       <div class="learning-review-grid">
@@ -29,20 +27,8 @@
           <p>{{ pronunciation or t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
-          <span class="focus-label">{{ t("chinese_definition") }}</span>
-          {% if definitions %}
-          <ul class="clean-list">
-            {% for item in zh_list(definitions[:4]) %}
-            <li>{{ item }}</li>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p>{{ t("not_added_yet") }}</p>
-          {% endif %}
-        </div>
-        <div class="learning-info-block">
-          <span class="focus-label">{{ t("english_definition") }}</span>
-          <p>{{ english_definition or t("not_added_yet") }}</p>
+          <span class="focus-label">{{ t("question_counter", current=progress.answered, total=progress.total) }}</span>
+          <p>{{ t("hidden_test_note") }}</p>
         </div>
       </div>
 
@@ -52,7 +38,6 @@
         {% else %}
         <a class="button" href="/test/{{ session.id }}">{{ t("next_question") }}</a>
         {% endif %}
-        <a class="button secondary" href="/word/{{ word.id }}">{{ t("open_word_page") }}</a>
       </div>
     </article>
 
@@ -78,14 +63,6 @@
         <div class="learning-info-block">
           <span class="focus-label">{{ t("word_type") }}</span>
           <p>{{ parts_of_speech|join(", ") if parts_of_speech else t("unknown") }}</p>
-        </div>
-        <div class="learning-info-block">
-          <span class="focus-label">{{ t("english_definition") }}</span>
-          <p>{{ english_definition or t("not_added_yet") }}</p>
-        </div>
-        <div class="learning-info-block">
-          <span class="focus-label">{{ t("chinese_definition") }}</span>
-          <p>{{ zh_list(definitions[:2])|join(" / ") if definitions else t("not_added_yet") }}</p>
         </div>
         <div class="learning-info-block">
           <span class="focus-label">{{ t("frequency_band_label") }}</span>
