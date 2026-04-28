@@ -4032,7 +4032,8 @@ input[type="file"] {
 
 .test-hero,
 .test-result-hero,
-.test-band-breakdown-card {
+.test-band-breakdown-card,
+.test-report-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 248, 255, 0.94));
 }
 
@@ -4122,6 +4123,57 @@ input[type="file"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.test-report-focus-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0;
+}
+
+.test-report-table-wrap {
+  overflow-x: auto;
+}
+
+.test-report-table {
+  min-width: 980px;
+}
+
+.test-report-table td {
+  vertical-align: top;
+}
+
+.test-report-meaning,
+.test-report-table small {
+  display: block;
+}
+
+.test-report-table small {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.report-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.report-mark.correct {
+  color: #2f6d47;
+  background: rgba(78, 148, 103, 0.14);
+}
+
+.report-mark.wrong {
+  color: #9a5430;
+  background: rgba(199, 109, 58, 0.14);
+}
+
 @media (max-width: 980px) {
   .app-shell {
     grid-template-columns: 220px minmax(0, 1fr);
@@ -4131,6 +4183,7 @@ input[type="file"] {
   .test-hero-grid,
   .test-result-summary-grid,
   .test-session-grid,
+  .test-report-focus-grid,
   .learning-hero-top,
   .learning-hero-grid,
   .learning-support-grid,

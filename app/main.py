@@ -866,6 +866,19 @@ TRANSLATIONS["en"].update(
         "band_performance": "How you performed by range",
         "band_accuracy_note": "{percent}% accuracy in this band.",
         "test_result_saved_summary_note": "This is a saved historical result. Detailed question breakdown was not stored for this older test session.",
+        "complete_report_title": "Complete Level Test Report",
+        "complete_report_lede": "Use this report to see whether your weakness is meaning, English definition, sentence application, similar words, or opposite words.",
+        "layer_breakdown": "Five-Layer Breakdown",
+        "layer_performance": "Performance by question layer",
+        "strongest_layer": "Strongest layer",
+        "weakest_layer": "Priority review layer",
+        "word_report": "Word-by-word report",
+        "word_report_note": "Each row shows how one vocabulary item performed across the five layers.",
+        "tested_word": "Tested word",
+        "layer_score": "Layer score",
+        "meaning_snapshot": "Meaning snapshot",
+        "correct_mark": "Correct",
+        "wrong_mark": "Review",
         "try_again": "Try Again",
         "go_to_learning": "Go To Learning",
         "review_queue_title": "Missed words",
@@ -1175,6 +1188,19 @@ TRANSLATIONS["zh-Hant"].update(
         "band_performance": "你在不同詞彙分類的表現",
         "band_accuracy_note": "這一組詞彙的正確率是 {percent}%。",
         "test_result_saved_summary_note": "這是先前保存的歷史測驗結果。較舊的測驗紀錄未保留完整題目明細，所以這裡只顯示摘要結果。",
+        "complete_report_title": "完整程度檢測報告",
+        "complete_report_lede": "用這份報告判斷你的弱點是在中文意思、英文定義、例句應用、相近詞，還是相反詞。",
+        "layer_breakdown": "五層題型分析",
+        "layer_performance": "各題型層表現",
+        "strongest_layer": "最強題型",
+        "weakest_layer": "優先複習題型",
+        "word_report": "逐詞報告",
+        "word_report_note": "每一列顯示一個詞在五層題型中的表現。",
+        "tested_word": "測驗詞彙",
+        "layer_score": "題型分數",
+        "meaning_snapshot": "意思摘要",
+        "correct_mark": "答對",
+        "wrong_mark": "待複習",
         "try_again": "再測一次",
         "go_to_learning": "前往學習",
         "review_queue_title": "錯題複習",
@@ -1739,6 +1765,19 @@ TRANSLATIONS["zh-Hans"].update(
         "band_performance": "你在不同词汇分类的表现",
         "band_accuracy_note": "这一组词汇的正确率是 {percent}%。",
         "test_result_saved_summary_note": "这是先前保存的历史检测结果。较旧的检测记录未保留完整题目明细，所以这里只显示摘要结果。",
+        "complete_report_title": "完整程度检测报告",
+        "complete_report_lede": "用这份报告判断你的弱点是在中文意思、英文定义、例句应用、相近词，还是相反词。",
+        "layer_breakdown": "五层题型分析",
+        "layer_performance": "各题型层表现",
+        "strongest_layer": "最强题型",
+        "weakest_layer": "优先复习题型",
+        "word_report": "逐词报告",
+        "word_report_note": "每一行显示一个词在五层题型中的表现。",
+        "tested_word": "检测词汇",
+        "layer_score": "题型分数",
+        "meaning_snapshot": "意思摘要",
+        "correct_mark": "答对",
+        "wrong_mark": "待复习",
         "try_again": "再测一次",
         "go_to_learning": "前往学习",
         "review_queue_title": "错题复习",
@@ -2779,6 +2818,106 @@ def band_accuracy_rows(conn: sqlite3.Connection, session_id: int) -> list[dict]:
             }
         )
     return result
+
+
+def layer_accuracy_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en") -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT question_type,
+               SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) AS correct,
+               COUNT(*) AS total
+        FROM assessment_questions
+        WHERE session_id = ?
+        GROUP BY question_type
+        """,
+        (session_id,),
+    ).fetchall()
+    row_map = {row["question_type"]: row for row in rows}
+    ordered_types = [
+        "chinese_definition",
+        "english_definition",
+        "example_application",
+        "similar_word",
+        "opposite_word",
+    ]
+    result = []
+    for question_type in ordered_types:
+        row = row_map.get(question_type)
+        total = row["total"] if row else 0
+        correct = row["correct"] if row else 0
+        accuracy = round((correct / total) * 100) if total else 0
+        result.append(
+            {
+                "question_type": question_type,
+                "label": translate_question_type(question_type, lang),
+                "correct": correct,
+                "total": total,
+                "accuracy": accuracy,
+                "color": accuracy_color(accuracy)["solid"],
+                "tint": accuracy_color(accuracy)["tint"],
+            }
+        )
+    return result
+
+
+def word_report_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en") -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT
+            assessment_questions.word_id,
+            assessment_questions.band_label,
+            assessment_questions.question_type,
+            assessment_questions.is_correct,
+            words.lemma
+        FROM assessment_questions
+        JOIN words ON words.id = assessment_questions.word_id
+        WHERE assessment_questions.session_id = ?
+        ORDER BY MIN(assessment_questions.position) OVER (PARTITION BY assessment_questions.word_id),
+                 assessment_questions.position
+        """,
+        (session_id,),
+    ).fetchall()
+    ordered_types = [
+        "chinese_definition",
+        "english_definition",
+        "example_application",
+        "similar_word",
+        "opposite_word",
+    ]
+    buckets: dict[int, dict] = {}
+    order: list[int] = []
+    for row in rows:
+        word_id = row["word_id"]
+        if word_id not in buckets:
+            payload = word_payload(conn, word_id, lang)
+            buckets[word_id] = {
+                "word_id": word_id,
+                "lemma": row["lemma"],
+                "band_label": row["band_label"],
+                "chinese_definition": payload["chinese_headword"],
+                "english_definition": payload["english_definition"],
+                "layers": {question_type: None for question_type in ordered_types},
+            }
+            order.append(word_id)
+        buckets[word_id]["layers"][row["question_type"]] = bool(row["is_correct"])
+    result = []
+    for word_id in order:
+        item = buckets[word_id]
+        correct_count = sum(1 for value in item["layers"].values() if value)
+        item["correct_count"] = correct_count
+        item["total_count"] = len(ordered_types)
+        item["accuracy"] = round((correct_count / len(ordered_types)) * 100)
+        result.append(item)
+    return result
+
+
+def report_focus_rows(layer_rows: list[dict]) -> dict[str, dict | None]:
+    available = [row for row in layer_rows if row["total"]]
+    if not available:
+        return {"strongest": None, "weakest": None}
+    strongest = max(available, key=lambda row: (row["accuracy"], row["correct"]))
+    weakest = min(available, key=lambda row: (row["accuracy"], row["correct"]))
+    return {"strongest": strongest, "weakest": weakest}
 
 
 def decorate_band_rows(rows: list[sqlite3.Row]) -> list[dict]:
@@ -4253,8 +4392,11 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         )
         conn.commit()
         session = conn.execute("SELECT * FROM assessment_sessions WHERE id = ?", (session_id,)).fetchone()
-    band_rows = band_accuracy_rows(conn, session_id)
     lang = getattr(request.state, "lang", get_lang(request))
+    band_rows = band_accuracy_rows(conn, session_id)
+    layer_rows = layer_accuracy_rows(conn, session_id, lang)
+    word_rows = word_report_rows(conn, session_id, lang) if has_detailed_results else []
+    focus_rows = report_focus_rows(layer_rows)
     display_total_questions = summary["question_count"] if summary.get("question_count") else session["question_count"]
     display_accuracy_percent = summary["accuracy_percent"] if summary["accuracy_percent"] is not None else session["accuracy_percent"]
     accuracy_ratio = (display_accuracy_percent / 100) if display_accuracy_percent is not None else 0
@@ -4268,6 +4410,9 @@ def test_result(request: Request, session_id: int) -> HTMLResponse:
         "test_result.html",
         session=session,
         band_results=band_rows,
+        layer_results=layer_rows,
+        word_report_rows=word_rows,
+        focus_rows=focus_rows,
         summary=summary,
         has_detailed_results=has_detailed_results,
         display_total_questions=display_total_questions,

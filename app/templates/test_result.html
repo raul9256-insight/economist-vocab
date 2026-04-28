@@ -51,6 +51,46 @@
   </article>
 
   {% if has_detailed_results %}
+  <article class="panel dashboard-v2-card test-report-card">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">{{ t("complete_report_title") }}</p>
+        <h2>{{ t("layer_breakdown") }}</h2>
+        <p class="section-subtle">{{ t("complete_report_lede") }}</p>
+      </div>
+    </div>
+
+    <div class="test-report-focus-grid">
+      {% if focus_rows.strongest %}
+      <div class="learning-info-block">
+        <span class="focus-label">{{ t("strongest_layer") }}</span>
+        <p><strong>{{ focus_rows.strongest.label }}</strong> · {{ focus_rows.strongest.correct }} / {{ focus_rows.strongest.total }}</p>
+      </div>
+      {% endif %}
+      {% if focus_rows.weakest %}
+      <div class="learning-info-block">
+        <span class="focus-label">{{ t("weakest_layer") }}</span>
+        <p><strong>{{ focus_rows.weakest.label }}</strong> · {{ focus_rows.weakest.correct }} / {{ focus_rows.weakest.total }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="test-band-breakdown-grid">
+      {% for row in layer_results %}
+      <article class="test-band-breakdown-item">
+        <div class="band-result-head">
+          <h3>{{ row.label }}</h3>
+          <span>{{ row.correct }} / {{ row.total }}</span>
+        </div>
+        <div class="progress-track" style="background: {{ row.tint }};">
+          <div class="progress-fill" style="width: {{ row.accuracy }}%; background: {{ row.color }};"></div>
+        </div>
+        <p class="section-subtle">{{ row.accuracy }}%</p>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
+
   <article class="panel dashboard-v2-card test-band-breakdown-card">
     <div class="card-head tight">
       <div>
@@ -71,6 +111,53 @@
         <p class="section-subtle">{{ t("band_accuracy_note", percent=row.accuracy) }}</p>
       </article>
       {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel dashboard-v2-card test-report-card">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">{{ t("word_report") }}</p>
+        <h2>{{ t("word_report_note") }}</h2>
+      </div>
+    </div>
+    <div class="test-report-table-wrap">
+      <table class="result-table test-report-table">
+        <thead>
+          <tr>
+            <th>{{ t("tested_word") }}</th>
+            <th>{{ t("frequency_band_label") }}</th>
+            <th>{{ t("meaning_snapshot") }}</th>
+            <th>{{ t("layer_score") }}</th>
+            {% for row in layer_results %}
+            <th>{{ row.label }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in word_report_rows %}
+          <tr>
+            <td><strong>{{ item.lemma }}</strong></td>
+            <td>{{ item.band_label }}</td>
+            <td>
+              <span class="test-report-meaning">{{ zh_text(item.chinese_definition) }}</span>
+              {% if item.english_definition %}
+              <small>{{ item.english_definition }}</small>
+              {% endif %}
+            </td>
+            <td>{{ item.correct_count }} / {{ item.total_count }}</td>
+            {% for row in layer_results %}
+            {% set layer_value = item.layers[row.question_type] %}
+            <td>
+              <span class="report-mark {% if layer_value %}correct{% else %}wrong{% endif %}">
+                {% if layer_value %}{{ t("correct_mark") }}{% else %}{{ t("wrong_mark") }}{% endif %}
+              </span>
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
     <div class="action-row">
       <a class="button secondary" href="/statistics">{{ t("view_statistics") }}</a>
