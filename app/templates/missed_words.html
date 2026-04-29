@@ -17,7 +17,9 @@
     </div>
 
     <div class="review-hero-actions">
-      <a class="button" href="/learning">{{ t("open_learning") }}</a>
+      <form method="post" action="/learning/start">
+        <button class="button" type="submit">{{ t("start_review_session") }}</button>
+      </form>
       <a class="button secondary" href="/dictionary">{{ t("open_dictionary") }}</a>
     </div>
   </article>
@@ -37,6 +39,11 @@
       </div>
       <div class="review-word-meta">
         <span class="review-miss-pill">{{ t("missed_times", count=row.miss_count) }}</span>
+        {% if row.is_due %}
+        <span class="review-miss-pill">{{ t("due_for_review") }}</span>
+        {% elif row.next_review_at %}
+        <span class="review-miss-pill">{{ t("next_review") }}: {{ row.next_review_at[:10] }}</span>
+        {% endif %}
       </div>
       {% if row.pronunciation %}
       <p class="review-word-ipa">{{ row.pronunciation }}</p>

@@ -9,6 +9,7 @@ import re
 import secrets
 import sqlite3
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -1170,6 +1171,9 @@ TRANSLATIONS["en"].update(
         "quality_feedback_open": "Open",
         "quality_feedback_reviewed": "Reviewed",
         "mark_reviewed": "Mark Reviewed",
+        "start_review_session": "Start Review Session",
+        "due_for_review": "Due for review",
+        "next_review": "Next review",
         "completed_on": "Completed",
         "score_label": "Score",
         "accuracy_short": "Accuracy",
@@ -1522,6 +1526,9 @@ TRANSLATIONS["zh-Hant"].update(
         "quality_feedback_open": "待處理",
         "quality_feedback_reviewed": "已檢查",
         "mark_reviewed": "標記已檢查",
+        "start_review_session": "開始複習",
+        "due_for_review": "到期複習",
+        "next_review": "下次複習",
         "completed_on": "完成時間",
         "score_label": "分數",
         "accuracy_short": "正確率",
@@ -2129,6 +2136,9 @@ TRANSLATIONS["zh-Hans"].update(
         "quality_feedback_open": "待处理",
         "quality_feedback_reviewed": "已检查",
         "mark_reviewed": "标记已检查",
+        "start_review_session": "开始复习",
+        "due_for_review": "到期复习",
+        "next_review": "下次复习",
         "completed_on": "完成时间",
         "score_label": "分数",
         "accuracy_short": "正确率",
@@ -3600,6 +3610,64 @@ def question_feedback_rows(conn: sqlite3.Connection, limit: int = 100, status: s
     return result
 
 
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def update_study_card_schedule(conn: sqlite3.Connection, word_id: int, is_correct: bool, source: str) -> None:
+    conn.execute("INSERT INTO study_cards (word_id) VALUES (?) ON CONFLICT(word_id) DO NOTHING", (word_id,))
+    card = conn.execute("SELECT * FROM study_cards WHERE word_id = ?", (word_id,)).fetchone()
+    now = datetime.now(timezone.utc)
+    ease = float(card["ease"] or 2.5)
+    interval = float(card["interval_days"] or 0)
+    streak = int(card["streak"] or 0)
+    correct_count = int(card["correct_count"] or 0)
+    wrong_count = int(card["wrong_count"] or 0)
+
+    if is_correct:
+        streak += 1
+        correct_count += 1
+        interval = 2 if interval < 2 else min(60, interval * ease)
+        ease = min(3.2, ease + 0.03)
+        status = "review"
+        grade = "good"
+    else:
+        streak = 0
+        wrong_count += 1
+        interval = 1
+        ease = max(1.3, ease - 0.2)
+        status = "learning"
+        grade = "again"
+
+    next_review_at = (now + timedelta(days=interval)).isoformat()
+    conn.execute(
+        """
+        UPDATE study_cards
+        SET status = ?, correct_count = ?, wrong_count = ?, streak = ?, ease = ?,
+            interval_days = ?, last_reviewed_at = ?, next_review_at = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE word_id = ?
+        """,
+        (
+            status,
+            correct_count,
+            wrong_count,
+            streak,
+            ease,
+            interval,
+            now.isoformat(),
+            next_review_at,
+            word_id,
+        ),
+    )
+    conn.execute(
+        """
+        INSERT INTO review_log (word_id, reviewed_at, prompt_mode, grade)
+        VALUES (?, ?, ?, ?)
+        """,
+        (word_id, now.isoformat(), source, grade),
+    )
+
+
 def search_words(
     conn: sqlite3.Connection,
     query: str,
@@ -3691,17 +3759,25 @@ def missed_words(conn: sqlite3.Connection, limit: int = 100, lang: str = "en") -
             words.best_band_label,
             COUNT(*) AS miss_count,
             MAX(wrong_answers.seen_at) AS last_seen,
+            study_cards.status,
+            study_cards.next_review_at,
+            study_cards.streak,
             COALESCE(word_enrichment.pronunciation, '') AS pronunciation,
             COALESCE(word_enrichment.english_definition, '') AS english_definition,
             COALESCE(word_enrichment.example_sentence, '') AS example_sentence
         FROM wrong_answers
         JOIN words ON words.id = wrong_answers.word_id
+        JOIN study_cards ON study_cards.word_id = words.id
         LEFT JOIN word_enrichment ON word_enrichment.word_id = words.id
-        GROUP BY words.id, words.lemma, words.best_band_label, word_enrichment.pronunciation, word_enrichment.english_definition, word_enrichment.example_sentence
-        ORDER BY miss_count DESC, last_seen DESC
+        GROUP BY words.id, words.lemma, words.best_band_label, study_cards.status, study_cards.next_review_at, study_cards.streak,
+                 word_enrichment.pronunciation, word_enrichment.english_definition, word_enrichment.example_sentence
+        ORDER BY
+            CASE WHEN study_cards.next_review_at IS NOT NULL AND study_cards.next_review_at <= ? THEN 0 ELSE 1 END,
+            miss_count DESC,
+            last_seen DESC
         LIMIT ?
         """,
-        (limit,),
+        (utc_now_iso(), limit),
     ).fetchall()
     word_ids = [row["id"] for row in rows]
     definitions_map = definitions_map_for_words(conn, word_ids, lang)
@@ -3716,6 +3792,10 @@ def missed_words(conn: sqlite3.Connection, limit: int = 100, lang: str = "en") -
                 "best_band_label": row["best_band_label"],
                 "miss_count": row["miss_count"],
                 "last_seen": row["last_seen"],
+                "status": row["status"],
+                "next_review_at": row["next_review_at"],
+                "streak": row["streak"],
+                "is_due": bool(row["next_review_at"] and row["next_review_at"] <= utc_now_iso()),
                 "pronunciation": row["pronunciation"] or source_fallback["pronunciation"],
                 "english_definition": row["english_definition"] or source_fallback["english_definition"],
                 "example_sentence": row["example_sentence"] or source_fallback["example_sentence"],
@@ -4513,15 +4593,20 @@ def create_learning_session(conn: sqlite3.Connection) -> int:
         JOIN source_entries ON source_entries.word_id = words.id
         WHERE source_entries.meanings_json <> '[]'
         ORDER BY
-            CASE study_cards.status
-                WHEN 'new' THEN 0
-                WHEN 'learning' THEN 1
-                ELSE 2
+            CASE
+                WHEN study_cards.next_review_at IS NOT NULL AND study_cards.next_review_at <= ? THEN 0
+                WHEN study_cards.wrong_count > 0 THEN 1
+                WHEN study_cards.status = 'learning' THEN 2
+                WHEN study_cards.status = 'new' THEN 3
+                ELSE 4
             END,
+            study_cards.wrong_count DESC,
+            study_cards.next_review_at,
             words.best_band_rank,
             RANDOM()
         LIMIT 30
         """,
+        (utc_now_iso(),),
     ).fetchall()
     populate_learning_session(conn, session_id, words)
     return session_id
@@ -5159,6 +5244,7 @@ def test_answer(session_id: int, answer: str = Form(...)) -> RedirectResponse:
         """,
         (is_correct, session_id),
     )
+    update_study_card_schedule(conn, question["word_id"], bool(is_correct), "level_test")
     conn.commit()
     total_questions = conn.execute(
         "SELECT COUNT(*) FROM assessment_questions WHERE session_id = ?",
@@ -5415,17 +5501,7 @@ def learning_answer(session_id: int, answer: str = Form(...)) -> RedirectRespons
         """,
         (is_correct, session_id),
     )
-    conn.execute(
-        """
-        UPDATE study_cards
-        SET correct_count = correct_count + ?,
-            wrong_count = wrong_count + ?,
-            status = CASE WHEN ? = 1 THEN 'learning' ELSE status END,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE word_id = ?
-        """,
-        (is_correct, 1 - is_correct, is_correct, question["word_id"]),
-    )
+    update_study_card_schedule(conn, question["word_id"], bool(is_correct), "learning")
     conn.commit()
     return RedirectResponse(url=f"/learning/{session_id}/review", status_code=303)
 
@@ -5895,17 +5971,7 @@ def mobile_learning_answer(
         """,
         (is_correct, session_id),
     )
-    conn.execute(
-        """
-        UPDATE study_cards
-        SET correct_count = correct_count + ?,
-            wrong_count = wrong_count + ?,
-            status = CASE WHEN ? = 1 THEN 'learning' ELSE status END,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE word_id = ?
-        """,
-        (is_correct, 1 - is_correct, is_correct, question["word_id"]),
-    )
+    update_study_card_schedule(conn, question["word_id"], bool(is_correct), "mobile_learning")
     conn.commit()
     updated_session = conn.execute("SELECT * FROM learning_sessions WHERE id = ?", (session_id,)).fetchone()
     reviewed_question = previous_learning_question(conn, session_id)
