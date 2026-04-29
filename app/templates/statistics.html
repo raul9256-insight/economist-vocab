@@ -62,7 +62,6 @@
       <div class="learning-stat-card">
         <span>{{ t("statistics_latest_report") }}</span>
         {% if latest_test_history %}
-        <strong>{{ t("view_full_report") }}</strong>
         <small>{{ t("statistics_latest_report_body") }}</small>
         <div class="action-row">
           <a class="button secondary" href="/test/{{ latest_test_history.id }}/result">{{ t("view_full_report") }}</a>

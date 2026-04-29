@@ -35,6 +35,7 @@ from app.enrichment_io import (
     import_ai_power_rows,
     import_enrichment_rows,
     import_taxonomy_rows,
+    iter_enrichment_import_rows,
     iter_import_rows,
 )
 from app.openai_enrichment import generate_ai_insight_for_word, generate_enrichment_batch, load_env_file
@@ -6799,10 +6800,10 @@ def bulk_export_template(
 async def bulk_import_upload(file: UploadFile = File(...)) -> RedirectResponse:
     conn = db_conn()
     content = await file.read()
-    rows = iter_import_rows(file.filename or "", content)
+    rows = iter_enrichment_import_rows(file.filename or "", content)
     stats = import_enrichment_rows(conn, rows)
     return RedirectResponse(
-        url=f"/bulk-import?imported=1&updated={stats['updated']}&missing={stats['missing_words']}",
+        url=f"/bulk-import?imported=1&updated={stats['updated']}&source_updated={stats['source_updated']}&missing={stats['missing_words']}",
         status_code=303,
     )
 

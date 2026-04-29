@@ -26,6 +26,20 @@ EXPECTED_COLUMNS = [
     "notes",
 ]
 
+ENRICHMENT_COLUMN_ALIASES = {
+    "vocabulary": "lemma",
+    "word": "lemma",
+    "type of word": "parts_of_speech",
+    "part of speech": "parts_of_speech",
+    "pos": "parts_of_speech",
+    "chinese definition": "chinese_definitions",
+    "traditional chinese definition": "chinese_definitions",
+    "simplified chinese definition": "simplified_chinese_definition",
+    "english definition": "english_definition",
+    "example sentence": "example_sentence",
+    "ipa": "pronunciation",
+}
+
 AI_POWER_EXPECTED_COLUMNS = [
     "completion_status",
     "missing_fields",
@@ -103,6 +117,47 @@ def iter_import_rows(filename: str, content: bytes) -> list[dict[str, str]]:
                 value = raw[index] if index < len(raw) else ""
                 row[header] = "" if value is None else str(value).strip()
             result.append(row)
+        return result
+    raise ValueError("Only .csv and .xlsx files are supported.")
+
+
+def normalize_enrichment_header(header: str) -> str:
+    cleaned = " ".join(str(header or "").strip().replace("_", " ").split()).lower()
+    if cleaned in ENRICHMENT_COLUMN_ALIASES:
+        return ENRICHMENT_COLUMN_ALIASES[cleaned]
+    underscored = cleaned.replace(" ", "_")
+    return underscored if underscored in EXPECTED_COLUMNS else str(header or "").strip()
+
+
+def iter_enrichment_import_rows(filename: str, content: bytes) -> list[dict[str, str]]:
+    suffix = Path(filename).suffix.lower()
+    workbook_name = Path(filename).name
+    if suffix == ".csv":
+        rows = iter_import_rows(filename, content)
+        return [
+            {normalize_enrichment_header(key): value for key, value in row.items()}
+            for row in rows
+        ]
+    if suffix in {".xlsx", ".xlsm"}:
+        wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+        result: list[dict[str, str]] = []
+        for ws in wb.worksheets:
+            rows = list(ws.iter_rows(values_only=True))
+            if not rows:
+                continue
+            headers = [normalize_enrichment_header(str(cell).strip() if cell is not None else "") for cell in rows[0]]
+            for row_number, raw in enumerate(rows[1:], start=2):
+                row = {
+                    "source_workbook_name": workbook_name,
+                    "source_sheet_name": ws.title,
+                    "source_row_number": str(row_number),
+                }
+                for index, header in enumerate(headers):
+                    if not header:
+                        continue
+                    value = raw[index] if index < len(raw) else ""
+                    row[header] = "" if value is None else str(value).strip()
+                result.append(row)
         return result
     raise ValueError("Only .csv and .xlsx files are supported.")
 
@@ -412,7 +467,7 @@ def import_ai_power_rows(rows: list[dict[str, str]]) -> tuple[list[dict[str, str
 
 
 def import_enrichment_rows(conn: sqlite3.Connection, rows: list[dict[str, str]]) -> dict[str, int]:
-    stats = {"updated": 0, "skipped": 0, "missing_words": 0}
+    stats = {"updated": 0, "source_updated": 0, "skipped": 0, "missing_words": 0}
     for raw_row in rows:
         lemma = normalize_word(raw_row.get("lemma", ""))
         if not lemma:
@@ -444,41 +499,47 @@ def import_enrichment_rows(conn: sqlite3.Connection, rows: list[dict[str, str]])
         incoming_example = raw_row.get("example_sentence", "").strip()
         incoming_synonyms = parse_list_field(raw_row.get("synonyms", ""))
         incoming_distractors = parse_list_field(raw_row.get("sentence_distractors", ""))
+        incoming_pos = raw_row.get("parts_of_speech", "").strip()
+        incoming_chinese = parse_list_field(raw_row.get("chinese_definitions", ""))
+        incoming_simplified = parse_list_field(raw_row.get("simplified_chinese_definition", ""))
         notes = raw_row.get("notes", "").strip()
-        has_new_content = any([incoming_pronunciation, incoming_english, incoming_example, incoming_synonyms, incoming_distractors, notes])
+        has_enrichment_content = any([incoming_pronunciation, incoming_english, incoming_example, incoming_synonyms, incoming_distractors, notes])
+        has_source_content = any([incoming_pos, incoming_chinese, incoming_simplified])
+        has_new_content = has_enrichment_content or has_source_content
         if not has_new_content:
             stats["skipped"] += 1
             continue
 
-        pronunciation = incoming_pronunciation or current_pronunciation
-        english_definition = incoming_english or current_english
-        example_sentence = incoming_example or current_example
-        synonyms = incoming_synonyms or current_synonyms
-        sentence_distractors = incoming_distractors or current_distractors
+        if has_enrichment_content:
+            pronunciation = incoming_pronunciation or current_pronunciation
+            english_definition = incoming_english or current_english
+            example_sentence = incoming_example or current_example
+            synonyms = incoming_synonyms or current_synonyms
+            sentence_distractors = incoming_distractors or current_distractors
 
-        conn.execute(
-            """
-            INSERT INTO word_enrichment (
-                word_id, pronunciation, english_definition, synonyms_json, example_sentence, sentence_distractors_json
+            conn.execute(
+                """
+                INSERT INTO word_enrichment (
+                    word_id, pronunciation, english_definition, synonyms_json, example_sentence, sentence_distractors_json
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(word_id) DO UPDATE SET
+                    pronunciation = excluded.pronunciation,
+                    english_definition = excluded.english_definition,
+                    synonyms_json = excluded.synonyms_json,
+                    example_sentence = excluded.example_sentence,
+                    sentence_distractors_json = excluded.sentence_distractors_json,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (
+                    word["id"],
+                    pronunciation,
+                    english_definition,
+                    json.dumps(synonyms, ensure_ascii=False),
+                    example_sentence,
+                    json.dumps(sentence_distractors, ensure_ascii=False),
+                ),
             )
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON CONFLICT(word_id) DO UPDATE SET
-                pronunciation = excluded.pronunciation,
-                english_definition = excluded.english_definition,
-                synonyms_json = excluded.synonyms_json,
-                example_sentence = excluded.example_sentence,
-                sentence_distractors_json = excluded.sentence_distractors_json,
-                updated_at = CURRENT_TIMESTAMP
-            """,
-            (
-                word["id"],
-                pronunciation,
-                english_definition,
-                json.dumps(synonyms, ensure_ascii=False),
-                example_sentence,
-                json.dumps(sentence_distractors, ensure_ascii=False),
-            ),
-        )
         if notes:
             conn.execute(
                 """
@@ -488,6 +549,66 @@ def import_enrichment_rows(conn: sqlite3.Connection, rows: list[dict[str, str]])
                 """,
                 (notes, word["id"]),
             )
+        if has_source_content:
+            source_row = None
+            source_workbook_name = raw_row.get("source_workbook_name", "").strip()
+            source_sheet_name = raw_row.get("source_sheet_name", "").strip()
+            source_row_number = raw_row.get("source_row_number", "").strip()
+            if source_workbook_name and source_sheet_name and source_row_number.isdigit():
+                source_row = conn.execute(
+                    """
+                    SELECT id, pos, meanings_json, extra_json
+                    FROM source_entries
+                    WHERE word_id = ?
+                      AND workbook_name = ?
+                      AND sheet_name = ?
+                      AND row_number = ?
+                    """,
+                    (word["id"], source_workbook_name, source_sheet_name, int(source_row_number)),
+                ).fetchone()
+            if source_row is None:
+                source_row = conn.execute(
+                    """
+                    SELECT id, pos, meanings_json, extra_json
+                    FROM source_entries
+                    WHERE word_id = ?
+                    ORDER BY band_rank, workbook_name, row_number
+                    LIMIT 1
+                    """,
+                    (word["id"],),
+                ).fetchone()
+            if source_row is not None:
+                try:
+                    extra = json.loads(source_row["extra_json"] or "{}")
+                except json.JSONDecodeError:
+                    extra = {}
+                if not isinstance(extra, dict):
+                    extra = {}
+                meanings = incoming_chinese or json.loads(source_row["meanings_json"])
+                if incoming_simplified:
+                    extra["simplified_chinese_definition"] = " | ".join(incoming_simplified)
+                if incoming_english:
+                    extra["english_definition"] = incoming_english
+                if incoming_example:
+                    extra["example_sentence"] = incoming_example
+                if incoming_pronunciation:
+                    extra["pronunciation"] = incoming_pronunciation
+                conn.execute(
+                    """
+                    UPDATE source_entries
+                    SET pos = ?,
+                        meanings_json = ?,
+                        extra_json = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        incoming_pos or source_row["pos"],
+                        json.dumps(meanings, ensure_ascii=False),
+                        json.dumps(extra, ensure_ascii=False),
+                        source_row["id"],
+                    ),
+                )
+                stats["source_updated"] += 1
         stats["updated"] += 1
     conn.commit()
     return stats

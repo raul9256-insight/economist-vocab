@@ -20,7 +20,7 @@
   {% endif %}
   {% if request.query_params.get('imported') %}
   <div class="callout">
-    <strong>Import complete.</strong> Updated {{ request.query_params.get('updated') or 0 }} words. Missing words: {{ request.query_params.get('missing') or 0 }}.
+    <strong>Import complete.</strong> Updated {{ request.query_params.get('updated') or 0 }} words. Source rows updated: {{ request.query_params.get('source_updated') or 0 }}. Missing words: {{ request.query_params.get('missing') or 0 }}.
   </div>
   {% endif %}
   {% if request.query_params.get('taxonomy_exported') %}
@@ -107,7 +107,7 @@
 
   <article class="panel">
     <h2>3. Upload The File</h2>
-    <p>Supported formats: <code>.xlsx</code> and <code>.csv</code>.</p>
+    <p>Supported formats: <code>.xlsx</code> and <code>.csv</code>. Excel files can use the exported template columns or the original band workbook columns: <code>Vocabulary</code>, <code>Type of word</code>, <code>English Definition</code>, <code>Chinese Definition</code>, <code>Simplified Chinese Definition</code>, <code>Example Sentence</code>, and <code>IPA</code>.</p>
     <form method="post" action="/bulk-import/upload" enctype="multipart/form-data" class="stack-form">
       <label>
         <span>Completed file</span>
