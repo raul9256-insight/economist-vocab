@@ -707,6 +707,21 @@ TRANSLATIONS = {
         "auth_error_password_short": "Password must be at least 8 characters.",
         "auth_error_name_required": "Please add your display name.",
         "auth_error_email_required": "Please add a valid email.",
+        "nav_account": "Account",
+        "account_title": "Account Settings",
+        "account_lede": "Manage your profile, learning role, and password.",
+        "account_profile": "Profile",
+        "account_email": "Email",
+        "account_persona": "Learning role",
+        "account_save_profile": "Save profile",
+        "account_password": "Password",
+        "current_password": "Current password",
+        "new_password": "New password",
+        "change_password": "Change password",
+        "account_profile_saved": "Profile updated.",
+        "account_password_saved": "Password changed.",
+        "account_error_password_current": "Current password is incorrect.",
+        "account_login_required": "Please log in to manage your account.",
         "persona_student": "Student",
         "persona_student_desc": "High school or university learners building stronger academic English.",
         "persona_teacher": "Teacher / Educator",
@@ -854,6 +869,21 @@ TRANSLATIONS = {
         "auth_error_password_short": "密碼至少需要 8 個字元。",
         "auth_error_name_required": "請填寫顯示名稱。",
         "auth_error_email_required": "請輸入有效的電子郵件。",
+        "nav_account": "帳戶",
+        "account_title": "帳戶設定",
+        "account_lede": "管理你的個人資料、學習角色與密碼。",
+        "account_profile": "個人資料",
+        "account_email": "電子郵件",
+        "account_persona": "學習角色",
+        "account_save_profile": "儲存個人資料",
+        "account_password": "密碼",
+        "current_password": "目前密碼",
+        "new_password": "新密碼",
+        "change_password": "修改密碼",
+        "account_profile_saved": "個人資料已更新。",
+        "account_password_saved": "密碼已更新。",
+        "account_error_password_current": "目前密碼不正確。",
+        "account_login_required": "請先登入才能管理帳戶。",
         "persona_student": "學生",
         "persona_student_desc": "小學、中學、大學或研究所階段，想建立更強的學術英語能力",
         "persona_teacher": "教師 / 教育工作者",
@@ -1851,6 +1881,21 @@ TRANSLATIONS["zh-Hans"].update(
         "auth_error_password_short": "密码至少需要 8 个字符。",
         "auth_error_name_required": "请填写显示名称。",
         "auth_error_email_required": "请输入有效的电子邮件。",
+        "nav_account": "账户",
+        "account_title": "账户设置",
+        "account_lede": "管理你的个人资料、学习角色与密码。",
+        "account_profile": "个人资料",
+        "account_email": "电子邮件",
+        "account_persona": "学习角色",
+        "account_save_profile": "保存个人资料",
+        "account_password": "密码",
+        "current_password": "当前密码",
+        "new_password": "新密码",
+        "change_password": "修改密码",
+        "account_profile_saved": "个人资料已更新。",
+        "account_password_saved": "密码已更新。",
+        "account_error_password_current": "当前密码不正确。",
+        "account_login_required": "请先登录才能管理账户。",
         "persona_student": "学生",
         "persona_student_desc": "高中、大学或研究所阶段，想建立更强的学术英语能力。",
         "persona_teacher": "教师 / 教育工作者",
@@ -5187,6 +5232,104 @@ def auth_logout(request: Request) -> RedirectResponse:
     response.delete_cookie("profile_name")
     response.delete_cookie("profile_persona")
     return response
+
+
+PERSONA_OPTIONS = [
+    {"value": "student", "label_key": "persona_student"},
+    {"value": "teacher", "label_key": "persona_teacher"},
+    {"value": "business_professional", "label_key": "persona_business"},
+    {"value": "ai_power_user", "label_key": "persona_ai"},
+    {"value": "lifelong_learner", "label_key": "persona_lifelong"},
+]
+
+
+def account_redirect_url(lang: str, message_key: str = "") -> str:
+    params = []
+    if message_key:
+        params.append(("message", message_key))
+    if lang != "en":
+        params.append(("lang", lang))
+    query = urlencode(params)
+    return f"/account?{query}" if query else "/account"
+
+
+@app.get("/account", response_class=HTMLResponse)
+def account_page(request: Request, message: str = Query("")) -> HTMLResponse:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    allowed_messages = {
+        "account_profile_saved",
+        "account_password_saved",
+        "account_error_password_current",
+        "auth_error_password_short",
+        "auth_error_name_required",
+    }
+    return render(
+        request,
+        "account.html",
+        user=user,
+        persona_options=PERSONA_OPTIONS,
+        message_key=message if message in allowed_messages else "",
+    )
+
+
+@app.post("/account/profile")
+def account_profile_update(
+    request: Request,
+    display_name: str = Form(""),
+    persona: str = Form("lifelong_learner"),
+) -> RedirectResponse:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    safe_name = display_name.strip()[:40]
+    if not safe_name:
+        return RedirectResponse(url=account_redirect_url(lang, "auth_error_name_required"), status_code=303)
+    safe_persona = persona if persona in SUPPORTED_PERSONAS else "lifelong_learner"
+    conn = db_conn()
+    conn.execute(
+        """
+        UPDATE users
+        SET display_name = ?, persona = ?
+        WHERE id = ?
+        """,
+        (safe_name, safe_persona, user["id"]),
+    )
+    conn.commit()
+    response = RedirectResponse(url=account_redirect_url(lang, "account_profile_saved"), status_code=303)
+    response.set_cookie("profile_name", safe_name, max_age=60 * 60 * 24 * 365)
+    response.set_cookie("profile_persona", safe_persona, max_age=60 * 60 * 24 * 365)
+    return response
+
+
+@app.post("/account/password")
+def account_password_update(
+    request: Request,
+    current_password: str = Form(""),
+    new_password: str = Form(""),
+) -> RedirectResponse:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    if not verify_password(current_password, user["password_hash"]):
+        return RedirectResponse(url=account_redirect_url(lang, "account_error_password_current"), status_code=303)
+    if len(new_password or "") < 8:
+        return RedirectResponse(url=account_redirect_url(lang, "auth_error_password_short"), status_code=303)
+    conn = db_conn()
+    conn.execute(
+        """
+        UPDATE users
+        SET password_hash = ?
+        WHERE id = ?
+        """,
+        (hash_password(new_password), user["id"]),
+    )
+    conn.commit()
+    return RedirectResponse(url=account_redirect_url(lang, "account_password_saved"), status_code=303)
 
 
 @app.get("/test", response_class=HTMLResponse)

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ t("account_title") }} | VocabLab AI{% endblock %}
+{% block content %}
+<section class="learning-shell account-shell">
+  <article class="panel dashboard-v2-card learning-hero account-hero">
+    <div class="learning-hero-top">
+      <div>
+        <p class="eyebrow">{{ t("nav_account") }}</p>
+        <h1>{{ t("account_title") }}</h1>
+        <p class="lede">{{ t("account_lede") }}</p>
+      </div>
+      <div class="topbar-user account-user-card">
+        <span class="user-badge">{{ profile_initials }}</span>
+        <div>
+          <strong>{{ profile_name }}</strong>
+          <small>{{ user.email }}</small>
+        </div>
+      </div>
+    </div>
+
+    {% if message_key %}
+    <div class="landing-auth-error account-message">{{ t(message_key) }}</div>
+    {% endif %}
+
+    <div class="account-grid">
+      <article class="learning-focus-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("account_profile") }}</p>
+            <h2>{{ t("signup_name_label") }}</h2>
+          </div>
+        </div>
+        <form class="stack-form refined-form" method="post" action="/account/profile{% if lang != 'en' %}?lang={{ lang }}{% endif %}">
+          <label>
+            <span>{{ t("signup_name_label") }}</span>
+            <input type="text" name="display_name" value="{{ user.display_name }}" maxlength="40" required>
+          </label>
+          <label>
+            <span>{{ t("account_email") }}</span>
+            <input type="email" value="{{ user.email }}" disabled>
+          </label>
+          <label>
+            <span>{{ t("account_persona") }}</span>
+            <select name="persona">
+              {% for item in persona_options %}
+              <option value="{{ item.value }}" {% if item.value == user.persona %}selected{% endif %}>{{ t(item.label_key) }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <button class="button" type="submit">{{ t("account_save_profile") }}</button>
+        </form>
+      </article>
+
+      <article class="learning-progress-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("account_password") }}</p>
+            <h2>{{ t("change_password") }}</h2>
+          </div>
+        </div>
+        <form class="stack-form refined-form" method="post" action="/account/password{% if lang != 'en' %}?lang={{ lang }}{% endif %}">
+          <label>
+            <span>{{ t("current_password") }}</span>
+            <input type="password" name="current_password" required>
+          </label>
+          <label>
+            <span>{{ t("new_password") }}</span>
+            <input type="password" name="new_password" minlength="8" maxlength="120" required>
+          </label>
+          <button class="button secondary" type="submit">{{ t("change_password") }}</button>
+        </form>
+      </article>
+    </div>
+  </article>
+</section>
+{% endblock %}
