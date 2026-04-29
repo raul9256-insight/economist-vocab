@@ -256,18 +256,20 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
         WHERE id = 1
         """
     )
-    conn.execute(
-        """
-        INSERT OR IGNORE INTO user_study_cards (
-            user_id, word_id, status, correct_count, wrong_count, streak, ease,
-            interval_days, notes, last_reviewed_at, next_review_at, updated_at
+    seeded_cards = conn.execute("SELECT COUNT(*) FROM user_study_cards WHERE user_id = 1").fetchone()[0]
+    if seeded_cards == 0:
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO user_study_cards (
+                user_id, word_id, status, correct_count, wrong_count, streak, ease,
+                interval_days, notes, last_reviewed_at, next_review_at, updated_at
+            )
+            SELECT
+                1, word_id, status, correct_count, wrong_count, streak, ease,
+                interval_days, notes, last_reviewed_at, next_review_at, updated_at
+            FROM study_cards
+            """
         )
-        SELECT
-            1, word_id, status, correct_count, wrong_count, streak, ease,
-            interval_days, notes, last_reviewed_at, next_review_at, updated_at
-        FROM study_cards
-        """
-    )
     conn.commit()
     return conn
 

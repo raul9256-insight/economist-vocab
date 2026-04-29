@@ -4122,15 +4122,14 @@ def level_test_synonym_for_word(conn: sqlite3.Connection, word: sqlite3.Row) -> 
 
 
 def level_test_antonym_for_word(conn: sqlite3.Connection, word: sqlite3.Row) -> str:
-    if "antonyms_json" in {row["name"] for row in conn.execute("PRAGMA table_info(word_enrichment)").fetchall()}:
-        enrichment = conn.execute(
-            "SELECT antonyms_json FROM word_enrichment WHERE word_id = ?",
-            (word["id"],),
-        ).fetchone()
-        if enrichment is not None:
-            candidate = first_quality_relation(json_loads(enrichment["antonyms_json"]), word["lemma"])
-            if candidate:
-                return candidate
+    enrichment = conn.execute(
+        "SELECT antonyms_json FROM word_enrichment WHERE word_id = ?",
+        (word["id"],),
+    ).fetchone()
+    if enrichment is not None:
+        candidate = first_quality_relation(json_loads(enrichment["antonyms_json"]), word["lemma"])
+        if candidate:
+            return candidate
     return LEVEL_TEST_ANTONYMS.get(word["lemma"].strip().lower(), "")
 
 
@@ -4650,6 +4649,39 @@ def build_sentence_question(conn: sqlite3.Connection, word: sqlite3.Row, positio
     }
 
 
+def level_test_candidate_words(conn: sqlite3.Connection, band_rank: int, limit: int = 180) -> list[sqlite3.Row]:
+    seeded_lemmas = sorted(set(LEVEL_TEST_SYNONYMS).intersection(LEVEL_TEST_ANTONYMS))
+    seeded_clause = ""
+    params: list[object] = [band_rank]
+    if seeded_lemmas:
+        placeholders = ",".join("?" for _ in seeded_lemmas)
+        seeded_clause = f"OR lower(words.lemma) IN ({placeholders})"
+        params.extend(seeded_lemmas)
+    params.append(limit)
+    return conn.execute(
+        f"""
+        SELECT words.*, COUNT(assessment_questions.id) AS test_use_count
+        FROM words
+        JOIN source_entries ON source_entries.word_id = words.id
+        LEFT JOIN word_enrichment ON word_enrichment.word_id = words.id
+        LEFT JOIN assessment_questions ON assessment_questions.word_id = words.id
+        WHERE words.best_band_rank = ?
+          AND source_entries.meanings_json <> '[]'
+          AND (
+            (
+              COALESCE(word_enrichment.synonyms_json, '[]') <> '[]'
+              AND COALESCE(word_enrichment.antonyms_json, '[]') <> '[]'
+            )
+            {seeded_clause}
+          )
+        GROUP BY words.id
+        ORDER BY test_use_count ASC, words.id
+        LIMIT ?
+        """,
+        tuple(params),
+    ).fetchall()
+
+
 def create_test_session(conn: sqlite3.Connection, user_id: int = USER_ID) -> int:
     band_rows = band_summary(conn)
     questions: list[dict] = []
@@ -4657,17 +4689,7 @@ def create_test_session(conn: sqlite3.Connection, user_id: int = USER_ID) -> int
     used_word_ids: set[int] = set()
     band_word_counts: dict[int, int] = defaultdict(int)
     for band in band_rows:
-        rows = conn.execute(
-            """
-            SELECT words.*, COUNT(assessment_questions.id) AS test_use_count
-            FROM words
-            LEFT JOIN assessment_questions ON assessment_questions.word_id = words.id
-            WHERE words.best_band_rank = ?
-            GROUP BY words.id
-            ORDER BY test_use_count ASC, RANDOM()
-            """,
-            (band["best_band_rank"],),
-        ).fetchall()
+        rows = level_test_candidate_words(conn, band["best_band_rank"])
         for word in rows:
             if word["id"] in used_word_ids:
                 continue
