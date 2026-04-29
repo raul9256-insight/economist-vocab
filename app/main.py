@@ -747,6 +747,30 @@ TRANSLATIONS = {
         "teacher_joined_at": "Joined",
         "teacher_no_students": "No students have joined yet.",
         "teacher_only": "Please switch your account role to Teacher / Educator to use this page.",
+        "teacher_class_snapshot": "Class Snapshot",
+        "teacher_active_students": "Active Students",
+        "teacher_avg_level_score": "Avg. Level Score",
+        "teacher_avg_learning_accuracy": "Avg. Learning Accuracy",
+        "teacher_learning_completed": "Learning Sessions",
+        "teacher_at_risk_students": "At-Risk Students",
+        "teacher_weakest_type": "Weakest Type",
+        "teacher_student_progress": "Student Progress",
+        "teacher_latest_test": "Latest Test",
+        "teacher_recommended_band": "Recommended Band",
+        "teacher_learning_accuracy": "Learning Accuracy",
+        "teacher_learning_sessions": "Learning",
+        "teacher_weak_area": "Weak Area",
+        "teacher_last_active": "Last Active",
+        "teacher_risk": "Risk",
+        "teacher_recommendations": "Recommended Actions",
+        "teacher_no_recommendations": "No urgent actions yet. Keep the class on the current learning plan.",
+        "teacher_recommend_inactive": "{count} students have not been active recently. Send a reminder or assign a short review.",
+        "teacher_recommend_accuracy": "{count} students are below 60% accuracy. Assign a lower-band revision set.",
+        "teacher_recommend_weak_type": "The class is weakest in {question_type}. Create focused practice for this layer.",
+        "risk_low": "Low",
+        "risk_medium": "Medium",
+        "risk_high": "High",
+        "not_enough_data": "Not enough data",
         "persona_student": "Student",
         "persona_student_desc": "High school or university learners building stronger academic English.",
         "persona_teacher": "Teacher / Educator",
@@ -934,6 +958,30 @@ TRANSLATIONS = {
         "teacher_joined_at": "加入時間",
         "teacher_no_students": "暫時沒有學生加入。",
         "teacher_only": "請先把帳戶角色切換成 Teacher / Educator，才能使用這個頁面。",
+        "teacher_class_snapshot": "班級總覽",
+        "teacher_active_students": "活躍學生",
+        "teacher_avg_level_score": "平均程度分",
+        "teacher_avg_learning_accuracy": "平均練習準確率",
+        "teacher_learning_completed": "完成練習",
+        "teacher_at_risk_students": "需關注學生",
+        "teacher_weakest_type": "最弱題型",
+        "teacher_student_progress": "學生進度",
+        "teacher_latest_test": "最近測驗",
+        "teacher_recommended_band": "建議 Band",
+        "teacher_learning_accuracy": "練習準確率",
+        "teacher_learning_sessions": "練習次數",
+        "teacher_weak_area": "弱項",
+        "teacher_last_active": "最後活躍",
+        "teacher_risk": "風險",
+        "teacher_recommendations": "建議行動",
+        "teacher_no_recommendations": "暫時沒有急需處理的事項，可以按目前學習節奏繼續。",
+        "teacher_recommend_inactive": "{count} 位學生近期沒有活躍。建議發提醒或派一份短複習。",
+        "teacher_recommend_accuracy": "{count} 位學生準確率低於 60%。建議派較低 band 的 revision set。",
+        "teacher_recommend_weak_type": "全班最弱題型是 {question_type}。建議建立針對這一層的練習。",
+        "risk_low": "低",
+        "risk_medium": "中",
+        "risk_high": "高",
+        "not_enough_data": "資料不足",
         "persona_student": "學生",
         "persona_student_desc": "小學、中學、大學或研究所階段，想建立更強的學術英語能力",
         "persona_teacher": "教師 / 教育工作者",
@@ -1993,6 +2041,30 @@ TRANSLATIONS["zh-Hans"].update(
         "teacher_joined_at": "加入时间",
         "teacher_no_students": "暂时没有学生加入。",
         "teacher_only": "请先把账户角色切换成 Teacher / Educator，才能使用这个页面。",
+        "teacher_class_snapshot": "班级总览",
+        "teacher_active_students": "活跃学生",
+        "teacher_avg_level_score": "平均程度分",
+        "teacher_avg_learning_accuracy": "平均练习准确率",
+        "teacher_learning_completed": "完成练习",
+        "teacher_at_risk_students": "需关注学生",
+        "teacher_weakest_type": "最弱题型",
+        "teacher_student_progress": "学生进度",
+        "teacher_latest_test": "最近检测",
+        "teacher_recommended_band": "建议 Band",
+        "teacher_learning_accuracy": "练习准确率",
+        "teacher_learning_sessions": "练习次数",
+        "teacher_weak_area": "弱项",
+        "teacher_last_active": "最后活跃",
+        "teacher_risk": "风险",
+        "teacher_recommendations": "建议行动",
+        "teacher_no_recommendations": "暂时没有急需处理的事项，可以按目前学习节奏继续。",
+        "teacher_recommend_inactive": "{count} 位学生近期没有活跃。建议发提醒或派一份短复习。",
+        "teacher_recommend_accuracy": "{count} 位学生准确率低于 60%。建议派较低 band 的 revision set。",
+        "teacher_recommend_weak_type": "全班最弱题型是 {question_type}。建议建立针对这一层的练习。",
+        "risk_low": "低",
+        "risk_medium": "中",
+        "risk_high": "高",
+        "not_enough_data": "资料不足",
         "persona_student": "学生",
         "persona_student_desc": "高中、大学或研究所阶段，想建立更强的学术英语能力。",
         "persona_teacher": "教师 / 教育工作者",
@@ -5489,7 +5561,209 @@ def teacher_redirect_url(lang: str, message_key: str = "") -> str:
     return f"/teacher?{query}" if query else "/teacher"
 
 
-def teacher_class_rows(conn: sqlite3.Connection, teacher_user_id: int) -> list[dict]:
+def parse_db_datetime(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    text = str(value).strip()
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            parsed = datetime.strptime(text, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def days_since_db_datetime(value: str | None) -> int | None:
+    parsed = parse_db_datetime(value)
+    if parsed is None:
+        return None
+    return max(0, (datetime.now(timezone.utc) - parsed).days)
+
+
+def percent_value(correct: int, total: int) -> int | None:
+    return round((correct / total) * 100) if total else None
+
+
+def latest_activity_at(conn: sqlite3.Connection, user_id: int) -> str:
+    row = conn.execute(
+        """
+        SELECT MAX(activity_at) AS last_active
+        FROM (
+            SELECT started_at AS activity_at FROM assessment_sessions WHERE user_id = ?
+            UNION ALL SELECT completed_at FROM assessment_sessions WHERE user_id = ? AND completed_at IS NOT NULL
+            UNION ALL SELECT assessment_questions.answered_at
+            FROM assessment_questions
+            JOIN assessment_sessions ON assessment_sessions.id = assessment_questions.session_id
+            WHERE assessment_sessions.user_id = ? AND assessment_questions.answered_at IS NOT NULL
+            UNION ALL SELECT started_at FROM learning_sessions WHERE user_id = ?
+            UNION ALL SELECT completed_at FROM learning_sessions WHERE user_id = ? AND completed_at IS NOT NULL
+            UNION ALL SELECT learning_questions.answered_at
+            FROM learning_questions
+            JOIN learning_sessions ON learning_sessions.id = learning_questions.session_id
+            WHERE learning_sessions.user_id = ? AND learning_questions.answered_at IS NOT NULL
+        )
+        """,
+        (user_id, user_id, user_id, user_id, user_id, user_id),
+    ).fetchone()
+    return row["last_active"] if row and row["last_active"] else ""
+
+
+def weak_question_type_for_user(conn: sqlite3.Connection, user_id: int, lang: str) -> dict:
+    rows = conn.execute(
+        """
+        SELECT question_type,
+               SUM(correct) AS correct,
+               SUM(total) AS total
+        FROM (
+            SELECT assessment_questions.question_type,
+                   SUM(CASE WHEN assessment_questions.is_correct = 1 THEN 1 ELSE 0 END) AS correct,
+                   COUNT(*) AS total
+            FROM assessment_questions
+            JOIN assessment_sessions ON assessment_sessions.id = assessment_questions.session_id
+            WHERE assessment_sessions.user_id = ?
+              AND assessment_questions.is_correct IS NOT NULL
+            GROUP BY assessment_questions.question_type
+            UNION ALL
+            SELECT learning_questions.question_type,
+                   SUM(CASE WHEN learning_questions.is_correct = 1 THEN 1 ELSE 0 END) AS correct,
+                   COUNT(*) AS total
+            FROM learning_questions
+            JOIN learning_sessions ON learning_sessions.id = learning_questions.session_id
+            WHERE learning_sessions.user_id = ?
+              AND learning_questions.is_correct IS NOT NULL
+            GROUP BY learning_questions.question_type
+        )
+        GROUP BY question_type
+        HAVING total > 0
+        """,
+        (user_id, user_id),
+    ).fetchall()
+    if not rows:
+        return {"label": translate(lang, "not_enough_data"), "accuracy": None, "question_type": ""}
+    weakest = min(rows, key=lambda row: ((row["correct"] or 0) / max(row["total"] or 1, 1), -(row["total"] or 0)))
+    accuracy = percent_value(int(weakest["correct"] or 0), int(weakest["total"] or 0))
+    return {
+        "label": translate_question_type(weakest["question_type"], lang),
+        "accuracy": accuracy,
+        "question_type": weakest["question_type"],
+    }
+
+
+def learning_summary_for_user(conn: sqlite3.Connection, user_id: int) -> dict:
+    row = conn.execute(
+        """
+        SELECT COUNT(DISTINCT learning_sessions.id) AS completed_sessions,
+               SUM(CASE WHEN learning_questions.is_correct = 1 THEN 1 ELSE 0 END) AS correct,
+               COUNT(learning_questions.id) AS total
+        FROM learning_sessions
+        LEFT JOIN learning_questions ON learning_questions.session_id = learning_sessions.id
+            AND learning_questions.is_correct IS NOT NULL
+        WHERE learning_sessions.user_id = ?
+          AND learning_sessions.status = 'completed'
+        """,
+        (user_id,),
+    ).fetchone()
+    correct = int(row["correct"] or 0) if row else 0
+    total = int(row["total"] or 0) if row else 0
+    return {
+        "completed_sessions": int(row["completed_sessions"] or 0) if row else 0,
+        "correct": correct,
+        "total": total,
+        "accuracy": percent_value(correct, total),
+    }
+
+
+def risk_status_for_student(latest_score: int | None, learning_accuracy: int | None, last_active: str) -> str:
+    inactive_days = days_since_db_datetime(last_active)
+    if inactive_days is None:
+        return "high"
+    if inactive_days >= 7 or (learning_accuracy is not None and learning_accuracy < 60) or (latest_score is not None and latest_score < 60):
+        return "high"
+    if inactive_days >= 3 or (learning_accuracy is not None and learning_accuracy < 70) or latest_score is None:
+        return "medium"
+    return "low"
+
+
+def class_weak_question_type(student_rows: list[dict], lang: str) -> dict:
+    weakest_rows = [row["weak_question_type"] for row in student_rows if row["weak_question_type"]["accuracy"] is not None]
+    if not weakest_rows:
+        return {"label": translate(lang, "not_enough_data"), "accuracy": None, "question_type": ""}
+    return min(weakest_rows, key=lambda row: row["accuracy"])
+
+
+def teacher_student_progress_rows(conn: sqlite3.Connection, students: list[sqlite3.Row], lang: str) -> list[dict]:
+    progress_rows: list[dict] = []
+    for student in students:
+        user_id = int(student["id"])
+        latest_test = latest_test_result(conn, user_id=user_id)
+        learning = learning_summary_for_user(conn, user_id)
+        weak_type = weak_question_type_for_user(conn, user_id, lang)
+        last_active = latest_activity_at(conn, user_id) or student["joined_at"]
+        latest_score = int(latest_test["score"]) if latest_test and latest_test["score"] is not None else None
+        risk = risk_status_for_student(latest_score, learning["accuracy"], last_active)
+        progress_rows.append(
+            {
+                "id": user_id,
+                "display_name": student["display_name"] or student["username"],
+                "email": student["email"] or "",
+                "joined_at": student["joined_at"],
+                "latest_test_score": latest_score,
+                "recommended_band": latest_test["estimated_band_label"] if latest_test else "",
+                "learning_sessions": learning["completed_sessions"],
+                "learning_accuracy": learning["accuracy"],
+                "weak_question_type": weak_type,
+                "last_active": last_active,
+                "last_active_days": days_since_db_datetime(last_active),
+                "risk": risk,
+                "risk_label": translate(lang, f"risk_{risk}"),
+            }
+        )
+    return progress_rows
+
+
+def teacher_class_snapshot(student_rows: list[dict], lang: str) -> dict:
+    student_count = len(student_rows)
+    active_count = sum(1 for row in student_rows if row["last_active_days"] is not None and row["last_active_days"] <= 7)
+    scores = [row["latest_test_score"] for row in student_rows if row["latest_test_score"] is not None]
+    learning_accuracies = [row["learning_accuracy"] for row in student_rows if row["learning_accuracy"] is not None]
+    avg_score = round(sum(scores) / len(scores)) if scores else None
+    avg_learning_accuracy = round(sum(learning_accuracies) / len(learning_accuracies)) if learning_accuracies else None
+    at_risk_count = sum(1 for row in student_rows if row["risk"] == "high")
+    weakest = class_weak_question_type(student_rows, lang)
+    return {
+        "student_count": student_count,
+        "active_students": active_count,
+        "avg_level_score": avg_score,
+        "avg_learning_accuracy": avg_learning_accuracy,
+        "learning_sessions": sum(row["learning_sessions"] for row in student_rows),
+        "at_risk_students": at_risk_count,
+        "weakest_type": weakest,
+    }
+
+
+def teacher_recommendation_rows(snapshot: dict, student_rows: list[dict], lang: str) -> list[str]:
+    recommendations: list[str] = []
+    inactive_count = sum(1 for row in student_rows if row["last_active_days"] is None or row["last_active_days"] >= 7)
+    low_accuracy_count = sum(
+        1 for row in student_rows
+        if (row["learning_accuracy"] is not None and row["learning_accuracy"] < 60)
+        or (row["latest_test_score"] is not None and row["latest_test_score"] < 60)
+    )
+    weakest = snapshot["weakest_type"]
+    if inactive_count:
+        recommendations.append(translate(lang, "teacher_recommend_inactive", count=inactive_count))
+    if low_accuracy_count:
+        recommendations.append(translate(lang, "teacher_recommend_accuracy", count=low_accuracy_count))
+    if weakest["accuracy"] is not None and weakest["accuracy"] < 70:
+        recommendations.append(translate(lang, "teacher_recommend_weak_type", question_type=weakest["label"]))
+    return recommendations
+
+
+def teacher_class_rows(conn: sqlite3.Connection, teacher_user_id: int, lang: str = "en") -> list[dict]:
     rows = conn.execute(
         """
         SELECT teacher_classes.*,
@@ -5506,7 +5780,7 @@ def teacher_class_rows(conn: sqlite3.Connection, teacher_user_id: int) -> list[d
     for row in rows:
         students = conn.execute(
             """
-            SELECT users.display_name, users.email, class_memberships.joined_at
+            SELECT users.id, users.username, users.display_name, users.email, class_memberships.joined_at
             FROM class_memberships
             JOIN users ON users.id = class_memberships.student_user_id
             WHERE class_memberships.class_id = ?
@@ -5514,7 +5788,17 @@ def teacher_class_rows(conn: sqlite3.Connection, teacher_user_id: int) -> list[d
             """,
             (row["id"],),
         ).fetchall()
-        classes.append({"row": row, "students": students})
+        student_progress = teacher_student_progress_rows(conn, students, lang)
+        snapshot = teacher_class_snapshot(student_progress, lang)
+        classes.append(
+            {
+                "row": row,
+                "students": students,
+                "student_progress": student_progress,
+                "snapshot": snapshot,
+                "recommendations": teacher_recommendation_rows(snapshot, student_progress, lang),
+            }
+        )
     return classes
 
 
@@ -5612,7 +5896,7 @@ def teacher_dashboard(request: Request, message: str = Query("")) -> HTMLRespons
         request,
         "teacher_dashboard.html",
         user=user,
-        classes=teacher_class_rows(db_conn(), int(user["id"])),
+        classes=teacher_class_rows(db_conn(), int(user["id"]), lang),
         message_key=message if message in allowed_messages else "",
     )
 

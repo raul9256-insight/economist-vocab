@@ -63,22 +63,83 @@
           </div>
           <strong>{{ item.row.student_count }} {{ t("teacher_students") }}</strong>
         </div>
+
+        <section class="teacher-snapshot-grid" aria-label="{{ t('teacher_class_snapshot') }}">
+          <div class="learning-stat-card">
+            <span>{{ t("teacher_active_students") }}</span>
+            <strong>{{ item.snapshot.active_students }} / {{ item.snapshot.student_count }}</strong>
+          </div>
+          <div class="learning-stat-card">
+            <span>{{ t("teacher_avg_level_score") }}</span>
+            <strong>{% if item.snapshot.avg_level_score is not none %}{{ item.snapshot.avg_level_score }}{% else %}--{% endif %}</strong>
+          </div>
+          <div class="learning-stat-card">
+            <span>{{ t("teacher_avg_learning_accuracy") }}</span>
+            <strong>{% if item.snapshot.avg_learning_accuracy is not none %}{{ item.snapshot.avg_learning_accuracy }}%{% else %}--{% endif %}</strong>
+          </div>
+          <div class="learning-stat-card">
+            <span>{{ t("teacher_learning_completed") }}</span>
+            <strong>{{ item.snapshot.learning_sessions }}</strong>
+          </div>
+          <div class="learning-stat-card">
+            <span>{{ t("teacher_at_risk_students") }}</span>
+            <strong>{{ item.snapshot.at_risk_students }}</strong>
+          </div>
+          <div class="learning-stat-card">
+            <span>{{ t("teacher_weakest_type") }}</span>
+            <strong class="teacher-small-metric">{{ item.snapshot.weakest_type.label }}</strong>
+          </div>
+        </section>
+
+        <section class="teacher-recommendation-box">
+          <p class="eyebrow">{{ t("teacher_recommendations") }}</p>
+          {% if item.recommendations %}
+          <ol>
+            {% for recommendation in item.recommendations %}
+            <li>{{ recommendation }}</li>
+            {% endfor %}
+          </ol>
+          {% else %}
+          <p>{{ t("teacher_no_recommendations") }}</p>
+          {% endif %}
+        </section>
+
         {% if item.students %}
+        <h3>{{ t("teacher_student_progress") }}</h3>
         <div class="test-report-table-wrap">
           <table class="result-table teacher-roster-table">
             <thead>
               <tr>
                 <th>{{ t("teacher_student_name") }}</th>
-                <th>{{ t("teacher_student_email") }}</th>
-                <th>{{ t("teacher_joined_at") }}</th>
+                <th>{{ t("teacher_latest_test") }}</th>
+                <th>{{ t("teacher_recommended_band") }}</th>
+                <th>{{ t("teacher_learning_accuracy") }}</th>
+                <th>{{ t("teacher_learning_sessions") }}</th>
+                <th>{{ t("teacher_weak_area") }}</th>
+                <th>{{ t("teacher_last_active") }}</th>
+                <th>{{ t("teacher_risk") }}</th>
               </tr>
             </thead>
             <tbody>
-              {% for student in item.students %}
+              {% for student in item.student_progress %}
               <tr>
-                <td>{{ student.display_name }}</td>
-                <td>{{ student.email }}</td>
-                <td>{{ student.joined_at }}</td>
+                <td>
+                  <strong>{{ student.display_name }}</strong>
+                  <small>{{ student.email }}</small>
+                </td>
+                <td>{% if student.latest_test_score is not none %}{{ student.latest_test_score }}{% else %}--{% endif %}</td>
+                <td>{{ student.recommended_band or "--" }}</td>
+                <td>{% if student.learning_accuracy is not none %}{{ student.learning_accuracy }}%{% else %}--{% endif %}</td>
+                <td>{{ student.learning_sessions }}</td>
+                <td>{{ student.weak_question_type.label }}</td>
+                <td>
+                  {% if student.last_active_days is not none %}
+                  {{ student.last_active_days }}d
+                  {% else %}
+                  --
+                  {% endif %}
+                </td>
+                <td><span class="risk-pill risk-{{ student.risk }}">{{ student.risk_label }}</span></td>
               </tr>
               {% endfor %}
             </tbody>

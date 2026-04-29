@@ -3170,8 +3170,63 @@ input[type="file"] {
   color: #687086;
 }
 
+.teacher-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.teacher-small-metric {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.teacher-recommendation-box {
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(47, 101, 79, 0.08);
+  border: 1px solid rgba(47, 101, 79, 0.16);
+}
+
+.teacher-recommendation-box ol,
+.teacher-recommendation-box p {
+  margin: 0.5rem 0 0;
+}
+
 .teacher-roster-table {
-  min-width: 640px;
+  min-width: 1040px;
+}
+
+.teacher-roster-table small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+}
+
+.risk-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.risk-low {
+  color: #2f6d47;
+  background: rgba(78, 148, 103, 0.14);
+}
+
+.risk-medium {
+  color: #8a6526;
+  background: rgba(190, 145, 61, 0.16);
+}
+
+.risk-high {
+  color: #9a5430;
+  background: rgba(199, 109, 58, 0.14);
 }
 
 .learning-stat-card,
@@ -4526,7 +4581,8 @@ input[type="file"] {
   .statistics-grid,
   .hero-actions-grid,
   .today-words-grid,
-  .snapshot-grid {
+  .snapshot-grid,
+  .teacher-snapshot-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -4561,6 +4617,7 @@ input[type="file"] {
   .statistics-grid,
   .today-words-grid,
   .snapshot-grid,
+  .teacher-snapshot-grid,
   .summary-grid,
   .hero-actions-grid {
     grid-template-columns: 1fr;
