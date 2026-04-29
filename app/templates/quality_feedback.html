@@ -40,11 +40,41 @@
         {% endif %}
         <p class="section-subtle">{{ t("completed_on") }}: {{ item.created_at }}</p>
         {% if item.status == "open" %}
+        <form method="post" action="/quality/feedback/{{ item.id }}/repair" class="stack-form refined-form quality-repair-form">
+          <span class="focus-label">{{ t("repair_content") }}</span>
+          <label>
+            <span>{{ t("english_definition") }}</span>
+            <textarea name="english_definition" rows="3">{{ item.english_definition }}</textarea>
+          </label>
+          <label>
+            <span>{{ t("ipa_label") }}</span>
+            <input type="text" name="pronunciation" value="{{ item.pronunciation }}">
+          </label>
+          <label>
+            <span>{{ t("synonyms_label") }}</span>
+            <textarea name="synonyms" rows="3" placeholder="{{ t('one_synonym_per_line') }}">{{ item.synonyms|join('\n') }}</textarea>
+          </label>
+          <label>
+            <span>{{ t("antonyms_label") }}</span>
+            <textarea name="antonyms" rows="3" placeholder="{{ t('one_antonym_per_line') }}">{{ item.antonyms|join('\n') }}</textarea>
+          </label>
+          <label>
+            <span>{{ t("example_sentence") }}</span>
+            <textarea name="example_sentence" rows="3">{{ item.example_sentence }}</textarea>
+          </label>
+          <label>
+            <span>{{ t("wrong_sentence_options") }}</span>
+            <textarea name="sentence_distractors" rows="4" placeholder="{{ t('one_distractor_per_line') }}">{{ item.sentence_distractors|join('\n') }}</textarea>
+          </label>
+          <div class="action-row">
+            <button class="button" type="submit">{{ t("save_repair") }}</button>
+            {% if item.session_id %}
+            <a class="button secondary" href="/test/{{ item.session_id }}/result">{{ t("view_full_report") }}</a>
+            {% endif %}
+          </div>
+        </form>
         <form method="post" action="/quality/feedback/{{ item.id }}/reviewed" class="action-row">
           <button class="button secondary" type="submit">{{ t("mark_reviewed") }}</button>
-          {% if item.session_id %}
-          <a class="button secondary" href="/test/{{ item.session_id }}/result">{{ t("view_full_report") }}</a>
-          {% endif %}
         </form>
         {% endif %}
       </article>

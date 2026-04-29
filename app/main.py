@@ -1171,6 +1171,10 @@ TRANSLATIONS["en"].update(
         "quality_feedback_open": "Open",
         "quality_feedback_reviewed": "Reviewed",
         "mark_reviewed": "Mark Reviewed",
+        "repair_content": "Repair Content",
+        "save_repair": "Save Repair",
+        "antonyms_label": "Antonyms",
+        "one_antonym_per_line": "One antonym per line",
         "start_review_session": "Start Review Session",
         "due_for_review": "Due for review",
         "next_review": "Next review",
@@ -1526,6 +1530,10 @@ TRANSLATIONS["zh-Hant"].update(
         "quality_feedback_open": "待處理",
         "quality_feedback_reviewed": "已檢查",
         "mark_reviewed": "標記已檢查",
+        "repair_content": "修正內容",
+        "save_repair": "保存修正",
+        "antonyms_label": "相反詞",
+        "one_antonym_per_line": "每行一個相反詞",
         "start_review_session": "開始複習",
         "due_for_review": "到期複習",
         "next_review": "下次複習",
@@ -2136,6 +2144,10 @@ TRANSLATIONS["zh-Hans"].update(
         "quality_feedback_open": "待处理",
         "quality_feedback_reviewed": "已检查",
         "mark_reviewed": "标记已检查",
+        "repair_content": "修正内容",
+        "save_repair": "保存修正",
+        "antonyms_label": "相反词",
+        "one_antonym_per_line": "每行一个相反词",
         "start_review_session": "开始复习",
         "due_for_review": "到期复习",
         "next_review": "下次复习",
@@ -3586,12 +3598,19 @@ def question_feedback_rows(conn: sqlite3.Connection, limit: int = 100, status: s
         SELECT
             question_feedback.*,
             words.lemma,
+            COALESCE(word_enrichment.english_definition, '') AS english_definition,
+            COALESCE(word_enrichment.pronunciation, '') AS pronunciation,
+            COALESCE(word_enrichment.synonyms_json, '[]') AS synonyms_json,
+            COALESCE(word_enrichment.antonyms_json, '[]') AS antonyms_json,
+            COALESCE(word_enrichment.example_sentence, '') AS example_sentence,
+            COALESCE(word_enrichment.sentence_distractors_json, '[]') AS sentence_distractors_json,
             assessment_questions.correct_option,
             assessment_questions.options_json,
             assessment_questions.prompt_text,
             assessment_questions.band_label
         FROM question_feedback
         LEFT JOIN words ON words.id = question_feedback.word_id
+        LEFT JOIN word_enrichment ON word_enrichment.word_id = question_feedback.word_id
         LEFT JOIN assessment_questions ON assessment_questions.id = question_feedback.question_id
         WHERE question_feedback.status = ?
         ORDER BY question_feedback.id DESC
@@ -3605,6 +3624,9 @@ def question_feedback_rows(conn: sqlite3.Connection, limit: int = 100, status: s
             {
                 **dict(row),
                 "options": json_loads(row["options_json"]) if row["options_json"] else [],
+                "synonyms": json_loads(row["synonyms_json"]),
+                "antonyms": json_loads(row["antonyms_json"]),
+                "sentence_distractors": json_loads(row["sentence_distractors_json"]),
             }
         )
     return result
@@ -5039,6 +5061,69 @@ def quality_feedback(request: Request, status: str = Query("open")) -> HTMLRespo
 @app.post("/quality/feedback/{feedback_id}/reviewed")
 def quality_feedback_reviewed(request: Request, feedback_id: int) -> RedirectResponse:
     conn = db_conn()
+    conn.execute(
+        """
+        UPDATE question_feedback
+        SET status = 'reviewed',
+            reviewed_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (feedback_id,),
+    )
+    conn.commit()
+    lang = getattr(request.state, "lang", get_lang(request))
+    return RedirectResponse(url=f"/quality/feedback?lang={lang}", status_code=303)
+
+
+@app.post("/quality/feedback/{feedback_id}/repair")
+def quality_feedback_repair(
+    request: Request,
+    feedback_id: int,
+    english_definition: str = Form(""),
+    pronunciation: str = Form(""),
+    synonyms: str = Form(""),
+    antonyms: str = Form(""),
+    example_sentence: str = Form(""),
+    sentence_distractors: str = Form(""),
+) -> RedirectResponse:
+    conn = db_conn()
+    feedback = conn.execute("SELECT * FROM question_feedback WHERE id = ?", (feedback_id,)).fetchone()
+    if feedback is None or feedback["word_id"] is None:
+        return RedirectResponse(url="/quality/feedback", status_code=303)
+    synonym_items = [item.strip() for item in synonyms.splitlines() if item.strip()]
+    antonym_items = [item.strip() for item in antonyms.splitlines() if item.strip()]
+    distractor_items = [item.strip() for item in sentence_distractors.splitlines() if item.strip()]
+    conn.execute(
+        """
+        INSERT INTO word_enrichment (
+            word_id,
+            english_definition,
+            pronunciation,
+            synonyms_json,
+            antonyms_json,
+            example_sentence,
+            sentence_distractors_json
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(word_id) DO UPDATE SET
+            english_definition = excluded.english_definition,
+            pronunciation = excluded.pronunciation,
+            synonyms_json = excluded.synonyms_json,
+            antonyms_json = excluded.antonyms_json,
+            example_sentence = excluded.example_sentence,
+            sentence_distractors_json = excluded.sentence_distractors_json,
+            updated_at = CURRENT_TIMESTAMP
+        """,
+        (
+            feedback["word_id"],
+            english_definition.strip(),
+            pronunciation.strip(),
+            json.dumps(synonym_items, ensure_ascii=False),
+            json.dumps(antonym_items, ensure_ascii=False),
+            example_sentence.strip(),
+            json.dumps(distractor_items, ensure_ascii=False),
+        ),
+    )
     conn.execute(
         """
         UPDATE question_feedback
