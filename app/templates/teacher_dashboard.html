@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ t("teacher_dashboard_title") }} | VocabLab AI{% endblock %}
+{% block content %}
+<section class="learning-shell account-shell">
+  <article class="panel dashboard-v2-card learning-hero account-hero">
+    <div class="learning-hero-top">
+      <div>
+        <p class="eyebrow">{{ t("nav_teacher") }}</p>
+        <h1>{{ t("teacher_dashboard_title") }}</h1>
+        <p class="lede">{{ t("teacher_dashboard_lede") }}</p>
+      </div>
+      <div class="topbar-user account-user-card">
+        <span class="user-badge">{{ profile_initials }}</span>
+        <div>
+          <strong>{{ profile_name }}</strong>
+          <small>{{ user.email }}</small>
+        </div>
+      </div>
+    </div>
+
+    {% if message_key %}
+    <div class="landing-auth-error account-message">{{ t(message_key) }}</div>
+    {% endif %}
+
+    {% if is_teacher %}
+    <div class="account-grid">
+      <article class="learning-focus-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("teacher_create_class") }}</p>
+            <h2>{{ t("teacher_create_class") }}</h2>
+          </div>
+        </div>
+        <form class="stack-form refined-form" method="post" action="/teacher/classes{% if lang != 'en' %}?lang={{ lang }}{% endif %}">
+          <label>
+            <span>{{ t("teacher_class_name") }}</span>
+            <input type="text" name="name" placeholder="{{ t('teacher_class_name_placeholder') }}" maxlength="80" required>
+          </label>
+          <button class="button" type="submit">{{ t("teacher_create_class_submit") }}</button>
+        </form>
+      </article>
+
+      <article class="learning-progress-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("teacher_my_classes") }}</p>
+            <h2>{{ t("teacher_my_classes") }}</h2>
+          </div>
+        </div>
+        {% if not classes %}
+        <p class="section-subtle">{{ t("teacher_no_classes") }}</p>
+        {% endif %}
+      </article>
+    </div>
+
+    <div class="teacher-class-list">
+      {% for item in classes %}
+      <article class="learning-info-block teacher-class-card">
+        <div class="teacher-class-head">
+          <div>
+            <h2>{{ item.row.name }}</h2>
+            <p>{{ t("class_invite_code") }}: <strong>{{ item.row.invite_code }}</strong></p>
+          </div>
+          <strong>{{ item.row.student_count }} {{ t("teacher_students") }}</strong>
+        </div>
+        {% if item.students %}
+        <div class="test-report-table-wrap">
+          <table class="result-table teacher-roster-table">
+            <thead>
+              <tr>
+                <th>{{ t("teacher_student_name") }}</th>
+                <th>{{ t("teacher_student_email") }}</th>
+                <th>{{ t("teacher_joined_at") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in item.students %}
+              <tr>
+                <td>{{ student.display_name }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.joined_at }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="section-subtle">{{ t("teacher_no_students") }}</p>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

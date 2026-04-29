@@ -3143,6 +3143,37 @@ input[type="file"] {
   margin-top: 1rem;
 }
 
+.teacher-class-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.teacher-class-card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.teacher-class-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.teacher-class-head h2,
+.teacher-class-head p {
+  margin: 0;
+}
+
+.teacher-class-head p {
+  color: #687086;
+}
+
+.teacher-roster-table {
+  min-width: 640px;
+}
+
 .learning-stat-card,
 .learning-result-card,
 .learning-mini-item,

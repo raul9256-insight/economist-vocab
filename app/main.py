@@ -650,6 +650,7 @@ TRANSLATIONS = {
         "nav_missed": "Missed Words",
         "nav_bulk": "Bulk Import",
         "nav_statistics": "Statistics",
+        "nav_teacher": "Teacher",
         "sidebar_flow_label": "Study Flow",
         "sidebar_flow_title": "Test, learn, review.",
         "sidebar_flow_text": "Use the level test to find your band, then build richer word cards over time.",
@@ -726,6 +727,26 @@ TRANSLATIONS = {
         "account_password_saved": "Password changed.",
         "account_error_password_current": "Current password is incorrect.",
         "account_login_required": "Please log in to manage your account.",
+        "account_join_class": "Join Class",
+        "account_join_class_note": "Enter an invite code from your teacher to link your learning records to a class.",
+        "class_invite_code": "Invite code",
+        "class_join_submit": "Join class",
+        "class_joined": "Class joined.",
+        "class_join_error": "Class code was not found.",
+        "teacher_dashboard_title": "Teacher Dashboard",
+        "teacher_dashboard_lede": "Create classes, share invite codes, and start tracking student learning records.",
+        "teacher_create_class": "Create Class",
+        "teacher_class_name": "Class name",
+        "teacher_class_name_placeholder": "Grade 10 Economist Reading",
+        "teacher_create_class_submit": "Create class",
+        "teacher_my_classes": "My Classes",
+        "teacher_no_classes": "No classes yet. Create your first class to generate an invite code.",
+        "teacher_students": "Students",
+        "teacher_student_name": "Student",
+        "teacher_student_email": "Email",
+        "teacher_joined_at": "Joined",
+        "teacher_no_students": "No students have joined yet.",
+        "teacher_only": "Please switch your account role to Teacher / Educator to use this page.",
         "persona_student": "Student",
         "persona_student_desc": "High school or university learners building stronger academic English.",
         "persona_teacher": "Teacher / Educator",
@@ -754,6 +775,7 @@ TRANSLATIONS = {
         "placement": "Placement",
         "practice": "Practice",
         "review": "Review",
+        "classroom": "Classroom",
         "study_flow": "Study flow",
         "goal_note": "Start with your level test, then work the recommended band, then check missed words or the dictionary.",
         "start_test": "Start Level Test",
@@ -815,6 +837,7 @@ TRANSLATIONS = {
         "nav_missed": "錯題複習",
         "nav_bulk": "批次匯入",
         "nav_statistics": "統計數據",
+        "nav_teacher": "教師",
         "sidebar_flow_label": "學習流程",
         "sidebar_flow_title": "先測驗，再學習，再複習。",
         "sidebar_flow_text": "先用程度檢測找出適合的詞彙範圍，再逐步補齊每張詞彙卡的內容。",
@@ -891,6 +914,26 @@ TRANSLATIONS = {
         "account_password_saved": "密碼已更新。",
         "account_error_password_current": "目前密碼不正確。",
         "account_login_required": "請先登入才能管理帳戶。",
+        "account_join_class": "加入班級",
+        "account_join_class_note": "輸入老師提供的邀請碼，把你的學習紀錄連到班級。",
+        "class_invite_code": "邀請碼",
+        "class_join_submit": "加入班級",
+        "class_joined": "已加入班級。",
+        "class_join_error": "找不到這個班級邀請碼。",
+        "teacher_dashboard_title": "教師 Dashboard",
+        "teacher_dashboard_lede": "建立班級、分享邀請碼，開始追蹤學生的學習紀錄。",
+        "teacher_create_class": "建立班級",
+        "teacher_class_name": "班級名稱",
+        "teacher_class_name_placeholder": "Grade 10 Economist Reading",
+        "teacher_create_class_submit": "建立班級",
+        "teacher_my_classes": "我的班級",
+        "teacher_no_classes": "目前還沒有班級。先建立第一個班級，系統會產生邀請碼。",
+        "teacher_students": "學生",
+        "teacher_student_name": "學生",
+        "teacher_student_email": "Email",
+        "teacher_joined_at": "加入時間",
+        "teacher_no_students": "暫時沒有學生加入。",
+        "teacher_only": "請先把帳戶角色切換成 Teacher / Educator，才能使用這個頁面。",
         "persona_student": "學生",
         "persona_student_desc": "小學、中學、大學或研究所階段，想建立更強的學術英語能力",
         "persona_teacher": "教師 / 教育工作者",
@@ -919,6 +962,7 @@ TRANSLATIONS = {
         "placement": "測驗",
         "practice": "練習",
         "review": "複習",
+        "classroom": "班級",
         "study_flow": "學習流程",
         "goal_note": "先做程度檢測，再練習建議的詞彙範圍，最後查看錯題或進入詞典補充內容。",
         "start_test": "開始程度檢測",
@@ -1852,6 +1896,7 @@ TRANSLATIONS["zh-Hans"].update(
         "nav_missed": "错题复习",
         "nav_bulk": "批量导入",
         "nav_statistics": "统计数据",
+        "nav_teacher": "教师",
         "sidebar_flow_label": "学习流程",
         "sidebar_flow_title": "先检测，再练习，再复习。",
         "sidebar_flow_text": "先用程度检测找出适合的词汇范围，再逐步补齐每张词汇卡的内容。",
@@ -1928,6 +1973,26 @@ TRANSLATIONS["zh-Hans"].update(
         "account_password_saved": "密码已更新。",
         "account_error_password_current": "当前密码不正确。",
         "account_login_required": "请先登录才能管理账户。",
+        "account_join_class": "加入班级",
+        "account_join_class_note": "输入老师提供的邀请码，把你的学习记录连到班级。",
+        "class_invite_code": "邀请码",
+        "class_join_submit": "加入班级",
+        "class_joined": "已加入班级。",
+        "class_join_error": "找不到这个班级邀请码。",
+        "teacher_dashboard_title": "教师 Dashboard",
+        "teacher_dashboard_lede": "建立班级、分享邀请码，开始追踪学生的学习记录。",
+        "teacher_create_class": "建立班级",
+        "teacher_class_name": "班级名称",
+        "teacher_class_name_placeholder": "Grade 10 Economist Reading",
+        "teacher_create_class_submit": "建立班级",
+        "teacher_my_classes": "我的班级",
+        "teacher_no_classes": "目前还没有班级。先建立第一个班级，系统会生成邀请码。",
+        "teacher_students": "学生",
+        "teacher_student_name": "学生",
+        "teacher_student_email": "Email",
+        "teacher_joined_at": "加入时间",
+        "teacher_no_students": "暂时没有学生加入。",
+        "teacher_only": "请先把账户角色切换成 Teacher / Educator，才能使用这个页面。",
         "persona_student": "学生",
         "persona_student_desc": "高中、大学或研究所阶段，想建立更强的学术英语能力。",
         "persona_teacher": "教师 / 教育工作者",
@@ -1953,6 +2018,7 @@ TRANSLATIONS["zh-Hans"].update(
         "placement": "检测",
         "practice": "练习",
         "review": "复习",
+        "classroom": "班级",
         "study_flow": "学习流程",
         "goal_note": "先做程度检测，再练习建议的词汇范围，最后查看错题或进入词典补充内容。",
         "start_test": "开始程度检测",
@@ -2501,6 +2567,10 @@ def valid_email(value: str) -> bool:
     return bool(re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", value or ""))
 
 
+def role_for_persona(persona: str) -> str:
+    return "teacher" if persona == "teacher" else "student"
+
+
 def registered_user_row(request: Request) -> sqlite3.Row | None:
     raw = (request.cookies.get("registered_user_id") or "").strip()
     if not raw.isdigit():
@@ -2512,6 +2582,18 @@ def registered_user_row(request: Request) -> sqlite3.Row | None:
 def current_user_id(request: Request) -> int:
     user = registered_user_row(request)
     return int(user["id"]) if user is not None else USER_ID
+
+
+def is_teacher_user(user: sqlite3.Row | None) -> bool:
+    return bool(user and ((user["role"] if "role" in user.keys() else "") == "teacher" or (user["persona"] or "") == "teacher"))
+
+
+def generate_invite_code(conn: sqlite3.Connection) -> str:
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    while True:
+        code = "".join(secrets.choice(alphabet) for _ in range(6))
+        if conn.execute("SELECT 1 FROM teacher_classes WHERE invite_code = ?", (code,)).fetchone() is None:
+            return code
 
 
 def get_profile_name(request: Request) -> str:
@@ -2572,9 +2654,9 @@ def recommendation_cards(persona: str | None) -> list[dict[str, str]]:
         ]
     if persona == "teacher":
         return [
+            {"tag_key": "classroom", "title_key": "nav_teacher", "body_key": "teacher_dashboard_lede", "href": "/teacher", "class_name": "recommend-card-blue"},
             {"tag_key": "review", "title_key": "nav_dictionary", "body_key": "card_teacher_dictionary", "href": "/dictionary", "class_name": "recommend-card-blue"},
             {"tag_key": "review", "title_key": "nav_missed", "body_key": "card_teacher_review", "href": "/review/missed", "class_name": "recommend-card-pink"},
-            {"tag_key": "practice", "title_key": "nav_learning", "body_key": "card_teacher_learning", "href": "/learning", "class_name": "recommend-card-sand"},
         ]
     if persona == "business_professional":
         return [
@@ -2963,6 +3045,7 @@ def render(request: Request, template_name: str, **context) -> HTMLResponse:
             "profile_initials": profile_initials(get_profile_name(request)),
             "profile_persona": get_profile_persona(request),
             "registered_user": user,
+            "is_teacher": is_teacher_user(user),
             "static_version": STATIC_ASSET_VERSION,
             "t": lambda key, **kwargs: translate(lang, key, **kwargs),
             "lang_url": lambda target_lang: build_lang_url(request, target_lang),
@@ -5334,10 +5417,10 @@ def auth_signup(
         username = f"{username_seed}_{suffix}"
     cursor = conn.execute(
         """
-        INSERT INTO users (username, email, password_hash, display_name, persona)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO users (username, email, password_hash, display_name, persona, role)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
-        (username, safe_email, hash_password(password), safe_name, safe_persona),
+        (username, safe_email, hash_password(password), safe_name, safe_persona, role_for_persona(safe_persona)),
     )
     conn.commit()
     user_id = cursor.lastrowid
@@ -5396,6 +5479,45 @@ def account_redirect_url(lang: str, message_key: str = "") -> str:
     return f"/account?{query}" if query else "/account"
 
 
+def teacher_redirect_url(lang: str, message_key: str = "") -> str:
+    params = []
+    if message_key:
+        params.append(("message", message_key))
+    if lang != "en":
+        params.append(("lang", lang))
+    query = urlencode(params)
+    return f"/teacher?{query}" if query else "/teacher"
+
+
+def teacher_class_rows(conn: sqlite3.Connection, teacher_user_id: int) -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT teacher_classes.*,
+               COUNT(class_memberships.id) AS student_count
+        FROM teacher_classes
+        LEFT JOIN class_memberships ON class_memberships.class_id = teacher_classes.id
+        WHERE teacher_classes.teacher_user_id = ?
+        GROUP BY teacher_classes.id
+        ORDER BY teacher_classes.created_at DESC, teacher_classes.id DESC
+        """,
+        (teacher_user_id,),
+    ).fetchall()
+    classes: list[dict] = []
+    for row in rows:
+        students = conn.execute(
+            """
+            SELECT users.display_name, users.email, class_memberships.joined_at
+            FROM class_memberships
+            JOIN users ON users.id = class_memberships.student_user_id
+            WHERE class_memberships.class_id = ?
+            ORDER BY class_memberships.joined_at DESC
+            """,
+            (row["id"],),
+        ).fetchall()
+        classes.append({"row": row, "students": students})
+    return classes
+
+
 @app.get("/account", response_class=HTMLResponse)
 def account_page(request: Request, message: str = Query("")) -> HTMLResponse:
     user = registered_user_row(request)
@@ -5408,6 +5530,8 @@ def account_page(request: Request, message: str = Query("")) -> HTMLResponse:
         "account_error_password_current",
         "auth_error_password_short",
         "auth_error_name_required",
+        "class_joined",
+        "class_join_error",
     }
     return render(
         request,
@@ -5436,10 +5560,10 @@ def account_profile_update(
     conn.execute(
         """
         UPDATE users
-        SET display_name = ?, persona = ?
+        SET display_name = ?, persona = ?, role = ?
         WHERE id = ?
         """,
-        (safe_name, safe_persona, user["id"]),
+        (safe_name, safe_persona, role_for_persona(safe_persona), user["id"]),
     )
     conn.commit()
     response = RedirectResponse(url=account_redirect_url(lang, "account_profile_saved"), status_code=303)
@@ -5473,6 +5597,69 @@ def account_password_update(
     )
     conn.commit()
     return RedirectResponse(url=account_redirect_url(lang, "account_password_saved"), status_code=303)
+
+
+@app.get("/teacher", response_class=HTMLResponse)
+def teacher_dashboard(request: Request, message: str = Query("")) -> HTMLResponse:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    if not is_teacher_user(user):
+        return render(request, "teacher_dashboard.html", user=user, classes=[], message_key="teacher_only")
+    allowed_messages = {"account_profile_saved"}
+    return render(
+        request,
+        "teacher_dashboard.html",
+        user=user,
+        classes=teacher_class_rows(db_conn(), int(user["id"])),
+        message_key=message if message in allowed_messages else "",
+    )
+
+
+@app.post("/teacher/classes")
+def teacher_class_create(request: Request, name: str = Form("")) -> RedirectResponse:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    if not is_teacher_user(user):
+        return RedirectResponse(url=teacher_redirect_url(lang), status_code=303)
+    safe_name = (name or "").strip()[:80]
+    if not safe_name:
+        safe_name = "New Class"
+    conn = db_conn()
+    conn.execute(
+        """
+        INSERT INTO teacher_classes (teacher_user_id, name, invite_code)
+        VALUES (?, ?, ?)
+        """,
+        (user["id"], safe_name, generate_invite_code(conn)),
+    )
+    conn.commit()
+    return RedirectResponse(url=teacher_redirect_url(lang), status_code=303)
+
+
+@app.post("/classes/join")
+def class_join(request: Request, invite_code: str = Form("")) -> RedirectResponse:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    code = re.sub(r"[^A-Z0-9]", "", (invite_code or "").upper())
+    conn = db_conn()
+    class_row = conn.execute("SELECT id FROM teacher_classes WHERE invite_code = ?", (code,)).fetchone()
+    if class_row is None:
+        return RedirectResponse(url=account_redirect_url(lang, "class_join_error"), status_code=303)
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO class_memberships (class_id, student_user_id)
+        VALUES (?, ?)
+        """,
+        (class_row["id"], user["id"]),
+    )
+    conn.commit()
+    return RedirectResponse(url=account_redirect_url(lang, "class_joined"), status_code=303)
 
 
 @app.get("/test", response_class=HTMLResponse)

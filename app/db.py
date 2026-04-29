@@ -174,6 +174,22 @@ CREATE TABLE IF NOT EXISTS word_relationships (
     strength INTEGER NOT NULL DEFAULT 1,
     UNIQUE(source_word_id, target_word_id, relation_type)
 );
+
+CREATE TABLE IF NOT EXISTS teacher_classes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    teacher_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    invite_code TEXT NOT NULL UNIQUE,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS class_memberships (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    class_id INTEGER NOT NULL REFERENCES teacher_classes(id) ON DELETE CASCADE,
+    student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    joined_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(class_id, student_user_id)
+);
 """
 
 
@@ -240,6 +256,7 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
     ensure_column(conn, "users", "password_hash", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "users", "display_name", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "users", "persona", "TEXT NOT NULL DEFAULT 'lifelong_learner'")
+    ensure_column(conn, "users", "role", "TEXT NOT NULL DEFAULT 'student'")
     conn.execute(
         """
         INSERT INTO users (id, username)
@@ -252,7 +269,8 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
         UPDATE users
         SET email = COALESCE(NULLIF(email, ''), 'lawrence@example.local'),
             display_name = COALESCE(NULLIF(display_name, ''), 'Lawrence'),
-            persona = COALESCE(NULLIF(persona, ''), 'lifelong_learner')
+            persona = COALESCE(NULLIF(persona, ''), 'lifelong_learner'),
+            role = CASE WHEN COALESCE(NULLIF(persona, ''), 'lifelong_learner') = 'teacher' THEN 'teacher' ELSE COALESCE(NULLIF(role, ''), 'student') END
         WHERE id = 1
         """
     )

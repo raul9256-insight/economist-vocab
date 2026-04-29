@@ -70,6 +70,25 @@
           <button class="button secondary" type="submit">{{ t("change_password") }}</button>
         </form>
       </article>
+
+      {% if not is_teacher %}
+      <article class="learning-focus-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("account_join_class") }}</p>
+            <h2>{{ t("account_join_class") }}</h2>
+          </div>
+        </div>
+        <p class="section-subtle">{{ t("account_join_class_note") }}</p>
+        <form class="stack-form refined-form" method="post" action="/classes/join{% if lang != 'en' %}?lang={{ lang }}{% endif %}">
+          <label>
+            <span>{{ t("class_invite_code") }}</span>
+            <input type="text" name="invite_code" maxlength="20" required>
+          </label>
+          <button class="button secondary" type="submit">{{ t("class_join_submit") }}</button>
+        </form>
+      </article>
+      {% endif %}
     </div>
   </article>
 </section>

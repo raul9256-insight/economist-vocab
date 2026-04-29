@@ -46,6 +46,12 @@
           <span class="nav-icon">📊</span>
           <span>{{ t("nav_statistics") }}</span>
         </a>
+        {% if is_teacher %}
+        <a href="/teacher" class="{% if request.url.path.startswith('/teacher') %}active{% endif %}">
+          <span class="nav-icon">▦</span>
+          <span>{{ t("nav_teacher") }}</span>
+        </a>
+        {% endif %}
       </nav>
 
       <div class="sidebar-card">
@@ -73,6 +79,9 @@
           <a class="topbar-action topbar-action-text" href="/test" aria-label="Open level test">Level Test</a>
           <a class="topbar-action topbar-action-text" href="/ai-power-vocabulary" aria-label="Open AI power vocabulary">{{ t("nav_ai_power") }}</a>
           <a class="topbar-action topbar-action-text" href="/statistics" aria-label="Open statistics">{{ t("nav_statistics") }}</a>
+          {% if is_teacher %}
+          <a class="topbar-action topbar-action-text {% if request.url.path.startswith('/teacher') %}active{% endif %}" href="/teacher">{{ t("nav_teacher") }}</a>
+          {% endif %}
           {% if registered_user %}
           <a class="topbar-action topbar-action-text {% if request.url.path.startswith('/account') %}active{% endif %}" href="/account">{{ t("nav_account") }}</a>
           {% else %}
