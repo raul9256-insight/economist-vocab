@@ -4216,6 +4216,84 @@ input[type="file"] {
   font-size: 1.05rem;
 }
 
+.learning-word-report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.learning-word-report-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(112, 125, 184, 0.12);
+}
+
+.learning-word-report-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.learning-word-report-head h3,
+.learning-word-report-head p,
+.learning-word-definition {
+  margin: 0;
+}
+
+.learning-word-report-head h3 {
+  font-size: 1.28rem;
+}
+
+.learning-word-report-head p,
+.learning-word-definition {
+  color: #687086;
+  line-height: 1.42;
+}
+
+.learning-word-report-head strong {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(95, 115, 255, 0.1);
+  color: #5666f1;
+}
+
+.learning-layer-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.learning-layer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 14px;
+  background: rgba(247, 249, 255, 0.82);
+}
+
+.learning-layer-row span {
+  color: #4f5872;
+  font-weight: 700;
+}
+
+.compact-button {
+  width: fit-content;
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.learning-detail-table {
+  min-width: 860px;
+}
+
 .test-shell {
   display: grid;
   gap: 1rem;
@@ -4510,6 +4588,10 @@ input[type="file"] {
   .learning-breakdown-head,
   .learning-breakdown-row {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .learning-word-report-grid {
+    grid-template-columns: 1fr;
   }
 
   .dictionary-band-results,

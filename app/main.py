@@ -1164,6 +1164,13 @@ TRANSLATIONS["en"].update(
         "question_types": "Question types",
         "question_type_label": "Question Type",
         "total_label": "Total",
+        "learning_word_performance": "Vocabulary Performance",
+        "learning_word_performance_note": "Review each vocabulary item, its score, and which layer needs more practice.",
+        "learning_question_review": "Question Review",
+        "learning_question_review_note": "Use this section to check your answer against the correct answer for every learning question.",
+        "score_out_of": "Score: {score}/{total}",
+        "result_status": "Result",
+        "prompt_label": "Prompt",
         "level_test_title": "Level Test",
         "find_starting_band": "Find your starting band.",
         "test_intro_lede": "This placement test uses {count} points: {vocab_count} vocabulary items, 4 from each band, tested through 5 layers of meaning, usage, similarity, and contrast.",
@@ -1532,6 +1539,13 @@ TRANSLATIONS["zh-Hant"].update(
         "question_types": "題型分布",
         "question_type_label": "題型",
         "total_label": "總數",
+        "learning_word_performance": "詞彙表現",
+        "learning_word_performance_note": "查看每個詞的分數，以及哪一層題型需要再加強。",
+        "learning_question_review": "題目回顧",
+        "learning_question_review_note": "在這裡逐題核對你的答案和正確答案。",
+        "score_out_of": "分數：{score}/{total}",
+        "result_status": "結果",
+        "prompt_label": "題目",
         "level_test_title": "程度檢測",
         "find_starting_band": "找出適合你的詞彙程度。",
         "test_intro_lede": "這個程度檢測共 {count} 分：20 個詞彙、每個 band 4 個，並透過中文意思、英文定義、例句應用、相近詞與相反詞 5 層題型評估。",
@@ -2173,6 +2187,13 @@ TRANSLATIONS["zh-Hans"].update(
         "question_types": "题型分布",
         "question_type_label": "题型",
         "total_label": "总数",
+        "learning_word_performance": "词汇表现",
+        "learning_word_performance_note": "查看每个词的分数，以及哪一层题型需要再加强。",
+        "learning_question_review": "题目回顾",
+        "learning_question_review_note": "在这里逐题核对你的答案和正确答案。",
+        "score_out_of": "分数：{score}/{total}",
+        "result_status": "结果",
+        "prompt_label": "题目",
         "level_test_title": "程度检测",
         "find_starting_band": "找出适合你的词汇程度。",
         "test_intro_lede": "这个程度检测共 {count} 分：20 个词汇、每个 band 4 个，并通过中文意思、英文定义、例句应用、相近词与相反词 5 层题型评估。",
@@ -3516,6 +3537,63 @@ def word_report_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en"
         item["correct_count"] = correct_count
         item["total_count"] = len(ordered_types)
         item["accuracy"] = round((correct_count / len(ordered_types)) * 100)
+        result.append(item)
+    return result
+
+
+def learning_word_report_rows(conn: sqlite3.Connection, session_id: int, lang: str = "en", user_id: int = USER_ID) -> list[dict]:
+    rows = conn.execute(
+        """
+        SELECT
+            learning_questions.word_id,
+            learning_questions.question_type,
+            learning_questions.id AS question_id,
+            learning_questions.prompt_text,
+            learning_questions.user_answer,
+            learning_questions.correct_option,
+            learning_questions.is_correct,
+            words.lemma
+        FROM learning_questions
+        JOIN words ON words.id = learning_questions.word_id
+        WHERE learning_questions.session_id = ?
+        ORDER BY MIN(learning_questions.position) OVER (PARTITION BY learning_questions.word_id),
+                 learning_questions.position
+        """,
+        (session_id,),
+    ).fetchall()
+    buckets: dict[int, dict] = {}
+    order: list[int] = []
+    for row in rows:
+        word_id = row["word_id"]
+        if word_id not in buckets:
+            payload = word_payload(conn, word_id, lang, user_id)
+            buckets[word_id] = {
+                "word_id": word_id,
+                "lemma": row["lemma"],
+                "chinese_definition": payload["chinese_headword"],
+                "english_definition": payload["english_definition"],
+                "questions": [],
+            }
+            order.append(word_id)
+        buckets[word_id]["questions"].append(
+            {
+                "question_id": row["question_id"],
+                "question_type": row["question_type"],
+                "question_type_label": translate_question_type(row["question_type"], lang),
+                "prompt_text": row["prompt_text"],
+                "user_answer": row["user_answer"],
+                "correct_option": row["correct_option"],
+                "is_correct": bool(row["is_correct"]),
+            }
+        )
+    result = []
+    for word_id in order:
+        item = buckets[word_id]
+        total_count = len(item["questions"])
+        correct_count = sum(1 for question in item["questions"] if question["is_correct"])
+        item["correct_count"] = correct_count
+        item["total_count"] = total_count
+        item["accuracy"] = round((correct_count / total_count) * 100) if total_count else 0
         result.append(item)
     return result
 
@@ -6059,6 +6137,8 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
     enriched_words = conn.execute("SELECT COUNT(*) FROM word_enrichment").fetchone()[0]
     total = sum(row["total"] for row in rows)
     lang = getattr(request.state, "lang", get_lang(request))
+    word_results = learning_word_report_rows(conn, session_id, lang, user_id)
+    question_review_rows = [question for word in word_results for question in word["questions"]]
     recommendation = learning_recommendation(session["score"], total, enriched_words, lang)
     band_identity = band_display_identity(session["band_label"], lang) if session["band_label"] else None
     return render(
@@ -6066,6 +6146,8 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
         "learning_result.html",
         session=session,
         question_results=rows,
+        word_results=word_results,
+        question_review_rows=question_review_rows,
         recommendation=recommendation,
         band_identity=band_identity,
         percent=round((session["score"] / total) * 100) if total else 0,

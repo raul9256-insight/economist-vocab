@@ -54,5 +54,85 @@
       <a class="button" href="/dictionary">{{ t("open_dictionary") }}</a>
     </div>
   </article>
+
+  <article class="panel dashboard-v2-card learning-breakdown-card">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">{{ t("learning_word_performance") }}</p>
+        <h2>{{ t("learning_word_performance") }}</h2>
+        <p>{{ t("learning_word_performance_note") }}</p>
+      </div>
+    </div>
+    <div class="learning-word-report-grid">
+      {% for word in word_results %}
+      <article class="learning-word-report-card">
+        <div class="learning-word-report-head">
+          <div>
+            <h3>{{ word.lemma }}</h3>
+            <p>{{ word.chinese_definition or word.english_definition or t("not_added_yet") }}</p>
+          </div>
+          <strong>{{ t("score_out_of", score=word.correct_count, total=word.total_count) }}</strong>
+        </div>
+        {% if word.english_definition %}
+        <p class="learning-word-definition">{{ word.english_definition }}</p>
+        {% endif %}
+        <div class="learning-layer-list">
+          {% for question in word.questions %}
+          <div class="learning-layer-row">
+            <span>{{ question.question_type_label }}</span>
+            {% if question.is_correct %}
+            <strong class="report-mark correct">{{ t("correct_review") }}</strong>
+            {% else %}
+            <strong class="report-mark wrong">{{ t("wrong_mark") }}</strong>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <a class="button secondary compact-button" href="/word/{{ word.word_id }}">{{ t("open_word_page") }}</a>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel dashboard-v2-card learning-breakdown-card">
+    <div class="card-head tight">
+      <div>
+        <p class="eyebrow">{{ t("learning_question_review") }}</p>
+        <h2>{{ t("learning_question_review") }}</h2>
+        <p>{{ t("learning_question_review_note") }}</p>
+      </div>
+    </div>
+    <div class="test-report-table-wrap">
+      <table class="result-table test-report-table learning-detail-table">
+        <thead>
+          <tr>
+            <th>{{ t("question_type_label") }}</th>
+            <th>{{ t("result_status") }}</th>
+            <th>{{ t("your_answer") }}</th>
+            <th>{{ t("correct_answer") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for question in question_review_rows %}
+          <tr>
+            <td>
+              {{ question.question_type_label }}
+              <small>{{ t("prompt_label") }}: {{ question.prompt_text }}</small>
+            </td>
+            <td>
+              {% if question.is_correct %}
+              <span class="report-mark correct">{{ t("correct_review") }}</span>
+              {% else %}
+              <span class="report-mark wrong">{{ t("wrong_mark") }}</span>
+              {% endif %}
+            </td>
+            <td>{{ question.user_answer }}</td>
+            <td>{{ question.correct_option }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
 </section>
 {% endblock %}
