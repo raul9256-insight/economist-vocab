@@ -83,6 +83,55 @@ const personaOptions: PersonaOption[] = [
 type TabKey = "home" | "learning" | "dictionary" | "ai" | "profile";
 type AuthMode = "login" | "signup";
 type MobileLang = "en" | "zh-Hant" | "zh-Hans";
+type MobileBandChoice = BootstrapPayload["hero_band_chart"][number];
+
+const fallbackBandChoices: MobileBandChoice[] = [
+  {
+    rank: 2000,
+    label: "2000~",
+    title: "基石",
+    subtitle: "The Foundation",
+    tone: "foundation",
+    count: 2330,
+    percent: 59,
+  },
+  {
+    rank: 500,
+    label: "500~1999",
+    title: "深度洞察",
+    subtitle: "Insight",
+    tone: "insight",
+    count: 3000,
+    percent: 76,
+  },
+  {
+    rank: 200,
+    label: "200~499",
+    title: "精準修辭",
+    subtitle: "Precision",
+    tone: "precision",
+    count: 3176,
+    percent: 81,
+  },
+  {
+    rank: 100,
+    label: "100~199",
+    title: "智識擴張",
+    subtitle: "Intellectual",
+    tone: "intellectual",
+    count: 3180,
+    percent: 81,
+  },
+  {
+    rank: 50,
+    label: "50~99",
+    title: "菁英語庫",
+    subtitle: "The Elite Lexicon",
+    tone: "elite",
+    count: 3924,
+    percent: 100,
+  },
+];
 
 const mobileCopy = {
   en: {
@@ -481,12 +530,10 @@ export default function App() {
     [lang, persona],
   );
   const copy = getMobileCopy(lang);
+  const learningBands = bootstrap?.hero_band_chart.length ? bootstrap.hero_band_chart : fallbackBandChoices;
   const recommendedBandRank = useMemo(() => {
-    if (!bootstrap?.hero_band_chart.length) {
-      return null;
-    }
-    const recommended = bootstrap.hero_band_chart.find((band) => band.label === bootstrap.recommended_band);
-    return recommended?.rank ?? bootstrap.hero_band_chart[0].rank;
+    const recommended = learningBands.find((band) => band.label === bootstrap?.recommended_band);
+    return recommended?.rank ?? learningBands[0]?.rank ?? null;
   }, [bootstrap]);
 
   function applyAuthenticatedUser(user: MobileUser) {
@@ -1601,7 +1648,7 @@ export default function App() {
               <>
                 <Text style={styles.cardTitle}>{copy.learningFlowTitle}</Text>
                 <Text style={styles.cardBody}>{copy.learningFlowBody}</Text>
-                {bootstrap?.hero_band_chart.length ? (
+                {learningBands.length ? (
                   <>
                     <View style={styles.quickActionRow}>
                       <QuickAction label={copy.startRecommended} tone="primary" onPress={() => startLearningFlow()} />
@@ -1620,7 +1667,7 @@ export default function App() {
                       </View>
                     ) : null}
                     <View style={styles.bandChoiceGrid}>
-                      {bootstrap.hero_band_chart.map((band) => {
+                      {learningBands.map((band) => {
                         const recommended = band.rank === recommendedBandRank;
                         return (
                           <Pressable

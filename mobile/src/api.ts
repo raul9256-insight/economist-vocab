@@ -19,9 +19,14 @@ function resolveApiBase() {
 const API_BASE = resolveApiBase();
 
 async function getJson<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    credentials: "include",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      credentials: "include",
+    });
+  } catch {
+    throw new Error("Cannot connect to VocabLab AI. The server may still be waking up. Please try again.");
+  }
   if (!response.ok) {
     throw new Error(await responseErrorMessage(response));
   }
@@ -29,14 +34,19 @@ async function getJson<T>(path: string): Promise<T> {
 }
 
 async function postJson<T>(path: string, body?: Record<string, unknown>): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error("Cannot connect to VocabLab AI. The server may still be waking up. Please try again.");
+  }
   if (!response.ok) {
     throw new Error(await responseErrorMessage(response));
   }
