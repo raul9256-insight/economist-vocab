@@ -111,6 +111,20 @@ const mobileCopy = {
     newHere: "New here? Create an account",
     alreadyHaveAccount: "Already have an account? Login",
     backToGuest: "Back to guest setup",
+    dailyEyebrow: "Daily Learning",
+    dailyTitle: "Start today’s 10-word session",
+    dailyBody:
+      "We suggest a band from your latest level test, but you can choose any band before starting.",
+    currentRecommendation: "Suggested start",
+    chooseBand: "Choose a band",
+    startBand: "Start",
+    questionsLabel: "50 questions",
+    vocabLabel: "10 vocab",
+    learningFlowTitle: "Choose your learning band",
+    learningFlowBody:
+      "Each session gives you 10 vocabulary items from one band, tested through the same five layers.",
+    startRecommended: "Start recommended band",
+    noBands: "Band choices are loading.",
     personas: {
       student: ["Student", "Academic growth, reading, and stronger vocabulary foundations."],
       teacher: ["Teacher / Educator", "Teaching, explaining, and building useful learning materials."],
@@ -150,6 +164,18 @@ const mobileCopy = {
     newHere: "第一次使用？建立帳戶",
     alreadyHaveAccount: "已有帳戶？登入",
     backToGuest: "返回訪客設定",
+    dailyEyebrow: "每日學習",
+    dailyTitle: "開始今日 10 個詞彙練習",
+    dailyBody: "系統會根據你最近的程度測驗建議 band，但你仍可自行選擇任何一個 band 開始。",
+    currentRecommendation: "建議起點",
+    chooseBand: "選擇詞彙 band",
+    startBand: "開始",
+    questionsLabel: "50 題",
+    vocabLabel: "10 個詞彙",
+    learningFlowTitle: "選擇學習 band",
+    learningFlowBody: "每次練習會從同一個 band 抽出 10 個詞彙，並用相同五層題型測試。",
+    startRecommended: "開始建議 band",
+    noBands: "正在載入 band 選項。",
     personas: {
       student: ["學生", "提升學術閱讀能力，建立更穩固的詞彙基礎。"],
       teacher: ["老師 / 教育工作者", "用於教學、解釋詞彙，以及建立實用學習材料。"],
@@ -189,6 +215,18 @@ const mobileCopy = {
     newHere: "第一次使用？建立账户",
     alreadyHaveAccount: "已有账户？登录",
     backToGuest: "返回访客设置",
+    dailyEyebrow: "每日学习",
+    dailyTitle: "开始今日 10 个词汇练习",
+    dailyBody: "系统会根据你最近的程度测试建议 band，但你仍可自行选择任何一个 band 开始。",
+    currentRecommendation: "建议起点",
+    chooseBand: "选择词汇 band",
+    startBand: "开始",
+    questionsLabel: "50 题",
+    vocabLabel: "10 个词汇",
+    learningFlowTitle: "选择学习 band",
+    learningFlowBody: "每次练习会从同一个 band 抽出 10 个词汇，并用相同五层题型测试。",
+    startRecommended: "开始建议 band",
+    noBands: "正在加载 band 选项。",
     personas: {
       student: ["学生", "提升学术阅读能力，建立更稳固的词汇基础。"],
       teacher: ["老师 / 教育工作者", "用于教学、解释词汇，以及建立实用学习材料。"],
@@ -290,6 +328,7 @@ export default function App() {
   const [learningReview, setLearningReview] = useState<LearningReviewState | null>(null);
   const [learningResult, setLearningResult] = useState<LearningCompletedState | null>(null);
   const [selectedLearningAnswer, setSelectedLearningAnswer] = useState("");
+  const [selectedLearningBandRank, setSelectedLearningBandRank] = useState<number | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
   const [loadingHome, setLoadingHome] = useState(false);
   const [loadingDictionary, setLoadingDictionary] = useState(false);
@@ -366,16 +405,6 @@ export default function App() {
       .finally(() => setLoadingAi(false));
   }, [started, activeTab, lang]);
 
-  useEffect(() => {
-    if (!started || activeTab !== "learning") {
-      return;
-    }
-    if (learningQuestion || learningReview || learningResult) {
-      return;
-    }
-    startLearningFlow();
-  }, [started, activeTab, lang]);
-
   const greetingName = useMemo(() => {
     if (bootstrap?.profile?.name) {
       return bootstrap.profile.name;
@@ -388,6 +417,13 @@ export default function App() {
     [lang, persona],
   );
   const copy = getMobileCopy(lang);
+  const recommendedBandRank = useMemo(() => {
+    if (!bootstrap?.hero_band_chart.length) {
+      return null;
+    }
+    const recommended = bootstrap.hero_band_chart.find((band) => band.label === bootstrap.recommended_band);
+    return recommended?.rank ?? bootstrap.hero_band_chart[0].rank;
+  }, [bootstrap]);
 
   function applyAuthenticatedUser(user: MobileUser) {
     setAuthUser(user);
@@ -506,16 +542,24 @@ export default function App() {
     setLearningQuestion(payload);
   }
 
-  function startLearningFlow() {
+  function startLearningFlow(bandRank?: number) {
+    const resolvedBandRank = bandRank ?? selectedLearningBandRank ?? recommendedBandRank ?? undefined;
+    setSelectedLearningBandRank(resolvedBandRank ?? null);
     setLoadingLearning(true);
     setError("");
     resetLearningFlow();
-    fetchLearningStart(lang)
+    fetchLearningStart(lang, resolvedBandRank)
       .then((payload) => {
         applyLearningState(payload);
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoadingLearning(false));
+  }
+
+  function startLearningFromBand(bandRank: number) {
+    setSelectedLearningBandRank(bandRank);
+    setActiveTab("learning");
+    startLearningFlow(bandRank);
   }
 
   function continueLearningFlow() {
@@ -946,6 +990,50 @@ export default function App() {
                   <View style={styles.quickActionRow}>
                     <QuickAction label="Open Dictionary" tone="soft" onPress={() => setActiveTab("dictionary")} />
                     <QuickAction label="Open AI Track" tone="primary" onPress={() => setActiveTab("ai")} />
+                  </View>
+                </View>
+
+                <View style={[styles.card, shadows.card]}>
+                  <View style={styles.learningHomeHeader}>
+                    <View style={styles.learningHomeTitleBlock}>
+                      <Text style={styles.sectionEyebrow}>{copy.dailyEyebrow}</Text>
+                      <Text style={styles.cardTitle}>{copy.dailyTitle}</Text>
+                      <Text style={styles.cardNote}>{copy.dailyBody}</Text>
+                    </View>
+                    <View style={styles.recommendedPill}>
+                      <Text style={styles.recommendedPillLabel}>{copy.currentRecommendation}</Text>
+                      <Text style={styles.recommendedPillValue}>{bootstrap.recommended_band}</Text>
+                    </View>
+                  </View>
+
+                  <Text style={styles.detailLabel}>{copy.chooseBand}</Text>
+                  <View style={styles.bandChoiceGrid}>
+                    {bootstrap.hero_band_chart.map((band) => {
+                      const recommended = band.rank === recommendedBandRank;
+                      return (
+                        <Pressable
+                          key={band.rank}
+                          style={[
+                            styles.bandChoiceCard,
+                            recommended && styles.bandChoiceCardRecommended,
+                          ]}
+                          onPress={() => startLearningFromBand(band.rank)}
+                          disabled={loadingLearning}
+                        >
+                          <View style={styles.bandChoiceTopRow}>
+                            <Text style={[styles.bandChoiceTitle, { color: bandColors[band.tone] || colors.navSoft }]}>
+                              {band.title}
+                            </Text>
+                            {recommended ? <Text style={styles.bandChoiceBadge}>{copy.currentRecommendation}</Text> : null}
+                          </View>
+                          <Text style={styles.bandChoiceLabel}>{band.label}</Text>
+                          <Text style={styles.bandChoiceMeta}>
+                            {copy.vocabLabel} • {copy.questionsLabel}
+                          </Text>
+                          <Text style={styles.bandChoiceAction}>{copy.startBand}</Text>
+                        </Pressable>
+                      );
+                    })}
                   </View>
                 </View>
 
@@ -1382,11 +1470,45 @@ export default function App() {
               </>
             ) : (
               <>
-                <Text style={styles.cardTitle}>Learning flow</Text>
-                <Text style={styles.cardBody}>
-                  Start a short session and we&apos;ll give you one multiple-choice question at a time, then explain the word after each answer.
-                </Text>
-                <QuickAction label="Start learning" tone="primary" onPress={startLearningFlow} />
+                <Text style={styles.cardTitle}>{copy.learningFlowTitle}</Text>
+                <Text style={styles.cardBody}>{copy.learningFlowBody}</Text>
+                {bootstrap?.hero_band_chart.length ? (
+                  <>
+                    <View style={styles.quickActionRow}>
+                      <QuickAction label={copy.startRecommended} tone="primary" onPress={() => startLearningFlow()} />
+                    </View>
+                    <View style={styles.bandChoiceGrid}>
+                      {bootstrap.hero_band_chart.map((band) => {
+                        const recommended = band.rank === recommendedBandRank;
+                        return (
+                          <Pressable
+                            key={band.rank}
+                            style={[
+                              styles.bandChoiceCard,
+                              recommended && styles.bandChoiceCardRecommended,
+                            ]}
+                            onPress={() => startLearningFromBand(band.rank)}
+                            disabled={loadingLearning}
+                          >
+                            <View style={styles.bandChoiceTopRow}>
+                              <Text style={[styles.bandChoiceTitle, { color: bandColors[band.tone] || colors.navSoft }]}>
+                                {band.title}
+                              </Text>
+                              {recommended ? <Text style={styles.bandChoiceBadge}>{copy.currentRecommendation}</Text> : null}
+                            </View>
+                            <Text style={styles.bandChoiceLabel}>{band.label}</Text>
+                            <Text style={styles.bandChoiceMeta}>
+                              {copy.vocabLabel} • {copy.questionsLabel}
+                            </Text>
+                            <Text style={styles.bandChoiceAction}>{copy.startBand}</Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </>
+                ) : (
+                  <Text style={styles.cardNote}>{copy.noBands}</Text>
+                )}
               </>
             )}
           </View>
@@ -1951,6 +2073,89 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 15,
     lineHeight: 22,
+  },
+  learningHomeHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 14,
+    flexWrap: "wrap",
+  },
+  learningHomeTitleBlock: {
+    flex: 1,
+    minWidth: 220,
+    gap: 8,
+  },
+  recommendedPill: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#d9ddff",
+    backgroundColor: "#eef0ff",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 4,
+    minWidth: 150,
+  },
+  recommendedPillLabel: {
+    color: colors.navSoft,
+    fontWeight: "800",
+    fontSize: 12,
+  },
+  recommendedPillValue: {
+    color: colors.ink,
+    fontWeight: "900",
+    fontSize: 18,
+  },
+  bandChoiceGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  bandChoiceCard: {
+    flex: 1,
+    minWidth: 148,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: "#fbf9f4",
+    padding: 14,
+    gap: 7,
+  },
+  bandChoiceCardRecommended: {
+    borderColor: colors.navSoft,
+    backgroundColor: "#f2f3ff",
+  },
+  bandChoiceTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  bandChoiceTitle: {
+    flex: 1,
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: "900",
+  },
+  bandChoiceBadge: {
+    color: colors.navSoft,
+    fontSize: 11,
+    fontWeight: "800",
+  },
+  bandChoiceLabel: {
+    color: colors.ink,
+    fontWeight: "800",
+    fontSize: 14,
+  },
+  bandChoiceMeta: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  bandChoiceAction: {
+    color: colors.success,
+    fontWeight: "900",
+    marginTop: 3,
   },
   learningIntroCard: {
     backgroundColor: "#f7f2e7",

@@ -102,6 +102,7 @@ export type BootstrapPayload = {
   latest_test: null | { score: number; estimated_band_label: string };
   latest_learning: null | { score: number; session_id: number };
   hero_band_chart: Array<{
+    rank: number;
     label: string;
     title: string;
     subtitle: string;
@@ -326,8 +327,11 @@ export async function fetchDictionaryWordDetail(wordId: number, lang: string) {
   return getJson<DictionaryWordDetail>(`/api/mobile/word/${wordId}?${query}`);
 }
 
-export async function fetchLearningStart(lang: string) {
-  const query = new URLSearchParams({ lang }).toString();
+export async function fetchLearningStart(lang: string, bandRank?: number) {
+  const query = new URLSearchParams({
+    lang,
+    ...(bandRank ? { band_rank: String(bandRank) } : {}),
+  }).toString();
   return postJson<LearningState>(`/api/mobile/learning/start?${query}`);
 }
 

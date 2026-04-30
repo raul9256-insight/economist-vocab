@@ -7023,6 +7023,7 @@ def mobile_bootstrap(
     max_band_total = max((band["workbook_total"] for band in bands), default=1)
     hero_band_chart = [
         {
+            "rank": band["best_band_rank"],
             "label": band["range_label"],
             "title": band["title"],
             "subtitle": band["subtitle"],
