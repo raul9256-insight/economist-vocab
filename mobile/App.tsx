@@ -77,6 +77,138 @@ const personaOptions: PersonaOption[] = [
 
 type TabKey = "home" | "learning" | "dictionary" | "ai" | "profile";
 type AuthMode = "login" | "signup";
+type MobileLang = "en" | "zh-Hant" | "zh-Hans";
+
+const mobileCopy = {
+  en: {
+    setupEyebrow: "Mobile App Setup",
+    setupTitle: "Welcome to VocabLab AI",
+    setupSubtitle:
+      "Choose how you want to use the app first. You can try it once as a guest, or log in to keep your records across mobile and web.",
+    checkingLogin: "Checking your saved login...",
+    firstName: "First name",
+    whoAreYou: "Who are you?",
+    bestFit: "Best fit",
+    language: "Language",
+    continueGuest: "Continue as guest",
+    loginSignupSave: "Login / Sign up to save progress",
+    authEyebrow: "VocabLab Mobile",
+    loginTitle: "Log in to continue",
+    signupTitle: "Create your account",
+    authSubtitle:
+      "Use the same VocabLab AI account as the web app so your learning records, notes, and results stay together. You can also go back and continue once as a guest.",
+    login: "Login",
+    signup: "Sign up",
+    name: "Name",
+    email: "Email",
+    password: "Password",
+    confirmPassword: "Confirm password",
+    passwordPlaceholder: "At least 8 characters",
+    confirmPasswordPlaceholder: "Type the password again",
+    accountType: "Account type",
+    pleaseWait: "Please wait...",
+    createAccount: "Create account",
+    newHere: "New here? Create an account",
+    alreadyHaveAccount: "Already have an account? Login",
+    backToGuest: "Back to guest setup",
+    personas: {
+      student: ["Student", "Academic growth, reading, and stronger vocabulary foundations."],
+      teacher: ["Teacher / Educator", "Teaching, explaining, and building useful learning materials."],
+      business_professional: ["Business Professional", "Sharper communication for meetings, writing, and decisions."],
+      ai_power_user: ["AI Power User", "Prompting, analysis, and high-precision work with AI tools."],
+      lifelong_learner: ["Lifelong Learner", "Practical vocabulary growth for long-term confidence."],
+    },
+  },
+  "zh-Hant": {
+    setupEyebrow: "手機版設定",
+    setupTitle: "歡迎使用 VocabLab AI",
+    setupSubtitle:
+      "先選擇你想怎樣使用這個 app。你可以先以訪客身份試用一次，也可以登入，讓學習紀錄在手機版和網頁版同步保存。",
+    checkingLogin: "正在檢查已儲存的登入狀態...",
+    firstName: "名字",
+    whoAreYou: "你是哪一類用戶？",
+    bestFit: "最適合",
+    language: "語言",
+    continueGuest: "以訪客身份繼續",
+    loginSignupSave: "登入 / 註冊以保存進度",
+    authEyebrow: "VocabLab 手機版",
+    loginTitle: "登入後繼續",
+    signupTitle: "建立你的帳戶",
+    authSubtitle:
+      "使用和網頁版相同的 VocabLab AI 帳戶，讓你的學習紀錄、筆記和結果集中保存。你亦可以返回，以訪客身份先試用一次。",
+    login: "登入",
+    signup: "註冊",
+    name: "姓名",
+    email: "電郵",
+    password: "密碼",
+    confirmPassword: "再次確認密碼",
+    passwordPlaceholder: "最少 8 個字元",
+    confirmPasswordPlaceholder: "再次輸入密碼",
+    accountType: "帳戶類型",
+    pleaseWait: "請稍候...",
+    createAccount: "建立帳戶",
+    newHere: "第一次使用？建立帳戶",
+    alreadyHaveAccount: "已有帳戶？登入",
+    backToGuest: "返回訪客設定",
+    personas: {
+      student: ["學生", "提升學術閱讀能力，建立更穩固的詞彙基礎。"],
+      teacher: ["老師 / 教育工作者", "用於教學、解釋詞彙，以及建立實用學習材料。"],
+      business_professional: ["商務專業人士", "提升會議、寫作和決策溝通的精準度。"],
+      ai_power_user: ["AI 進階用戶", "強化提示詞、分析和高精準度 AI 工作流程。"],
+      lifelong_learner: ["終身學習者", "為長期自學和實用表達建立更有信心的詞彙能力。"],
+    },
+  },
+  "zh-Hans": {
+    setupEyebrow: "手机版设置",
+    setupTitle: "欢迎使用 VocabLab AI",
+    setupSubtitle:
+      "先选择你想怎样使用这个 app。你可以先以访客身份试用一次，也可以登录，让学习记录在手机版和网页版同步保存。",
+    checkingLogin: "正在检查已保存的登录状态...",
+    firstName: "名字",
+    whoAreYou: "你是哪一类用户？",
+    bestFit: "最适合",
+    language: "语言",
+    continueGuest: "以访客身份继续",
+    loginSignupSave: "登录 / 注册以保存进度",
+    authEyebrow: "VocabLab 手机版",
+    loginTitle: "登录后继续",
+    signupTitle: "建立你的账户",
+    authSubtitle:
+      "使用和网页版相同的 VocabLab AI 账户，让你的学习记录、笔记和结果集中保存。你也可以返回，以访客身份先试用一次。",
+    login: "登录",
+    signup: "注册",
+    name: "姓名",
+    email: "邮箱",
+    password: "密码",
+    confirmPassword: "再次确认密码",
+    passwordPlaceholder: "至少 8 个字符",
+    confirmPasswordPlaceholder: "再次输入密码",
+    accountType: "账户类型",
+    pleaseWait: "请稍候...",
+    createAccount: "建立账户",
+    newHere: "第一次使用？建立账户",
+    alreadyHaveAccount: "已有账户？登录",
+    backToGuest: "返回访客设置",
+    personas: {
+      student: ["学生", "提升学术阅读能力，建立更稳固的词汇基础。"],
+      teacher: ["老师 / 教育工作者", "用于教学、解释词汇，以及建立实用学习材料。"],
+      business_professional: ["商务专业人士", "提升会议、写作和决策沟通的精准度。"],
+      ai_power_user: ["AI 进阶用户", "强化提示词、分析和高精准度 AI 工作流程。"],
+      lifelong_learner: ["终身学习者", "为长期自学和实用表达建立更有信心的词汇能力。"],
+    },
+  },
+} as const;
+
+type PersonaKey = keyof typeof mobileCopy.en.personas;
+
+function getMobileCopy(lang: string) {
+  return mobileCopy[(lang as MobileLang) in mobileCopy ? (lang as MobileLang) : "en"];
+}
+
+function getPersonaCopy(lang: string, key: string) {
+  const copy = getMobileCopy(lang);
+  return copy.personas[key as PersonaKey] || mobileCopy.en.personas.lifelong_learner;
+}
 
 const bandColors: Record<string, string> = {
   foundation: colors.foundation,
@@ -252,9 +384,10 @@ export default function App() {
   }, [bootstrap?.profile?.name, name]);
 
   const selectedPersonaLabel = useMemo(
-    () => personaOptions.find((option) => option.key === persona)?.label || "Lifelong Learner",
-    [persona],
+    () => getPersonaCopy(lang, persona)[0],
+    [lang, persona],
   );
+  const copy = getMobileCopy(lang);
 
   function applyAuthenticatedUser(user: MobileUser) {
     setAuthUser(user);
@@ -513,21 +646,19 @@ export default function App() {
       <SafeAreaView style={styles.safe}>
         <ExpoStatusBar style="dark" />
         <ScrollView contentContainerStyle={styles.onboardingWrap}>
-          <Text style={styles.eyebrow}>Mobile App Setup</Text>
-          <Text style={styles.title}>Welcome to VocabLab AI</Text>
-          <Text style={styles.subtitle}>
-            Choose how you want to use the app first. You can try it once as a guest, or log in to keep your records across mobile and web.
-          </Text>
+          <Text style={styles.eyebrow}>{copy.setupEyebrow}</Text>
+          <Text style={styles.title}>{copy.setupTitle}</Text>
+          <Text style={styles.subtitle}>{copy.setupSubtitle}</Text>
 
           <View style={styles.panel}>
             {checkingAuth ? (
               <View style={styles.authLoadingBox}>
                 <ActivityIndicator color={colors.navSoft} />
-                <Text style={styles.cardNote}>Checking your saved login...</Text>
+                <Text style={styles.cardNote}>{copy.checkingLogin}</Text>
               </View>
             ) : null}
 
-            <Text style={styles.label}>First name</Text>
+            <Text style={styles.label}>{copy.firstName}</Text>
             <TextInput
               value={name}
               onChangeText={setName}
@@ -537,26 +668,29 @@ export default function App() {
               autoCapitalize="words"
             />
 
-            <Text style={[styles.label, styles.sectionLabel]}>Who are you?</Text>
-            {personaOptions.map((option) => (
-              <Pressable
-                key={option.key}
-                onPress={() => setPersona(option.key)}
-                style={[
-                  styles.personaCard,
-                  persona === option.key && styles.personaCardActive,
-                  option.featured && styles.personaFeatured,
-                ]}
-              >
-                <View style={styles.personaHead}>
-                  <Text style={styles.personaTitle}>{option.label}</Text>
-                  {option.featured ? <Text style={styles.featuredTag}>Best fit</Text> : null}
-                </View>
-                <Text style={styles.personaDesc}>{option.description}</Text>
-              </Pressable>
-            ))}
+            <Text style={[styles.label, styles.sectionLabel]}>{copy.whoAreYou}</Text>
+            {personaOptions.map((option) => {
+              const [personaLabel, personaDescription] = getPersonaCopy(lang, option.key);
+              return (
+                <Pressable
+                  key={option.key}
+                  onPress={() => setPersona(option.key)}
+                  style={[
+                    styles.personaCard,
+                    persona === option.key && styles.personaCardActive,
+                    option.featured && styles.personaFeatured,
+                  ]}
+                >
+                  <View style={styles.personaHead}>
+                    <Text style={styles.personaTitle}>{personaLabel}</Text>
+                    {option.featured ? <Text style={styles.featuredTag}>{copy.bestFit}</Text> : null}
+                  </View>
+                  <Text style={styles.personaDesc}>{personaDescription}</Text>
+                </Pressable>
+              );
+            })}
 
-            <Text style={[styles.label, styles.sectionLabel]}>Language</Text>
+            <Text style={[styles.label, styles.sectionLabel]}>{copy.language}</Text>
             <View style={styles.langRow}>
               {[
                 ["en", "English"],
@@ -574,11 +708,11 @@ export default function App() {
             </View>
 
             <Pressable style={styles.primaryButton} onPress={continueAsGuest}>
-              <Text style={styles.primaryButtonText}>Continue as guest</Text>
+              <Text style={styles.primaryButtonText}>{copy.continueGuest}</Text>
             </Pressable>
 
             <Pressable style={styles.secondaryButton} onPress={() => openAuthForm("login")}>
-              <Text style={styles.secondaryButtonText}>Login / Sign up to save progress</Text>
+              <Text style={styles.secondaryButtonText}>{copy.loginSignupSave}</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -591,24 +725,22 @@ export default function App() {
       <SafeAreaView style={styles.safe}>
         <ExpoStatusBar style="dark" />
         <ScrollView contentContainerStyle={styles.onboardingWrap}>
-          <Text style={styles.eyebrow}>VocabLab Mobile</Text>
-          <Text style={styles.title}>{authMode === "login" ? "Log in to continue" : "Create your account"}</Text>
-          <Text style={styles.subtitle}>
-            Use the same VocabLab AI account as the web app so your learning records, notes, and results stay together. You can also go back and continue once as a guest.
-          </Text>
+          <Text style={styles.eyebrow}>{copy.authEyebrow}</Text>
+          <Text style={styles.title}>{authMode === "login" ? copy.loginTitle : copy.signupTitle}</Text>
+          <Text style={styles.subtitle}>{copy.authSubtitle}</Text>
 
           <View style={styles.panel}>
             {checkingAuth ? (
               <View style={styles.authLoadingBox}>
                 <ActivityIndicator color={colors.navSoft} />
-                <Text style={styles.cardNote}>Checking your saved login...</Text>
+                <Text style={styles.cardNote}>{copy.checkingLogin}</Text>
               </View>
             ) : null}
 
             <View style={styles.authModeRow}>
               {[
-                ["login", "Login"],
-                ["signup", "Sign up"],
+                ["login", copy.login],
+                ["signup", copy.signup],
               ].map(([key, label]) => (
                 <Pressable
                   key={key}
@@ -625,7 +757,7 @@ export default function App() {
 
             {authMode === "signup" ? (
               <>
-                <Text style={styles.label}>Name</Text>
+                <Text style={styles.label}>{copy.name}</Text>
                 <TextInput
                   value={name}
                   onChangeText={setName}
@@ -637,7 +769,7 @@ export default function App() {
               </>
             ) : null}
 
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>{copy.email}</Text>
             <TextInput
               value={authEmail}
               onChangeText={setAuthEmail}
@@ -648,11 +780,11 @@ export default function App() {
               keyboardType="email-address"
             />
 
-            <Text style={styles.label}>Password</Text>
+            <Text style={styles.label}>{copy.password}</Text>
             <TextInput
               value={authPassword}
               onChangeText={setAuthPassword}
-              placeholder="At least 8 characters"
+              placeholder={copy.passwordPlaceholder}
               placeholderTextColor="#9d9488"
               style={styles.input}
               secureTextEntry
@@ -660,38 +792,41 @@ export default function App() {
 
             {authMode === "signup" ? (
               <>
-                <Text style={styles.label}>Confirm password</Text>
+                <Text style={styles.label}>{copy.confirmPassword}</Text>
                 <TextInput
                   value={authConfirmPassword}
                   onChangeText={setAuthConfirmPassword}
-                  placeholder="Type the password again"
+                  placeholder={copy.confirmPasswordPlaceholder}
                   placeholderTextColor="#9d9488"
                   style={styles.input}
                   secureTextEntry
                 />
 
-                <Text style={[styles.label, styles.sectionLabel]}>Account type</Text>
-                {personaOptions.map((option) => (
-                  <Pressable
-                    key={option.key}
-                    onPress={() => setPersona(option.key)}
-                    style={[
-                      styles.personaCard,
-                      persona === option.key && styles.personaCardActive,
-                      option.featured && styles.personaFeatured,
-                    ]}
-                  >
-                    <View style={styles.personaHead}>
-                      <Text style={styles.personaTitle}>{option.label}</Text>
-                      {option.featured ? <Text style={styles.featuredTag}>Best fit</Text> : null}
-                    </View>
-                    <Text style={styles.personaDesc}>{option.description}</Text>
-                  </Pressable>
-                ))}
+                <Text style={[styles.label, styles.sectionLabel]}>{copy.accountType}</Text>
+                {personaOptions.map((option) => {
+                  const [personaLabel, personaDescription] = getPersonaCopy(lang, option.key);
+                  return (
+                    <Pressable
+                      key={option.key}
+                      onPress={() => setPersona(option.key)}
+                      style={[
+                        styles.personaCard,
+                        persona === option.key && styles.personaCardActive,
+                        option.featured && styles.personaFeatured,
+                      ]}
+                    >
+                      <View style={styles.personaHead}>
+                        <Text style={styles.personaTitle}>{personaLabel}</Text>
+                        {option.featured ? <Text style={styles.featuredTag}>{copy.bestFit}</Text> : null}
+                      </View>
+                      <Text style={styles.personaDesc}>{personaDescription}</Text>
+                    </Pressable>
+                  );
+                })}
               </>
             ) : null}
 
-            <Text style={[styles.label, styles.sectionLabel]}>Language</Text>
+            <Text style={[styles.label, styles.sectionLabel]}>{copy.language}</Text>
             <View style={styles.langRow}>
               {[
                 ["en", "English"],
@@ -712,7 +847,7 @@ export default function App() {
 
             <Pressable style={[styles.primaryButton, loadingAuth && styles.primaryButtonDisabled]} onPress={submitAuthForm} disabled={loadingAuth}>
               <Text style={styles.primaryButtonText}>
-                {loadingAuth ? "Please wait..." : authMode === "login" ? "Login" : "Create account"}
+                {loadingAuth ? copy.pleaseWait : authMode === "login" ? copy.login : copy.createAccount}
               </Text>
             </Pressable>
 
@@ -724,12 +859,12 @@ export default function App() {
               }}
             >
               <Text style={styles.authSwitchText}>
-                {authMode === "login" ? "New here? Create an account" : "Already have an account? Login"}
+                {authMode === "login" ? copy.newHere : copy.alreadyHaveAccount}
               </Text>
             </Pressable>
 
             <Pressable style={styles.authSwitchLink} onPress={() => setShowAuthForm(false)}>
-              <Text style={styles.authSwitchText}>Back to guest setup</Text>
+              <Text style={styles.authSwitchText}>{copy.backToGuest}</Text>
             </Pressable>
           </View>
         </ScrollView>
