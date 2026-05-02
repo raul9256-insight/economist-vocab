@@ -2504,7 +2504,7 @@ input[type="file"] {
 }
 
 .word-detail-tabs {
-  grid-template-columns: repeat(4, max-content);
+  grid-template-columns: repeat(5, max-content);
   align-items: center;
   margin-top: 1rem;
 }
@@ -2577,6 +2577,82 @@ input[type="file"] {
   margin: 0;
   color: #687086;
   line-height: 1.55;
+}
+
+.word-mastery-card {
+  border-color: rgba(49, 103, 83, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(242, 248, 245, 0.94));
+}
+
+.word-mastery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.mastery-step-card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.mastery-target-word {
+  color: #202026;
+  font-size: 1.35rem;
+}
+
+.mastery-sentence-input {
+  width: 100%;
+  min-height: 8rem;
+  resize: vertical;
+  border: 1px solid rgba(112, 125, 184, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #202026;
+  padding: 0.85rem 0.95rem;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.mastery-sentence-input:focus {
+  outline: none;
+  border-color: rgba(95, 115, 255, 0.42);
+  box-shadow: 0 0 0 4px rgba(95, 115, 255, 0.1);
+}
+
+.mastery-result-panel {
+  display: grid;
+  gap: 0.55rem;
+  border-top: 1px solid rgba(112, 125, 184, 0.12);
+  padding-top: 0.8rem;
+}
+
+.mastery-result-panel p {
+  margin: 0;
+  color: #687086;
+  line-height: 1.55;
+}
+
+.mastery-score-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.mastery-score-line strong {
+  color: #316753;
+}
+
+.mastery-score-line span {
+  color: #5666f1;
+  font-weight: 700;
+}
+
+.mastery-error {
+  color: #9c3548 !important;
+  font-weight: 700;
 }
 
 .clean-list {
@@ -4589,6 +4665,7 @@ input[type="file"] {
   .dashboard-hero-v3-grid,
   .word-detail-grid,
   .word-definition-grid,
+  .word-mastery-grid,
   .dashboard-refined-top,
   .dashboard-simple-hero,
   .dashboard-v2-grid,

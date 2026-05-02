@@ -10,6 +10,7 @@ import secrets
 import sqlite3
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from difflib import SequenceMatcher
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -38,8 +39,8 @@ from app.enrichment_io import (
     iter_enrichment_import_rows,
     iter_import_rows,
 )
-from app.openai_enrichment import generate_ai_insight_for_word, generate_enrichment_batch, load_env_file
-from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio
+from app.openai_enrichment import evaluate_sentence_usage, generate_ai_insight_for_word, generate_enrichment_batch, load_env_file
+from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio, transcribe_pronunciation_audio
 from economist_vocab import DEFAULT_DB_PATH
 
 
@@ -47,7 +48,7 @@ BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
 DATA_DIR = BASE_DIR.parent / "data"
 AI_POWER_DATA_PATH = DATA_DIR / "ai_power_vocab.json"
-STATIC_ASSET_VERSION = "20260422b"
+STATIC_ASSET_VERSION = "20260502a"
 app = FastAPI(title="VocabLab AI")
 app.add_middleware(
     CORSMiddleware,
@@ -1180,6 +1181,31 @@ TRANSLATIONS["en"].update(
         "ai_insight_generate_note": "Use OpenAI to draft the explanation, nuance, comparison, business example, and AI prompt example for this word.",
         "ai_insight_generated": "AI Insight generated.",
         "ai_insight_error": "AI Insight generation failed",
+        "word_mastery_tab": "Word Mastery Lab",
+        "word_mastery_section": "Deep Learning",
+        "word_mastery_title": "Pronounce, apply, and master this word",
+        "word_mastery_lede": "Say the word, write one sentence, and let AI check whether your pronunciation, usage, and grammar are ready for real exam use.",
+        "mastery_pronunciation_title": "1. Pronunciation practice",
+        "mastery_sentence_title": "2. Sentence application",
+        "mastery_record_note": "Your attempts are saved to your learning record.",
+        "mastery_record_button": "Record my voice",
+        "mastery_stop_button": "Stop and check",
+        "mastery_retry_button": "Record again",
+        "mastery_check_sentence": "Check with AI",
+        "mastery_sentence_placeholder": "Write one sentence using this word.",
+        "mastery_latest_result": "Latest mastery result",
+        "mastery_no_attempt": "No deep-learning attempt saved yet.",
+        "mastery_transcript": "AI heard",
+        "mastery_feedback": "AI feedback",
+        "mastery_corrected_sentence": "Corrected sentence",
+        "mastery_suggested_upgrade": "Suggested upgrade",
+        "mastery_score": "Score",
+        "mastery_status": "Status",
+        "mastery_api_not_ready": "AI checking is not configured yet.",
+        "mastery_recording_unsupported": "Recording is not supported in this browser.",
+        "mastery_recording": "Recording...",
+        "mastery_checking": "Checking...",
+        "mastery_sentence_required": "Please write a sentence first.",
         "progression_section": "Progression",
         "vocabulary_progression": "Vocabulary Progression",
         "meaning_family": "Meaning family",
@@ -1555,6 +1581,31 @@ TRANSLATIONS["zh-Hant"].update(
         "ai_insight_generate_note": "使用 OpenAI 為這個詞草擬簡單解釋、語感比較、商務例句與 AI 提示範例。",
         "ai_insight_generated": "AI 重點提示已生成。",
         "ai_insight_error": "AI 重點提示生成失敗",
+        "word_mastery_tab": "深度學習",
+        "word_mastery_section": "深度學習",
+        "word_mastery_title": "讀出、用出、真正掌握這個詞",
+        "word_mastery_lede": "讀出單字，再寫一句句子，讓 AI 檢查你的發音、用法和文法是否已適合真實考試情境。",
+        "mastery_pronunciation_title": "1. 發音練習",
+        "mastery_sentence_title": "2. 句子應用",
+        "mastery_record_note": "你的練習結果會保存到學習紀錄。",
+        "mastery_record_button": "錄下我的發音",
+        "mastery_stop_button": "停止並檢查",
+        "mastery_retry_button": "重新錄音",
+        "mastery_check_sentence": "用 AI 檢查",
+        "mastery_sentence_placeholder": "用這個詞寫一句句子。",
+        "mastery_latest_result": "最近一次深度練習",
+        "mastery_no_attempt": "尚未保存深度練習結果。",
+        "mastery_transcript": "AI 聽到",
+        "mastery_feedback": "AI 回饋",
+        "mastery_corrected_sentence": "修正版句子",
+        "mastery_suggested_upgrade": "升級版句子",
+        "mastery_score": "分數",
+        "mastery_status": "狀態",
+        "mastery_api_not_ready": "AI 檢查尚未設定。",
+        "mastery_recording_unsupported": "這個瀏覽器不支援錄音。",
+        "mastery_recording": "錄音中...",
+        "mastery_checking": "檢查中...",
+        "mastery_sentence_required": "請先寫一句句子。",
         "progression_section": "進階路徑",
         "vocabulary_progression": "詞彙進階路徑",
         "meaning_family": "核心語義群組",
@@ -2266,6 +2317,31 @@ TRANSLATIONS["zh-Hans"].update(
         "ai_insight_generate_note": "使用 OpenAI 为这个词草拟简单解释、语感比较、商务例句与 AI 提示范例。",
         "ai_insight_generated": "AI 重点提示已生成。",
         "ai_insight_error": "AI 重点提示生成失败",
+        "word_mastery_tab": "深度学习",
+        "word_mastery_section": "深度学习",
+        "word_mastery_title": "读出、用出、真正掌握这个词",
+        "word_mastery_lede": "读出单词，再写一句句子，让 AI 检查你的发音、用法和语法是否已适合真实考试情境。",
+        "mastery_pronunciation_title": "1. 发音练习",
+        "mastery_sentence_title": "2. 句子应用",
+        "mastery_record_note": "你的练习结果会保存到学习记录。",
+        "mastery_record_button": "录下我的发音",
+        "mastery_stop_button": "停止并检查",
+        "mastery_retry_button": "重新录音",
+        "mastery_check_sentence": "用 AI 检查",
+        "mastery_sentence_placeholder": "用这个词写一句句子。",
+        "mastery_latest_result": "最近一次深度练习",
+        "mastery_no_attempt": "尚未保存深度练习结果。",
+        "mastery_transcript": "AI 听到",
+        "mastery_feedback": "AI 反馈",
+        "mastery_corrected_sentence": "修正版句子",
+        "mastery_suggested_upgrade": "升级版句子",
+        "mastery_score": "分数",
+        "mastery_status": "状态",
+        "mastery_api_not_ready": "AI 检查尚未设置。",
+        "mastery_recording_unsupported": "这个浏览器不支持录音。",
+        "mastery_recording": "录音中...",
+        "mastery_checking": "检查中...",
+        "mastery_sentence_required": "请先写一句句子。",
         "progression_section": "进阶路径",
         "vocabulary_progression": "词汇进阶路径",
         "meaning_family": "核心语义群组",
@@ -3387,6 +3463,134 @@ def word_row(conn: sqlite3.Connection, word_id: int, user_id: int = USER_ID) -> 
     if row is None:
         raise HTTPException(status_code=404, detail="Word not found")
     return row
+
+
+def normalize_spoken_word(value: str) -> str:
+    return re.sub(r"[^a-z]", "", (value or "").lower())
+
+
+def pronunciation_score(target_word: str, transcript: str) -> dict[str, object]:
+    target = normalize_spoken_word(target_word)
+    heard_words = [normalize_spoken_word(part) for part in re.split(r"\s+", transcript or "") if normalize_spoken_word(part)]
+    if not target:
+        return {"score": 0, "recognized": False, "status": "Needs review"}
+    best_ratio = 0.0
+    for heard in heard_words or [normalize_spoken_word(transcript)]:
+        ratio = SequenceMatcher(None, target, heard).ratio()
+        best_ratio = max(best_ratio, ratio)
+    recognized = any(heard == target for heard in heard_words)
+    if recognized:
+        score = 92
+    elif target in normalize_spoken_word(transcript):
+        score = 86
+    else:
+        score = round(best_ratio * 100)
+    if score >= 90:
+        status = "Mastered"
+    elif score >= 75:
+        status = "Almost mastered"
+    elif score >= 60:
+        status = "Needs review"
+    else:
+        status = "Relearn"
+    return {"score": max(0, min(100, score)), "recognized": recognized, "status": status}
+
+
+def mastery_feedback_for_pronunciation(target_word: str, transcript: str, score: int, lang: str = "en") -> str:
+    if lang == "zh-Hant":
+        if score >= 85:
+            return f"AI 能清楚辨認出 {target_word}。發音已經可以理解，之後可再留意重音和自然節奏。"
+        return f"AI 聽到的是「{transcript or '未能辨認'}」。請慢一點讀，先聽一次標準發音，再重新錄音。"
+    if lang == "zh-Hans":
+        if score >= 85:
+            return f"AI 能清楚辨认出 {target_word}。发音已经可以理解，之后可再留意重音和自然节奏。"
+        return f"AI 听到的是「{transcript or '未能辨认'}」。请慢一点读，先听一次标准发音，再重新录音。"
+    if score >= 85:
+        return f"AI recognized {target_word}. Your pronunciation is understandable; next, refine stress and rhythm."
+    return f'AI heard "{transcript or "unclear audio"}". Try speaking a little slower after listening to the model pronunciation.'
+
+
+def save_word_mastery_attempt(
+    conn: sqlite3.Connection,
+    *,
+    user_id: int,
+    word_id: int,
+    attempt_type: str,
+    input_text: str = "",
+    transcript: str = "",
+    score: int = 0,
+    status: str = "",
+    feedback: str = "",
+    corrected_sentence: str = "",
+    suggested_upgrade: str = "",
+    payload: dict | None = None,
+) -> None:
+    ensure_user_study_card(conn, user_id, word_id)
+    conn.execute(
+        """
+        INSERT INTO word_mastery_attempts (
+            user_id, word_id, attempt_type, input_text, transcript, score, status,
+            feedback, corrected_sentence, suggested_upgrade, payload_json
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            user_id,
+            word_id,
+            attempt_type,
+            input_text.strip(),
+            transcript.strip(),
+            max(0, min(100, int(score or 0))),
+            status.strip(),
+            feedback.strip(),
+            corrected_sentence.strip(),
+            suggested_upgrade.strip(),
+            json.dumps(payload or {}, ensure_ascii=False),
+        ),
+    )
+    if int(score or 0) >= 75:
+        conn.execute(
+            """
+            UPDATE user_study_cards
+            SET status = CASE WHEN ? >= 90 THEN 'mastered' ELSE status END,
+                correct_count = correct_count + 1,
+                streak = streak + 1,
+                last_reviewed_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = ? AND word_id = ?
+            """,
+            (int(score or 0), user_id, word_id),
+        )
+    else:
+        conn.execute(
+            """
+            UPDATE user_study_cards
+            SET status = 'review',
+                wrong_count = wrong_count + 1,
+                streak = 0,
+                last_reviewed_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = ? AND word_id = ?
+            """,
+            (user_id, word_id),
+        )
+    conn.commit()
+
+
+def latest_word_mastery_attempts(conn: sqlite3.Connection, *, word_id: int, user_id: int) -> dict[str, sqlite3.Row | None]:
+    result: dict[str, sqlite3.Row | None] = {"pronunciation": None, "sentence": None}
+    for attempt_type in result:
+        result[attempt_type] = conn.execute(
+            """
+            SELECT *
+            FROM word_mastery_attempts
+            WHERE user_id = ? AND word_id = ? AND attempt_type = ?
+            ORDER BY created_at DESC, id DESC
+            LIMIT 1
+            """,
+            (user_id, word_id, attempt_type),
+        ).fetchone()
+    return result
 
 
 def source_fallback_for_word(conn: sqlite3.Connection, word_id: int) -> dict[str, str]:
@@ -7813,6 +8017,7 @@ def word_detail(request: Request, word_id: int) -> HTMLResponse:
     load_env_file()
     payload = word_payload(conn, word_id, getattr(request.state, "lang", get_lang(request)), current_user_id(request))
     payload["ai_key_ready"] = bool(os.environ.get("OPENAI_API_KEY", "").strip())
+    payload["latest_mastery"] = latest_word_mastery_attempts(conn, word_id=word_id, user_id=current_user_id(request))
     return render(request, "word_detail.html", **payload)
 
 
@@ -7828,6 +8033,98 @@ def pronounce_word_audio(text: str = Query(..., min_length=1, max_length=80)) ->
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Speech generation failed: {exc}") from exc
     return Response(content=audio_bytes, media_type="audio/mpeg")
+
+
+@app.post("/api/word/{word_id}/deep-learning/pronunciation")
+async def word_deep_learning_pronunciation(
+    request: Request,
+    word_id: int,
+    audio: UploadFile = File(...),
+    lang: str = Form("en"),
+) -> dict:
+    conn = db_conn()
+    user_id = current_user_id(request)
+    word = word_row(conn, word_id, user_id)
+    if not speech_api_ready():
+        raise HTTPException(status_code=503, detail=translate(get_lang(request), "mastery_api_not_ready"))
+    audio_bytes = await audio.read()
+    if len(audio_bytes) > 12 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Audio file is too large.")
+    try:
+        transcript = transcribe_pronunciation_audio(
+            audio_bytes,
+            filename=audio.filename or "pronunciation.webm",
+            target_word=word["lemma"],
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Pronunciation check failed: {exc}") from exc
+
+    safe_lang = lang if lang in SUPPORTED_LANGS else get_lang(request)
+    scored = pronunciation_score(word["lemma"], transcript)
+    feedback = mastery_feedback_for_pronunciation(word["lemma"], transcript, int(scored["score"]), safe_lang)
+    payload = {
+        "attempt_type": "pronunciation",
+        "target_word": word["lemma"],
+        "transcript": transcript,
+        "score": scored["score"],
+        "status": scored["status"],
+        "recognized": scored["recognized"],
+        "feedback": feedback,
+    }
+    save_word_mastery_attempt(
+        conn,
+        user_id=user_id,
+        word_id=word_id,
+        attempt_type="pronunciation",
+        transcript=transcript,
+        score=int(scored["score"]),
+        status=str(scored["status"]),
+        feedback=feedback,
+        payload=payload,
+    )
+    return payload
+
+
+@app.post("/api/word/{word_id}/deep-learning/sentence")
+def word_deep_learning_sentence(
+    request: Request,
+    word_id: int,
+    sentence: str = Form(...),
+    lang: str = Form("en"),
+) -> dict:
+    conn = db_conn()
+    user_id = current_user_id(request)
+    word_row(conn, word_id, user_id)
+    cleaned_sentence = sentence.strip()
+    if not cleaned_sentence:
+        raise HTTPException(status_code=400, detail=translate(get_lang(request), "mastery_sentence_required"))
+    if len(cleaned_sentence) > 800:
+        raise HTTPException(status_code=400, detail="Sentence is too long.")
+    if not speech_api_ready():
+        raise HTTPException(status_code=503, detail=translate(get_lang(request), "mastery_api_not_ready"))
+    safe_lang = lang if lang in SUPPORTED_LANGS else get_lang(request)
+    try:
+        result = evaluate_sentence_usage(conn, word_id=word_id, sentence=cleaned_sentence, lang=safe_lang)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Sentence check failed: {exc}") from exc
+    save_word_mastery_attempt(
+        conn,
+        user_id=user_id,
+        word_id=word_id,
+        attempt_type="sentence",
+        input_text=cleaned_sentence,
+        score=int(result.get("overall_score", 0) or 0),
+        status=str(result.get("status", "")),
+        feedback=str(result.get("feedback", "")),
+        corrected_sentence=str(result.get("corrected_sentence", "")),
+        suggested_upgrade=str(result.get("suggested_upgrade", "")),
+        payload=result,
+    )
+    return {
+        "attempt_type": "sentence",
+        "input_text": cleaned_sentence,
+        **result,
+    }
 
 
 @app.post("/word/{word_id}/update")

@@ -45,6 +45,7 @@
       <span class="word-tab active">{{ t("overview_tab") }}</span>
       <span class="word-tab">{{ t("meaning_tab") }}</span>
       <span class="word-tab">{{ t("examples_tab") }}</span>
+      <span class="word-tab">{{ t("word_mastery_tab") }}</span>
       <span class="word-tab">{{ t("notes_tab") }}</span>
     </div>
   </article>
@@ -74,6 +75,82 @@
             {% else %}
             <p>{{ t("no_chinese_definition") }}</p>
             {% endif %}
+          </section>
+        </div>
+      </article>
+
+      <article
+        class="panel dashboard-v2-card word-section-card word-mastery-card"
+        data-word-mastery
+        data-word-id="{{ word.id }}"
+        data-lang="{{ lang }}"
+        data-record-label="{{ t('mastery_record_button') }}"
+        data-stop-label="{{ t('mastery_stop_button') }}"
+        data-retry-label="{{ t('mastery_retry_button') }}"
+        data-checking-label="{{ t('mastery_checking') }}"
+        data-recording-label="{{ t('mastery_recording') }}"
+        data-unsupported-message="{{ t('mastery_recording_unsupported') }}"
+        data-sentence-required="{{ t('mastery_sentence_required') }}"
+      >
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("word_mastery_section") }}</p>
+            <h2>{{ t("word_mastery_title") }}</h2>
+          </div>
+        </div>
+        <p class="section-note">{{ t("word_mastery_lede") }}</p>
+        {% if not ai_key_ready %}
+        <div class="callout compact">
+          <strong>{{ t("mastery_api_not_ready") }}</strong>
+        </div>
+        {% endif %}
+
+        <div class="word-mastery-grid">
+          <section class="word-info-card primary mastery-step-card">
+            <span class="focus-label">{{ t("mastery_pronunciation_title") }}</span>
+            <div class="word-heading-row compact">
+              <strong class="mastery-target-word">{{ word.lemma }}</strong>
+              {% if pronunciation %}<span class="section-note">{{ pronunciation }}</span>{% endif %}
+              <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
+            </div>
+            <button class="button secondary mastery-record-button" type="button" {% if not ai_key_ready %}disabled{% endif %}>{{ t("mastery_record_button") }}</button>
+            <div class="mastery-result-panel" data-pronunciation-result>
+              {% if latest_mastery.pronunciation %}
+              <div class="mastery-score-line">
+                <strong>{{ t("mastery_score") }}: {{ latest_mastery.pronunciation.score }}/100</strong>
+                <span>{{ t("mastery_status") }}: {{ latest_mastery.pronunciation.status }}</span>
+              </div>
+              {% if latest_mastery.pronunciation.transcript %}
+              <p><strong>{{ t("mastery_transcript") }}:</strong> {{ latest_mastery.pronunciation.transcript }}</p>
+              {% endif %}
+              <p>{{ latest_mastery.pronunciation.feedback }}</p>
+              {% else %}
+              <p class="section-note">{{ t("mastery_no_attempt") }}</p>
+              {% endif %}
+            </div>
+          </section>
+
+          <section class="word-info-card mastery-step-card">
+            <span class="focus-label">{{ t("mastery_sentence_title") }}</span>
+            <textarea class="mastery-sentence-input" rows="5" placeholder="{{ t('mastery_sentence_placeholder') }}"></textarea>
+            <button class="button word-save-button mastery-sentence-button" type="button" {% if not ai_key_ready %}disabled{% endif %}>{{ t("mastery_check_sentence") }}</button>
+            <div class="mastery-result-panel" data-sentence-result>
+              {% if latest_mastery.sentence %}
+              <div class="mastery-score-line">
+                <strong>{{ t("mastery_score") }}: {{ latest_mastery.sentence.score }}/100</strong>
+                <span>{{ t("mastery_status") }}: {{ latest_mastery.sentence.status }}</span>
+              </div>
+              <p><strong>{{ t("mastery_feedback") }}:</strong> {{ latest_mastery.sentence.feedback }}</p>
+              {% if latest_mastery.sentence.corrected_sentence %}
+              <p><strong>{{ t("mastery_corrected_sentence") }}:</strong> {{ latest_mastery.sentence.corrected_sentence }}</p>
+              {% endif %}
+              {% if latest_mastery.sentence.suggested_upgrade %}
+              <p><strong>{{ t("mastery_suggested_upgrade") }}:</strong> {{ latest_mastery.sentence.suggested_upgrade }}</p>
+              {% endif %}
+              {% else %}
+              <p class="section-note">{{ t("mastery_record_note") }}</p>
+              {% endif %}
+            </div>
           </section>
         </div>
       </article>

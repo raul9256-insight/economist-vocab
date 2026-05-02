@@ -142,6 +142,42 @@ AI_INSIGHT_RESPONSE_SCHEMA = {
     },
 }
 
+SENTENCE_USAGE_RESPONSE_SCHEMA = {
+    "type": "json_schema",
+    "name": "word_sentence_usage_check",
+    "strict": True,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "usage_correct": {"type": "boolean"},
+            "grammar_correct": {"type": "boolean"},
+            "meaning_score": {"type": "integer"},
+            "grammar_score": {"type": "integer"},
+            "naturalness_score": {"type": "integer"},
+            "exam_usefulness_score": {"type": "integer"},
+            "overall_score": {"type": "integer"},
+            "status": {"type": "string"},
+            "feedback": {"type": "string"},
+            "corrected_sentence": {"type": "string"},
+            "suggested_upgrade": {"type": "string"},
+        },
+        "required": [
+            "usage_correct",
+            "grammar_correct",
+            "meaning_score",
+            "grammar_score",
+            "naturalness_score",
+            "exam_usefulness_score",
+            "overall_score",
+            "status",
+            "feedback",
+            "corrected_sentence",
+            "suggested_upgrade",
+        ],
+        "additionalProperties": False,
+    },
+}
+
 
 SYSTEM_PROMPT = (
     "You are enriching an English vocabulary database for a learner. "
@@ -161,6 +197,17 @@ AI_INSIGHT_SYSTEM_PROMPT = (
     "Keep all outputs concise, practical, and clear for learners. "
     "Use Traditional Chinese for the Chinese explanation. "
     "Return structured JSON only."
+)
+
+SENTENCE_USAGE_SYSTEM_PROMPT = (
+    "You are an English vocabulary coach for DSE, IELTS, and SAT learners. "
+    "Evaluate whether a student's sentence uses the target vocabulary word correctly and naturally. "
+    "Check meaning, grammar, naturalness, and exam usefulness. "
+    "Give concise, practical feedback. If the sentence is wrong or awkward, provide a corrected sentence. "
+    "Always provide a stronger suggested upgrade sentence suitable for academic or exam writing. "
+    "Use the requested feedback language for feedback, but keep the corrected sentence and suggested upgrade in English. "
+    "Return structured JSON only. Scores must be integers from 0 to 100. "
+    "Status must be one of: Mastered, Almost mastered, Needs review, Relearn."
 )
 
 
@@ -310,4 +357,60 @@ def generate_ai_insight_for_word(conn: sqlite3.Connection, *, word_id: int) -> d
         ),
     )
     conn.commit()
+    return parsed
+
+
+def evaluate_sentence_usage(
+    conn: sqlite3.Connection,
+    *,
+    word_id: int,
+    sentence: str,
+    lang: str = "en",
+) -> dict[str, object]:
+    cleaned_sentence = (sentence or "").strip()
+    if not cleaned_sentence:
+        raise RuntimeError("No sentence provided.")
+
+    row = conn.execute(
+        """
+        SELECT id, lemma, best_band_label
+        FROM words
+        WHERE id = ?
+        """,
+        (word_id,),
+    ).fetchone()
+    if row is None:
+        raise RuntimeError(f"Word {word_id} not found")
+
+    enrichment = conn.execute(
+        """
+        SELECT english_definition, example_sentence, synonyms_json
+        FROM word_enrichment
+        WHERE word_id = ?
+        """,
+        (word_id,),
+    ).fetchone()
+
+    payload = {
+        "target_word": row["lemma"],
+        "band_label": row["best_band_label"],
+        "parts_of_speech": parts_of_speech_for_word(conn, word_id),
+        "chinese_definitions": definitions_for_word(conn, word_id)[:5],
+        "english_definition": enrichment["english_definition"] if enrichment else "",
+        "example_sentence": enrichment["example_sentence"] if enrichment else "",
+        "synonyms": json.loads(enrichment["synonyms_json"]) if enrichment and enrichment["synonyms_json"] else [],
+        "student_sentence": cleaned_sentence,
+        "feedback_language": lang,
+    }
+
+    client = openai_client()
+    response = client.responses.create(
+        model=openai_model(),
+        instructions=SENTENCE_USAGE_SYSTEM_PROMPT,
+        input=json.dumps(payload, ensure_ascii=False),
+        text={"format": SENTENCE_USAGE_RESPONSE_SCHEMA},
+    )
+    parsed = json.loads(response.output_text)
+    for key in ["meaning_score", "grammar_score", "naturalness_score", "exam_usefulness_score", "overall_score"]:
+        parsed[key] = max(0, min(100, int(parsed.get(key, 0) or 0)))
     return parsed
