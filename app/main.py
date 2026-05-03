@@ -1206,6 +1206,16 @@ TRANSLATIONS["en"].update(
         "mastery_recording": "Recording...",
         "mastery_checking": "Checking...",
         "mastery_sentence_required": "Please write a sentence first.",
+        "dse_exam_use_section": "DSE Exam Use",
+        "dse_exam_use_title": "How to use this word in DSE English",
+        "dse_exam_use_lede": "Focus on where this word can help in Paper 1 reading, Paper 2 writing, and Paper 4 speaking.",
+        "dse_paper_fit": "Best DSE fit",
+        "dse_topic_fit": "Likely topics",
+        "dse_writing_move": "Writing move",
+        "dse_sample_sentence": "DSE-style sentence",
+        "dse_common_mistake": "Common mistake",
+        "dse_next_practice": "Next practice",
+        "dse_next_practice_text": "Write one DSE Paper 2 sentence below, then use Deep Learning to check usage and grammar.",
         "progression_section": "Progression",
         "vocabulary_progression": "Vocabulary Progression",
         "meaning_family": "Meaning family",
@@ -1606,6 +1616,16 @@ TRANSLATIONS["zh-Hant"].update(
         "mastery_recording": "錄音中...",
         "mastery_checking": "檢查中...",
         "mastery_sentence_required": "請先寫一句句子。",
+        "dse_exam_use_section": "DSE 考試應用",
+        "dse_exam_use_title": "這個詞在 DSE English 怎樣使用",
+        "dse_exam_use_lede": "重點看它如何幫助 Paper 1 閱讀、Paper 2 寫作和 Paper 4 Speaking。",
+        "dse_paper_fit": "最適合的 DSE 卷別",
+        "dse_topic_fit": "常見題材",
+        "dse_writing_move": "寫作用途",
+        "dse_sample_sentence": "DSE 風格例句",
+        "dse_common_mistake": "常見錯誤",
+        "dse_next_practice": "下一步練習",
+        "dse_next_practice_text": "在下面寫一句 DSE Paper 2 句子，再用深度學習檢查用法和文法。",
         "progression_section": "進階路徑",
         "vocabulary_progression": "詞彙進階路徑",
         "meaning_family": "核心語義群組",
@@ -2342,6 +2362,16 @@ TRANSLATIONS["zh-Hans"].update(
         "mastery_recording": "录音中...",
         "mastery_checking": "检查中...",
         "mastery_sentence_required": "请先写一句句子。",
+        "dse_exam_use_section": "DSE 考试应用",
+        "dse_exam_use_title": "这个词在 DSE English 怎样使用",
+        "dse_exam_use_lede": "重点看它如何帮助 Paper 1 阅读、Paper 2 写作和 Paper 4 Speaking。",
+        "dse_paper_fit": "最适合的 DSE 卷别",
+        "dse_topic_fit": "常见题材",
+        "dse_writing_move": "写作用途",
+        "dse_sample_sentence": "DSE 风格例句",
+        "dse_common_mistake": "常见错误",
+        "dse_next_practice": "下一步练习",
+        "dse_next_practice_text": "在下面写一句 DSE Paper 2 句子，再用深度学习检查用法和语法。",
         "progression_section": "进阶路径",
         "vocabulary_progression": "词汇进阶路径",
         "meaning_family": "核心语义群组",
@@ -3593,6 +3623,83 @@ def latest_word_mastery_attempts(conn: sqlite3.Connection, *, word_id: int, user
     return result
 
 
+def dse_exam_profile_for_word(
+    lemma: str,
+    *,
+    band_rank: int | None,
+    parts_of_speech: list[str],
+    english_definition: str = "",
+    example_sentence: str = "",
+    lang: str = "en",
+) -> dict[str, object]:
+    text = f"{lemma} {english_definition} {example_sentence}".lower()
+    topic_keywords = [
+        ("Environment", "環境", "环境", ["climate", "environment", "green", "sustainable", "pollution", "energy", "waste"]),
+        ("Technology", "科技", "科技", ["technology", "digital", "ai", "data", "online", "internet", "automation"]),
+        ("Economy & Work", "經濟與工作", "经济与工作", ["market", "econom", "business", "work", "job", "labour", "income", "firm"]),
+        ("Society & Policy", "社會與政策", "社会与政策", ["society", "policy", "government", "public", "community", "inequality", "rights"]),
+        ("Education & Youth", "教育與青年", "教育与青年", ["education", "school", "student", "youth", "learn", "exam", "teacher"]),
+        ("Health & Lifestyle", "健康與生活", "健康与生活", ["health", "mental", "stress", "lifestyle", "wellbeing", "medical"]),
+    ]
+    topics: list[str] = []
+    for en_label, zh_hant_label, zh_hans_label, keywords in topic_keywords:
+        if any(keyword in text for keyword in keywords):
+            topics.append(zh_hant_label if lang == "zh-Hant" else zh_hans_label if lang == "zh-Hans" else en_label)
+    if not topics:
+        topics = [
+            "Social issues",
+            "Argument writing",
+        ] if lang == "en" else [
+            "社會議題",
+            "議論寫作",
+        ] if lang == "zh-Hant" else [
+            "社会议题",
+            "议论写作",
+        ]
+
+    pos_text = " ".join(parts_of_speech).lower()
+    paper_fit = ["Paper 1 Reading", "Paper 2 Writing"]
+    if band_rank in {50, 100, 200}:
+        paper_fit.append("Paper 4 Speaking")
+    if "verb" in pos_text:
+        writing_move = {
+            "en": "Use it to describe an action, trend, policy effect, or cause-and-effect relationship.",
+            "zh-Hant": "可用來描述行動、趨勢、政策影響或因果關係。",
+            "zh-Hans": "可用来描述行动、趋势、政策影响或因果关系。",
+        }
+    elif "adjective" in pos_text or "adj" in pos_text:
+        writing_move = {
+            "en": "Use it to make your description or argument more precise.",
+            "zh-Hant": "可用來令描述或論點更精準。",
+            "zh-Hans": "可用来令描述或论点更精准。",
+        }
+    elif "noun" in pos_text:
+        writing_move = {
+            "en": "Use it as a key concept in topic sentences, examples, and conclusions.",
+            "zh-Hant": "可作為 topic sentence、例子或結論中的核心概念。",
+            "zh-Hans": "可作为 topic sentence、例子或结论中的核心概念。",
+        }
+    else:
+        writing_move = {
+            "en": "Use it when you need a more exact DSE writing word instead of a simple everyday word.",
+            "zh-Hant": "當你想把日常用字升級成更精準的 DSE 寫作用字時使用。",
+            "zh-Hans": "当你想把日常用词升级成更精准的 DSE 写作用词时使用。",
+        }
+    common_mistake = {
+        "en": "Do not only memorise the Chinese meaning. Check the part of speech and use the word in a complete sentence.",
+        "zh-Hant": "不要只背中文意思；要先確認詞性，再把它放入完整句子。",
+        "zh-Hans": "不要只背中文意思；要先确认词性，再把它放入完整句子。",
+    }
+    sample_sentence = example_sentence.strip() or f"This issue shows why {lemma} matters in modern society."
+    return {
+        "paper_fit": paper_fit,
+        "topics": topics[:3],
+        "writing_move": writing_move.get(lang, writing_move["en"]),
+        "sample_sentence": sample_sentence,
+        "common_mistake": common_mistake.get(lang, common_mistake["en"]),
+    }
+
+
 def source_fallback_for_word(conn: sqlite3.Connection, word_id: int) -> dict[str, str]:
     rows = conn.execute(
         """
@@ -3790,6 +3897,14 @@ def word_payload(conn: sqlite3.Connection, word_id: int, lang: str = "en", user_
     english_definition = (enrichment["english_definition"] if enrichment and enrichment["english_definition"] else source_fallback["english_definition"])
     synonyms = json_loads(enrichment["synonyms_json"]) if enrichment else []
     example_sentence = (enrichment["example_sentence"] if enrichment and enrichment["example_sentence"] else source_fallback["example_sentence"])
+    dse_exam_profile = dse_exam_profile_for_word(
+        row["lemma"],
+        band_rank=row["best_band_rank"],
+        parts_of_speech=parts_of_speech,
+        english_definition=english_definition,
+        example_sentence=example_sentence,
+        lang=lang,
+    )
     return {
         "word": row,
         "definitions": definitions,
@@ -3800,6 +3915,7 @@ def word_payload(conn: sqlite3.Connection, word_id: int, lang: str = "en", user_
         "pronunciation": (enrichment["pronunciation"] if enrichment and enrichment["pronunciation"] else source_fallback["pronunciation"]),
         "synonyms": synonyms,
         "example_sentence": example_sentence,
+        "dse_exam_profile": dse_exam_profile,
         "sentence_distractors": json_loads(enrichment["sentence_distractors_json"]) if enrichment else [],
         "ai_insight": {
             "simple_explanation_en": enrichment["ai_simple_explanation_en"] if enrichment else "",

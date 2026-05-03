@@ -31,6 +31,7 @@ function renderSentenceResult(target, data, labels) {
     <p><strong>${escapeHtml(labels.feedback)}:</strong> ${escapeHtml(data.feedback || "")}</p>
     ${data.corrected_sentence ? `<p><strong>${escapeHtml(labels.corrected)}:</strong> ${escapeHtml(data.corrected_sentence)}</p>` : ""}
     ${data.suggested_upgrade ? `<p><strong>${escapeHtml(labels.upgrade)}:</strong> ${escapeHtml(data.suggested_upgrade)}</p>` : ""}
+    <p><strong>${escapeHtml(labels.dseUsefulness)}:</strong> ${escapeHtml(data.exam_usefulness_score)}/100</p>
   `;
 }
 
@@ -50,6 +51,7 @@ function bindWordMasteryLab() {
       feedback: document.documentElement.lang === "en" ? "AI feedback" : lang === "zh-Hans" ? "AI 反馈" : "AI 回饋",
       corrected: document.documentElement.lang === "en" ? "Corrected sentence" : "修正版句子",
       upgrade: document.documentElement.lang === "en" ? "Suggested upgrade" : lang === "zh-Hans" ? "升级版句子" : "升級版句子",
+      dseUsefulness: document.documentElement.lang === "en" ? "DSE writing usefulness" : lang === "zh-Hans" ? "DSE 写作实用度" : "DSE 寫作實用度",
     };
     let mediaRecorder = null;
     let audioChunks = [];

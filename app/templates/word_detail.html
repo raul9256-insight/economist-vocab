@@ -79,6 +79,52 @@
         </div>
       </article>
 
+      <article class="panel dashboard-v2-card word-section-card dse-exam-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">{{ t("dse_exam_use_section") }}</p>
+            <h2>{{ t("dse_exam_use_title") }}</h2>
+          </div>
+        </div>
+        <p class="section-note">{{ t("dse_exam_use_lede") }}</p>
+        <div class="dse-exam-grid">
+          <section class="word-info-card primary">
+            <span class="focus-label">{{ t("dse_paper_fit") }}</span>
+            <div class="word-chip-row">
+              {% for paper in dse_exam_profile.paper_fit %}
+              <span class="soft-chip">{{ paper }}</span>
+              {% endfor %}
+            </div>
+          </section>
+          <section class="word-info-card">
+            <span class="focus-label">{{ t("dse_topic_fit") }}</span>
+            <div class="word-chip-row">
+              {% for topic in dse_exam_profile.topics %}
+              <span class="soft-chip">{{ topic }}</span>
+              {% endfor %}
+            </div>
+          </section>
+        </div>
+        <div class="dse-exam-grid">
+          <section class="word-info-card">
+            <span class="focus-label">{{ t("dse_writing_move") }}</span>
+            <p>{{ dse_exam_profile.writing_move }}</p>
+          </section>
+          <section class="word-info-card">
+            <span class="focus-label">{{ t("dse_common_mistake") }}</span>
+            <p>{{ dse_exam_profile.common_mistake }}</p>
+          </section>
+        </div>
+        <section class="word-info-card dse-sentence-card">
+          <span class="focus-label">{{ t("dse_sample_sentence") }}</span>
+          <p>{{ dse_exam_profile.sample_sentence }}</p>
+        </section>
+        <section class="word-info-card dse-next-card">
+          <span class="focus-label">{{ t("dse_next_practice") }}</span>
+          <p>{{ t("dse_next_practice_text") }}</p>
+        </section>
+      </article>
+
       <article
         class="panel dashboard-v2-card word-section-card word-mastery-card"
         data-word-mastery

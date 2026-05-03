@@ -2584,6 +2584,27 @@ input[type="file"] {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(242, 248, 245, 0.94));
 }
 
+.dse-exam-card {
+  border-color: rgba(150, 48, 66, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 248, 0.94));
+}
+
+.dse-exam-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.dse-sentence-card,
+.dse-next-card {
+  margin-top: 0.9rem;
+}
+
+.dse-next-card {
+  background: linear-gradient(180deg, rgba(240, 246, 255, 0.92), rgba(255, 255, 255, 0.9));
+}
+
 .word-mastery-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4665,6 +4686,7 @@ input[type="file"] {
   .dashboard-hero-v3-grid,
   .word-detail-grid,
   .word-definition-grid,
+  .dse-exam-grid,
   .word-mastery-grid,
   .dashboard-refined-top,
   .dashboard-simple-hero,
