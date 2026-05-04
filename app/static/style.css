@@ -2531,43 +2531,50 @@ input[type="file"] {
   --mastery-soft: rgba(56, 189, 248, 0.14);
   display: grid;
   gap: 0.95rem;
-  border-color: color-mix(in srgb, var(--mastery-color) 28%, transparent);
+  border-color: rgba(56, 189, 248, 0.24);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), var(--mastery-soft));
 }
 
 .mastery-tone-not-started {
   --mastery-color: #9ca3af;
   --mastery-soft: rgba(229, 231, 235, 0.82);
+  border-color: rgba(156, 163, 175, 0.28);
 }
 
 .mastery-tone-seen {
   --mastery-color: #38bdf8;
   --mastery-soft: rgba(186, 230, 253, 0.34);
+  border-color: rgba(56, 189, 248, 0.28);
 }
 
 .mastery-tone-learning {
   --mastery-color: #0ea5e9;
   --mastery-soft: rgba(56, 189, 248, 0.18);
+  border-color: rgba(14, 165, 233, 0.28);
 }
 
 .mastery-tone-practicing {
   --mastery-color: #eab308;
   --mastery-soft: rgba(250, 204, 21, 0.2);
+  border-color: rgba(234, 179, 8, 0.3);
 }
 
 .mastery-tone-tested {
   --mastery-color: #fb923c;
   --mastery-soft: rgba(251, 146, 60, 0.18);
+  border-color: rgba(251, 146, 60, 0.3);
 }
 
 .mastery-tone-deep-learning {
   --mastery-color: #8b5cf6;
   --mastery-soft: rgba(167, 139, 250, 0.18);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .mastery-tone-mastered {
   --mastery-color: #22c55e;
   --mastery-soft: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.3);
 }
 
 .mastery-progress-top {
@@ -2582,7 +2589,8 @@ input[type="file"] {
   padding: 0.9rem 1rem;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(112, 125, 184, 0.12);
+  border: 1px solid rgba(112, 125, 184, 0.14);
+  box-shadow: 0 10px 24px rgba(40, 50, 78, 0.06);
   text-align: right;
 }
 
@@ -2614,7 +2622,7 @@ input[type="file"] {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--mastery-color), color-mix(in srgb, var(--mastery-color) 72%, #ffffff));
+  background: var(--mastery-color);
 }
 
 .mastery-segment-grid {
@@ -2639,8 +2647,9 @@ input[type="file"] {
 }
 
 .mastery-segment.complete {
-  border-color: color-mix(in srgb, var(--mastery-color) 32%, transparent);
-  background: color-mix(in srgb, var(--mastery-color) 12%, #ffffff);
+  border-color: var(--mastery-color);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 4px 0 0 var(--mastery-color);
 }
 
 .mastery-segment span {

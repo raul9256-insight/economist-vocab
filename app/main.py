@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
 DATA_DIR = BASE_DIR.parent / "data"
 AI_POWER_DATA_PATH = DATA_DIR / "ai_power_vocab.json"
-STATIC_ASSET_VERSION = "20260502a"
+STATIC_ASSET_VERSION = "20260504b"
 app = FastAPI(title="VocabLab AI")
 app.add_middleware(
     CORSMiddleware,
@@ -1303,6 +1303,7 @@ TRANSLATIONS["en"].update(
         "mastery_progress_deep_learning": "Deep Learning",
         "mastery_progress_mastered": "Mastered",
         "mastery_progress_exposure": "Opened",
+        "mastery_progress_test_layers": "5-layer test",
         "mastery_progress_pronunciation": "Pronunciation",
         "mastery_progress_writing": "AI usage",
         "mastery_progress_review": "Review",
@@ -1754,6 +1755,7 @@ TRANSLATIONS["zh-Hant"].update(
         "mastery_progress_deep_learning": "深度學習中",
         "mastery_progress_mastered": "已掌握",
         "mastery_progress_exposure": "已打開",
+        "mastery_progress_test_layers": "五層題型",
         "mastery_progress_pronunciation": "發音",
         "mastery_progress_writing": "AI 用法",
         "mastery_progress_review": "複習",
@@ -2545,6 +2547,7 @@ TRANSLATIONS["zh-Hans"].update(
         "mastery_progress_deep_learning": "深度学习中",
         "mastery_progress_mastered": "已掌握",
         "mastery_progress_exposure": "已打开",
+        "mastery_progress_test_layers": "五层题型",
         "mastery_progress_pronunciation": "发音",
         "mastery_progress_writing": "AI 用法",
         "mastery_progress_review": "复习",
@@ -3945,7 +3948,7 @@ def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: in
     tone, label_key = word_mastery_status(percent, test_complete, pronunciation_complete and sentence_complete, review_complete)
     segments = [
         {"key": "exposure", "label": translate(lang, "mastery_progress_exposure"), "complete": True, "weight": 15},
-        {"key": "test", "label": "5-layer test", "complete": test_complete, "weight": 50},
+        {"key": "test", "label": translate(lang, "mastery_progress_test_layers"), "complete": test_complete, "weight": 50},
         {"key": "pronunciation", "label": translate(lang, "mastery_progress_pronunciation"), "complete": pronunciation_complete, "weight": 10},
         {"key": "writing", "label": translate(lang, "mastery_progress_writing"), "complete": sentence_complete, "weight": 15},
         {"key": "review", "label": translate(lang, "mastery_progress_review"), "complete": review_complete, "weight": 10},
