@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import os
+import logging
 from io import BytesIO
 from urllib import request as urlrequest
 from urllib.error import HTTPError, URLError
 
 from app.openai_enrichment import load_env_file, openai_client
+
+logger = logging.getLogger(__name__)
 
 
 def speech_api_ready() -> bool:
@@ -79,7 +82,11 @@ def assemblyai_transcribe_pronunciation_audio(audio_bytes: bytes, *, filename: s
             {
                 "audio_url": upload_url,
                 "language_code": "en",
-                "speech_model": os.environ.get("ASSEMBLYAI_SPEECH_MODEL", "universal").strip() or "universal",
+                "speech_models": [
+                    model.strip()
+                    for model in os.environ.get("ASSEMBLYAI_SPEECH_MODELS", "universal-2").split(",")
+                    if model.strip()
+                ],
                 "word_boost": [target_word] if target_word else [],
                 "boost_param": "high" if target_word else "default",
             }
@@ -147,5 +154,6 @@ def transcribe_pronunciation_audio(audio_bytes: bytes, *, filename: str = "pronu
         except Exception as exc:
             if not os.environ.get("ASSEMBLYAI_API_KEY", "").strip() or not is_quota_error(exc):
                 raise
+            logger.warning("OpenAI transcription failed with quota error; falling back to AssemblyAI: %s", exc)
 
     return assemblyai_transcribe_pronunciation_audio(audio_bytes, filename=filename, target_word=target_word)

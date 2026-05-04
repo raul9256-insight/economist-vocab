@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import hashlib
 import hmac
+import logging
 import os
 import random
 import re
@@ -43,6 +44,8 @@ from app.openai_enrichment import evaluate_sentence_usage, generate_ai_insight_f
 from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio, transcribe_pronunciation_audio, transcription_api_ready
 from economist_vocab import DEFAULT_DB_PATH
 
+
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
@@ -8796,6 +8799,7 @@ async def word_deep_learning_pronunciation(
             target_word=word["lemma"],
         )
     except Exception as exc:
+        logger.exception("Pronunciation check failed for word_id=%s", word_id)
         raise HTTPException(status_code=502, detail=friendly_ai_failure_message("Pronunciation check", safe_lang)) from exc
 
     scored = pronunciation_score(word["lemma"], transcript)
@@ -8844,6 +8848,7 @@ def word_deep_learning_sentence(
     try:
         result = evaluate_sentence_usage(conn, word_id=word_id, sentence=cleaned_sentence, lang=safe_lang)
     except Exception as exc:
+        logger.exception("Sentence check failed for word_id=%s", word_id)
         raise HTTPException(status_code=502, detail=friendly_ai_failure_message("Sentence check", safe_lang)) from exc
     save_word_mastery_attempt(
         conn,
