@@ -18,7 +18,7 @@
         <h1>{{ question.prompt_text }}</h1>
         <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
       </div>
-      <p class="section-subtle">{{ question.explanation }}</p>
+      <p class="section-subtle">{{ question_instruction }}</p>
 
       <form method="post" action="/test/{{ session.id }}/answer" class="options-form learning-options-form">
         {% for option in options %}

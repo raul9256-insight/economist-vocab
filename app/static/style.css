@@ -1241,6 +1241,7 @@ input[type="file"] {
   position: sticky;
   top: 0;
   height: 100vh;
+  min-height: 0;
   padding: 1.2rem 1rem;
   background:
     radial-gradient(circle at top, rgba(95, 115, 255, 0.24), transparent 30%),
@@ -1250,6 +1251,8 @@ input[type="file"] {
   flex-direction: column;
   gap: 1.25rem;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .sidebar-brand {
@@ -1376,6 +1379,40 @@ input[type="file"] {
   background: rgba(95, 115, 255, 0.92);
   color: white;
   font-weight: 600;
+}
+
+@media (max-height: 760px) and (min-width: 861px) {
+  .app-sidebar {
+    gap: 0.8rem;
+    padding-block: 0.85rem;
+  }
+
+  .sidebar-brand {
+    padding-block: 0.35rem 0.55rem;
+  }
+
+  .sidebar-nav {
+    gap: 0.2rem;
+  }
+
+  .sidebar-nav a {
+    padding-block: 0.62rem;
+  }
+
+  .sidebar-card {
+    margin-top: 0.35rem;
+    padding: 0.8rem;
+    border-radius: 18px;
+  }
+
+  .sidebar-card span {
+    font-size: 0.86rem;
+    line-height: 1.35;
+  }
+
+  .sidebar-card-link {
+    padding-block: 0.58rem;
+  }
 }
 
 .app-main {
@@ -4880,6 +4917,19 @@ input[type="file"] {
   gap: 1rem;
 }
 
+.test-hero {
+  padding: clamp(1.25rem, 2vw, 2rem);
+}
+
+.test-hero h1 {
+  font-size: clamp(2rem, 3.2vw, 3.35rem);
+  max-width: 14ch;
+}
+
+.test-hero .lede {
+  max-width: 62ch;
+}
+
 .test-hero,
 .test-result-hero,
 .test-band-breakdown-card,
@@ -4935,19 +4985,23 @@ input[type="file"] {
 }
 
 .test-band-chip-grid {
-  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .test-band-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.8rem;
-  border-radius: 999px;
+  min-height: 58px;
+  padding: 0.7rem 0.9rem;
+  border-radius: 18px;
   background: rgba(247, 249, 255, 0.94);
   border: 1px solid rgba(112, 125, 184, 0.12);
   color: #6f7890;
   font-weight: 600;
+  line-height: 1.05;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .test-session-grid {
