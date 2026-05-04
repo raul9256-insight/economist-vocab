@@ -39,8 +39,8 @@ from app.enrichment_io import (
     iter_enrichment_import_rows,
     iter_import_rows,
 )
-from app.openai_enrichment import evaluate_sentence_usage, generate_ai_insight_for_word, generate_enrichment_batch, load_env_file
-from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio, transcribe_pronunciation_audio
+from app.openai_enrichment import evaluate_sentence_usage, generate_ai_insight_for_word, generate_enrichment_batch, load_env_file, sentence_ai_ready
+from app.openai_speech import speech_api_ready, synthesize_pronunciation_audio, transcribe_pronunciation_audio, transcription_api_ready
 from economist_vocab import DEFAULT_DB_PATH
 
 
@@ -3698,6 +3698,14 @@ def mastery_feedback_for_pronunciation(target_word: str, transcript: str, score:
     if score >= 85:
         return f"AI recognized {target_word}. Your pronunciation is understandable; next, refine stress and rhythm."
     return f'AI heard "{transcript or "unclear audio"}". Try speaking a little slower after listening to the model pronunciation.'
+
+
+def friendly_ai_failure_message(feature: str, lang: str = "en") -> str:
+    if lang == "zh-Hant":
+        return f"{feature} 暫時未能完成。請稍後再試，或請管理員檢查 OpenAI / AssemblyAI / Gemini API 額度與環境變數。"
+    if lang == "zh-Hans":
+        return f"{feature} 暂时未能完成。请稍后再试，或请管理员检查 OpenAI / AssemblyAI / Gemini API 额度与环境变量。"
+    return f"{feature} is temporarily unavailable. Please try again later, or ask the admin to check OpenAI / AssemblyAI / Gemini API quota and environment variables."
 
 
 def save_word_mastery_attempt(
@@ -8775,7 +8783,8 @@ async def word_deep_learning_pronunciation(
     conn = db_conn()
     user_id = current_user_id(request)
     word = word_row(conn, word_id, user_id)
-    if not speech_api_ready():
+    safe_lang = lang if lang in SUPPORTED_LANGS else get_lang(request)
+    if not transcription_api_ready():
         raise HTTPException(status_code=503, detail=translate(get_lang(request), "mastery_api_not_ready"))
     audio_bytes = await audio.read()
     if len(audio_bytes) > 12 * 1024 * 1024:
@@ -8787,9 +8796,8 @@ async def word_deep_learning_pronunciation(
             target_word=word["lemma"],
         )
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Pronunciation check failed: {exc}") from exc
+        raise HTTPException(status_code=502, detail=friendly_ai_failure_message("Pronunciation check", safe_lang)) from exc
 
-    safe_lang = lang if lang in SUPPORTED_LANGS else get_lang(request)
     scored = pronunciation_score(word["lemma"], transcript)
     feedback = mastery_feedback_for_pronunciation(word["lemma"], transcript, int(scored["score"]), safe_lang)
     payload = {
@@ -8830,13 +8838,13 @@ def word_deep_learning_sentence(
         raise HTTPException(status_code=400, detail=translate(get_lang(request), "mastery_sentence_required"))
     if len(cleaned_sentence) > 800:
         raise HTTPException(status_code=400, detail="Sentence is too long.")
-    if not speech_api_ready():
+    if not sentence_ai_ready():
         raise HTTPException(status_code=503, detail=translate(get_lang(request), "mastery_api_not_ready"))
     safe_lang = lang if lang in SUPPORTED_LANGS else get_lang(request)
     try:
         result = evaluate_sentence_usage(conn, word_id=word_id, sentence=cleaned_sentence, lang=safe_lang)
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Sentence check failed: {exc}") from exc
+        raise HTTPException(status_code=502, detail=friendly_ai_failure_message("Sentence check", safe_lang)) from exc
     save_word_mastery_attempt(
         conn,
         user_id=user_id,

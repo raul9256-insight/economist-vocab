@@ -4,6 +4,8 @@ import json
 import os
 import sqlite3
 from pathlib import Path
+from urllib import request as urlrequest
+from urllib.error import HTTPError, URLError
 
 from app.db import definitions_for_word, parts_of_speech_for_word
 
@@ -37,6 +39,95 @@ def openai_client():
 def openai_model() -> str:
     load_env_file()
     return os.environ.get("OPENAI_MODEL", "gpt-5").strip() or "gpt-5"
+
+
+def sentence_ai_ready() -> bool:
+    load_env_file()
+    return bool(os.environ.get("OPENAI_API_KEY", "").strip() or os.environ.get("GEMINI_API_KEY", "").strip())
+
+
+def is_openai_quota_error(exc: Exception) -> bool:
+    text = str(exc).lower()
+    return "insufficient_quota" in text or "exceeded your current quota" in text or "billing" in text
+
+
+def extract_json_object(text: str) -> dict[str, object]:
+    cleaned = (text or "").strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`").strip()
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:].strip()
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start >= 0 and end > start:
+            return json.loads(cleaned[start : end + 1])
+        raise
+
+
+def normalize_sentence_usage_result(parsed: dict[str, object]) -> dict[str, object]:
+    for key in ["meaning_score", "grammar_score", "naturalness_score", "exam_usefulness_score", "overall_score"]:
+        parsed[key] = max(0, min(100, int(parsed.get(key, 0) or 0)))
+    parsed["usage_correct"] = bool(parsed.get("usage_correct", False))
+    parsed["grammar_correct"] = bool(parsed.get("grammar_correct", False))
+    status = str(parsed.get("status") or "").strip()
+    if status not in {"Mastered", "Almost mastered", "Needs review", "Relearn"}:
+        overall = int(parsed.get("overall_score", 0) or 0)
+        status = "Mastered" if overall >= 90 else "Almost mastered" if overall >= 75 else "Needs review" if overall >= 60 else "Relearn"
+    parsed["status"] = status
+    for key in ["feedback", "corrected_sentence", "suggested_upgrade"]:
+        parsed[key] = str(parsed.get(key, "") or "").strip()
+    return parsed
+
+
+def gemini_sentence_usage_check(payload: dict[str, object], lang: str) -> dict[str, object]:
+    load_env_file()
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY is not set.")
+    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite").strip() or "gemini-2.5-flash-lite"
+    prompt = (
+        f"{SENTENCE_USAGE_SYSTEM_PROMPT}\n\n"
+        "Return one valid JSON object only. Do not use markdown. "
+        "The object must contain these exact keys: usage_correct, grammar_correct, meaning_score, "
+        "grammar_score, naturalness_score, exam_usefulness_score, overall_score, status, feedback, "
+        "corrected_sentence, suggested_upgrade.\n\n"
+        f"Payload:\n{json.dumps(payload, ensure_ascii=False)}"
+    )
+    body = json.dumps(
+        {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "temperature": 0.2,
+                "responseMimeType": "application/json",
+            },
+        },
+        ensure_ascii=False,
+    ).encode("utf-8")
+    req = urlrequest.Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlrequest.urlopen(req, timeout=45) as response:
+            response_payload = json.loads(response.read().decode("utf-8"))
+    except HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Gemini sentence check failed: {detail}") from exc
+    except URLError as exc:
+        raise RuntimeError(f"Gemini sentence check failed: {exc}") from exc
+    candidates = response_payload.get("candidates", [])
+    text = ""
+    if candidates:
+        parts = candidates[0].get("content", {}).get("parts", [])
+        text = "".join(str(part.get("text", "")) for part in parts)
+    if not text:
+        raise RuntimeError("Gemini sentence check returned no text.")
+    return normalize_sentence_usage_result(extract_json_object(text))
 
 
 def words_for_generation(conn: sqlite3.Connection, limit: int, band_rank: int | None = None) -> list[sqlite3.Row]:
@@ -405,14 +496,19 @@ def evaluate_sentence_usage(
         "feedback_language": lang,
     }
 
-    client = openai_client()
-    response = client.responses.create(
-        model=openai_model(),
-        instructions=SENTENCE_USAGE_SYSTEM_PROMPT,
-        input=json.dumps(payload, ensure_ascii=False),
-        text={"format": SENTENCE_USAGE_RESPONSE_SCHEMA},
-    )
-    parsed = json.loads(response.output_text)
-    for key in ["meaning_score", "grammar_score", "naturalness_score", "exam_usefulness_score", "overall_score"]:
-        parsed[key] = max(0, min(100, int(parsed.get(key, 0) or 0)))
-    return parsed
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if openai_key:
+        try:
+            client = openai_client()
+            response = client.responses.create(
+                model=openai_model(),
+                instructions=SENTENCE_USAGE_SYSTEM_PROMPT,
+                input=json.dumps(payload, ensure_ascii=False),
+                text={"format": SENTENCE_USAGE_RESPONSE_SCHEMA},
+            )
+            return normalize_sentence_usage_result(json.loads(response.output_text))
+        except Exception as exc:
+            if not os.environ.get("GEMINI_API_KEY", "").strip() or not is_openai_quota_error(exc):
+                raise
+
+    return gemini_sentence_usage_check(payload, lang)
