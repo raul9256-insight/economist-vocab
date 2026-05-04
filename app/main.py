@@ -1291,6 +1291,21 @@ TRANSLATIONS["en"].update(
         "mastery_score": "Score",
         "mastery_status": "Status",
         "mastery_api_not_ready": "AI checking is not configured yet.",
+        "mastery_progress_section": "Learning Progress",
+        "mastery_progress_title": "Vocabulary mastery ladder",
+        "mastery_progress_lede": "Passing the five test layers shows test mastery. Full mastery requires pronunciation, sentence usage, and review.",
+        "mastery_progress_percent": "{percent}% complete",
+        "mastery_progress_not_started": "Not Started",
+        "mastery_progress_seen": "Seen",
+        "mastery_progress_learning": "Learning",
+        "mastery_progress_practicing": "Practicing",
+        "mastery_progress_tested": "Tested",
+        "mastery_progress_deep_learning": "Deep Learning",
+        "mastery_progress_mastered": "Mastered",
+        "mastery_progress_exposure": "Opened",
+        "mastery_progress_pronunciation": "Pronunciation",
+        "mastery_progress_writing": "AI usage",
+        "mastery_progress_review": "Review",
         "mastery_recording_unsupported": "Recording is not supported in this browser.",
         "mastery_recording": "Recording...",
         "mastery_checking": "Checking...",
@@ -1727,6 +1742,21 @@ TRANSLATIONS["zh-Hant"].update(
         "mastery_score": "分數",
         "mastery_status": "狀態",
         "mastery_api_not_ready": "AI 檢查尚未設定。",
+        "mastery_progress_section": "學習進度",
+        "mastery_progress_title": "詞彙掌握階梯",
+        "mastery_progress_lede": "通過五層題型代表完成測驗掌握；真正 100% 掌握需要完成發音、句子應用與複習。",
+        "mastery_progress_percent": "完成度 {percent}%",
+        "mastery_progress_not_started": "未開始",
+        "mastery_progress_seen": "已看過",
+        "mastery_progress_learning": "學習中",
+        "mastery_progress_practicing": "練習中",
+        "mastery_progress_tested": "已通過測驗",
+        "mastery_progress_deep_learning": "深度學習中",
+        "mastery_progress_mastered": "已掌握",
+        "mastery_progress_exposure": "已打開",
+        "mastery_progress_pronunciation": "發音",
+        "mastery_progress_writing": "AI 用法",
+        "mastery_progress_review": "複習",
         "mastery_recording_unsupported": "這個瀏覽器不支援錄音。",
         "mastery_recording": "錄音中...",
         "mastery_checking": "檢查中...",
@@ -2503,6 +2533,21 @@ TRANSLATIONS["zh-Hans"].update(
         "mastery_score": "分数",
         "mastery_status": "状态",
         "mastery_api_not_ready": "AI 检查尚未设置。",
+        "mastery_progress_section": "学习进度",
+        "mastery_progress_title": "词汇掌握阶梯",
+        "mastery_progress_lede": "通过五层题型代表完成测验掌握；真正 100% 掌握需要完成发音、句子应用与复习。",
+        "mastery_progress_percent": "完成度 {percent}%",
+        "mastery_progress_not_started": "未开始",
+        "mastery_progress_seen": "已看过",
+        "mastery_progress_learning": "学习中",
+        "mastery_progress_practicing": "练习中",
+        "mastery_progress_tested": "已通过测验",
+        "mastery_progress_deep_learning": "深度学习中",
+        "mastery_progress_mastered": "已掌握",
+        "mastery_progress_exposure": "已打开",
+        "mastery_progress_pronunciation": "发音",
+        "mastery_progress_writing": "AI 用法",
+        "mastery_progress_review": "复习",
         "mastery_recording_unsupported": "这个浏览器不支持录音。",
         "mastery_recording": "录音中...",
         "mastery_checking": "检查中...",
@@ -3792,6 +3837,129 @@ def latest_word_mastery_attempts(conn: sqlite3.Connection, *, word_id: int, user
             (user_id, word_id, attempt_type),
         ).fetchone()
     return result
+
+
+MASTERY_TEST_LAYERS = [
+    ("chinese_definition", ["chinese_definition"]),
+    ("english_definition", ["english_definition", "definition"]),
+    ("example_application", ["example_application", "sentence"]),
+    ("similar_word", ["similar_word", "synonym"]),
+    ("opposite_word", ["opposite_word", "antonym"]),
+]
+
+
+def word_mastery_status(percent: int, test_complete: bool, deep_complete: bool, review_complete: bool) -> tuple[str, str]:
+    if percent >= 100 and test_complete and deep_complete and review_complete:
+        return "mastered", "mastery_progress_mastered"
+    if percent >= 71:
+        return "deep-learning", "mastery_progress_deep_learning"
+    if test_complete:
+        return "tested", "mastery_progress_tested"
+    if percent >= 41:
+        return "practicing", "mastery_progress_practicing"
+    if percent >= 21:
+        return "learning", "mastery_progress_learning"
+    if percent > 0:
+        return "seen", "mastery_progress_seen"
+    return "not-started", "mastery_progress_not_started"
+
+
+def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: int, lang: str) -> dict[str, object]:
+    latest_mastery = latest_word_mastery_attempts(conn, word_id=word_id, user_id=user_id)
+    answered_rows = conn.execute(
+        """
+        SELECT question_type, MAX(is_correct) AS passed
+        FROM (
+            SELECT assessment_questions.question_type, assessment_questions.is_correct
+            FROM assessment_questions
+            JOIN assessment_sessions ON assessment_sessions.id = assessment_questions.session_id
+            WHERE assessment_sessions.user_id = ?
+              AND assessment_questions.word_id = ?
+              AND assessment_questions.is_correct IS NOT NULL
+            UNION ALL
+            SELECT learning_questions.question_type, learning_questions.is_correct
+            FROM learning_questions
+            JOIN learning_sessions ON learning_sessions.id = learning_questions.session_id
+            WHERE learning_sessions.user_id = ?
+              AND learning_questions.word_id = ?
+              AND learning_questions.is_correct IS NOT NULL
+        )
+        GROUP BY question_type
+        """,
+        (user_id, word_id, user_id, word_id),
+    ).fetchall()
+    passed_by_type = {row["question_type"]: bool(row["passed"]) for row in answered_rows}
+    layers = []
+    passed_layers = 0
+    for canonical, aliases in MASTERY_TEST_LAYERS:
+        passed = any(passed_by_type.get(alias, False) for alias in aliases)
+        passed_layers += 1 if passed else 0
+        layers.append(
+            {
+                "key": canonical,
+                "short": {
+                    "chinese_definition": "中",
+                    "english_definition": "EN",
+                    "example_application": "EX",
+                    "similar_word": "SYN",
+                    "opposite_word": "ANT",
+                }[canonical],
+                "label": translate_question_type(canonical, lang),
+                "complete": passed,
+            }
+        )
+
+    pronunciation_complete = bool(latest_mastery["pronunciation"] and int(latest_mastery["pronunciation"]["score"] or 0) >= 75)
+    sentence_complete = bool(latest_mastery["sentence"] and int(latest_mastery["sentence"]["score"] or 0) >= 75)
+    review_row = conn.execute(
+        """
+        SELECT COUNT(*) AS total
+        FROM user_review_log
+        WHERE user_id = ?
+          AND word_id = ?
+          AND grade = 'good'
+        """,
+        (user_id, word_id),
+    ).fetchone()
+    review_complete = int(review_row["total"] if review_row else 0) > 0
+    test_complete = passed_layers == len(MASTERY_TEST_LAYERS)
+    raw_percent = 15 + (passed_layers * 10)
+    if pronunciation_complete:
+        raw_percent += 10
+    if sentence_complete:
+        raw_percent += 15
+    if review_complete:
+        raw_percent += 10
+
+    if test_complete and not (pronunciation_complete or sentence_complete or review_complete):
+        percent = min(raw_percent, 70)
+    elif pronunciation_complete and not sentence_complete:
+        percent = min(raw_percent, 80)
+    elif sentence_complete and not review_complete:
+        percent = min(raw_percent, 90)
+    else:
+        percent = raw_percent
+    if not (test_complete and pronunciation_complete and sentence_complete and review_complete):
+        percent = min(percent, 99)
+    percent = max(0, min(100, percent))
+    tone, label_key = word_mastery_status(percent, test_complete, pronunciation_complete and sentence_complete, review_complete)
+    segments = [
+        {"key": "exposure", "label": translate(lang, "mastery_progress_exposure"), "complete": True, "weight": 15},
+        {"key": "test", "label": "5-layer test", "complete": test_complete, "weight": 50},
+        {"key": "pronunciation", "label": translate(lang, "mastery_progress_pronunciation"), "complete": pronunciation_complete, "weight": 10},
+        {"key": "writing", "label": translate(lang, "mastery_progress_writing"), "complete": sentence_complete, "weight": 15},
+        {"key": "review", "label": translate(lang, "mastery_progress_review"), "complete": review_complete, "weight": 10},
+    ]
+    return {
+        "percent": percent,
+        "tone": tone,
+        "status_label": translate(lang, label_key),
+        "test_complete": test_complete,
+        "deep_complete": pronunciation_complete and sentence_complete,
+        "review_complete": review_complete,
+        "layers": layers,
+        "segments": segments,
+    }
 
 
 def dse_exam_profile_for_word(
@@ -8756,9 +8924,14 @@ def missed_words_page(request: Request) -> HTMLResponse:
 def word_detail(request: Request, word_id: int) -> HTMLResponse:
     conn = db_conn()
     load_env_file()
-    payload = word_payload(conn, word_id, getattr(request.state, "lang", get_lang(request)), current_user_id(request))
-    payload["ai_key_ready"] = bool(os.environ.get("OPENAI_API_KEY", "").strip())
-    payload["latest_mastery"] = latest_word_mastery_attempts(conn, word_id=word_id, user_id=current_user_id(request))
+    lang = getattr(request.state, "lang", get_lang(request))
+    user_id = current_user_id(request)
+    payload = word_payload(conn, word_id, lang, user_id)
+    payload["pronunciation_ai_ready"] = transcription_api_ready()
+    payload["sentence_check_ready"] = sentence_ai_ready()
+    payload["ai_key_ready"] = payload["pronunciation_ai_ready"] or payload["sentence_check_ready"]
+    payload["latest_mastery"] = latest_word_mastery_attempts(conn, word_id=word_id, user_id=user_id)
+    payload["mastery_progress"] = word_mastery_progress(conn, word_id=word_id, user_id=user_id, lang=lang)
     return render(request, "word_detail.html", **payload)
 
 

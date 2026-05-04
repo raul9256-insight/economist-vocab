@@ -50,6 +50,50 @@
     </div>
   </article>
 
+  <article class="panel dashboard-v2-card mastery-progress-card mastery-tone-{{ mastery_progress.tone }}">
+    <div class="mastery-progress-top">
+      <div>
+        <p class="eyebrow">{{ t("mastery_progress_section") }}</p>
+        <h2>{{ t("mastery_progress_title") }}</h2>
+        <p class="section-note">{{ t("mastery_progress_lede") }}</p>
+      </div>
+      <div class="mastery-progress-score">
+        <strong>{{ mastery_progress.percent }}%</strong>
+        <span>{{ mastery_progress.status_label }}</span>
+      </div>
+    </div>
+
+    <div class="mastery-progress-track" aria-label="{{ t('mastery_progress_percent', percent=mastery_progress.percent) }}">
+      <span style="width: {{ mastery_progress.percent }}%"></span>
+    </div>
+
+    <div class="mastery-segment-grid">
+      {% for segment in mastery_progress.segments %}
+      <div class="mastery-segment {% if segment.complete %}complete{% endif %}">
+        <span>{{ segment.weight }}%</span>
+        <strong>{{ segment.label }}</strong>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mastery-layer-row">
+      {% for layer in mastery_progress.layers %}
+      <span class="mastery-layer-badge {% if layer.complete %}complete{% endif %}" title="{{ layer.label }}">
+        {{ layer.short }}{% if layer.complete %}✓{% else %}○{% endif %}
+      </span>
+      {% endfor %}
+      <span class="mastery-layer-badge {% if mastery_progress.segments[2].complete %}complete{% endif %}">
+        PRON{% if mastery_progress.segments[2].complete %}✓{% else %}○{% endif %}
+      </span>
+      <span class="mastery-layer-badge {% if mastery_progress.segments[3].complete %}complete{% endif %}">
+        WRITE{% if mastery_progress.segments[3].complete %}✓{% else %}○{% endif %}
+      </span>
+      <span class="mastery-layer-badge {% if mastery_progress.segments[4].complete %}complete{% endif %}">
+        REV{% if mastery_progress.segments[4].complete %}✓{% else %}○{% endif %}
+      </span>
+    </div>
+  </article>
+
   <section class="word-detail-grid">
     <div class="word-detail-content">
       <article class="panel dashboard-v2-card word-section-card">
@@ -159,7 +203,7 @@
               {% if pronunciation %}<span class="section-note">{{ pronunciation }}</span>{% endif %}
               <button class="pronounce-button small" type="button" data-pronounce="{{ word.lemma }}" aria-label="{{ t('pronunciation_label') }} {{ word.lemma }}">🔊</button>
             </div>
-            <button class="button secondary mastery-record-button" type="button" {% if not ai_key_ready %}disabled{% endif %}>{{ t("mastery_record_button") }}</button>
+            <button class="button secondary mastery-record-button" type="button" {% if not pronunciation_ai_ready %}disabled{% endif %}>{{ t("mastery_record_button") }}</button>
             <div class="mastery-result-panel" data-pronunciation-result>
               {% if latest_mastery.pronunciation %}
               <div class="mastery-score-line">
@@ -179,7 +223,7 @@
           <section class="word-info-card mastery-step-card">
             <span class="focus-label">{{ t("mastery_sentence_title") }}</span>
             <textarea class="mastery-sentence-input" rows="5" placeholder="{{ t('mastery_sentence_placeholder') }}"></textarea>
-            <button class="button word-save-button mastery-sentence-button" type="button" {% if not ai_key_ready %}disabled{% endif %}>{{ t("mastery_check_sentence") }}</button>
+            <button class="button word-save-button mastery-sentence-button" type="button" {% if not sentence_check_ready %}disabled{% endif %}>{{ t("mastery_check_sentence") }}</button>
             <div class="mastery-result-panel" data-sentence-result>
               {% if latest_mastery.sentence %}
               <div class="mastery-score-line">
