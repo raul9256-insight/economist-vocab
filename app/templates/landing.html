@@ -71,6 +71,12 @@
               <input type="password" name="confirm_password" placeholder="{{ t('signup_confirm_password_placeholder') }}" minlength="8" maxlength="120">
             </label>
 
+            <label>
+              <span>{{ t("teacher_invite_code") }}</span>
+              <input type="text" name="teacher_invite_code" placeholder="{{ t('teacher_invite_code') }}" maxlength="40">
+              <small>{{ t("teacher_invite_code_note") }}</small>
+            </label>
+
             <div class="onboarding-role-block">
               <div class="card-head tight">
                 <div>

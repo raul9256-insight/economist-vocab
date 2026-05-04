@@ -718,6 +718,9 @@ TRANSLATIONS = {
         "auth_error_password_mismatch": "The two passwords do not match.",
         "auth_error_name_required": "Please add your display name.",
         "auth_error_email_required": "Please add a valid email.",
+        "auth_error_teacher_invite_required": "Teacher accounts require a valid teacher invitation code.",
+        "teacher_invite_code": "Teacher invitation code",
+        "teacher_invite_code_note": "Only enter this if you are registering or switching to Teacher / Educator.",
         "nav_account": "Account",
         "account_title": "Account Settings",
         "account_lede": "Manage your profile, learning role, and password.",
@@ -975,6 +978,9 @@ TRANSLATIONS = {
         "auth_error_password_mismatch": "兩次輸入的密碼不一致。",
         "auth_error_name_required": "請填寫顯示名稱。",
         "auth_error_email_required": "請輸入有效的電子郵件。",
+        "auth_error_teacher_invite_required": "Teacher 帳戶需要有效的老師邀請碼。",
+        "teacher_invite_code": "老師邀請碼",
+        "teacher_invite_code_note": "只有註冊或切換為 Teacher / Educator 時才需要填寫。",
         "nav_account": "帳戶",
         "account_title": "帳戶設定",
         "account_lede": "管理你的個人資料、學習角色與密碼。",
@@ -2262,6 +2268,9 @@ TRANSLATIONS["zh-Hans"].update(
         "auth_error_password_mismatch": "两次输入的密码不一致。",
         "auth_error_name_required": "请填写显示名称。",
         "auth_error_email_required": "请输入有效的电子邮件。",
+        "auth_error_teacher_invite_required": "Teacher 账户需要有效的老师邀请码。",
+        "teacher_invite_code": "老师邀请码",
+        "teacher_invite_code_note": "只有注册或切换为 Teacher / Educator 时才需要填写。",
         "nav_account": "账户",
         "account_title": "账户设置",
         "account_lede": "管理你的个人资料、学习角色与密码。",
@@ -2994,6 +3003,25 @@ def valid_email(value: str) -> bool:
 
 def role_for_persona(persona: str) -> str:
     return "teacher" if persona == "teacher" else "student"
+
+
+def configured_teacher_invite_codes() -> set[str]:
+    raw_values = [
+        os.environ.get("TEACHER_INVITE_CODE", ""),
+        os.environ.get("TEACHER_INVITE_CODES", ""),
+    ]
+    codes: set[str] = set()
+    for raw in raw_values:
+        for item in raw.split(","):
+            code = re.sub(r"[^A-Z0-9]", "", item.strip().upper())
+            if code:
+                codes.add(code)
+    return codes
+
+
+def teacher_invite_code_valid(value: str) -> bool:
+    code = re.sub(r"[^A-Z0-9]", "", (value or "").upper())
+    return bool(code and code in configured_teacher_invite_codes())
 
 
 def registered_user_row(request: Request) -> sqlite3.Row | None:
@@ -6591,6 +6619,7 @@ def auth_signup(
     password: str = Form(""),
     confirm_password: str = Form(""),
     persona: str = Form("lifelong_learner"),
+    teacher_invite_code: str = Form(""),
 ) -> RedirectResponse:
     conn = db_conn()
     lang = getattr(request.state, "lang", get_lang(request))
@@ -6605,6 +6634,8 @@ def auth_signup(
         return RedirectResponse(url=auth_redirect_url(lang, error_key="auth_error_password_short"), status_code=303)
     if password != confirm_password:
         return RedirectResponse(url=auth_redirect_url(lang, error_key="auth_error_password_mismatch"), status_code=303)
+    if safe_persona == "teacher" and not teacher_invite_code_valid(teacher_invite_code):
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="auth_error_teacher_invite_required"), status_code=303)
     existing = conn.execute("SELECT id FROM users WHERE lower(email) = ?", (safe_email,)).fetchone()
     if existing is not None:
         return RedirectResponse(url=auth_redirect_url(lang, error_key="auth_error_email_taken"), status_code=303)
@@ -7152,6 +7183,7 @@ def account_page(request: Request, message: str = Query("")) -> HTMLResponse:
         "account_error_password_current",
         "auth_error_password_short",
         "auth_error_name_required",
+        "auth_error_teacher_invite_required",
         "class_joined",
         "class_join_error",
     }
@@ -7169,6 +7201,7 @@ def account_profile_update(
     request: Request,
     display_name: str = Form(""),
     persona: str = Form("lifelong_learner"),
+    teacher_invite_code: str = Form(""),
 ) -> RedirectResponse:
     user = registered_user_row(request)
     lang = getattr(request.state, "lang", get_lang(request))
@@ -7178,6 +7211,8 @@ def account_profile_update(
     if not safe_name:
         return RedirectResponse(url=account_redirect_url(lang, "auth_error_name_required"), status_code=303)
     safe_persona = persona if persona in SUPPORTED_PERSONAS else "lifelong_learner"
+    if safe_persona == "teacher" and not is_teacher_user(user) and not teacher_invite_code_valid(teacher_invite_code):
+        return RedirectResponse(url=account_redirect_url(lang, "auth_error_teacher_invite_required"), status_code=303)
     conn = db_conn()
     conn.execute(
         """
@@ -8241,6 +8276,7 @@ def mobile_auth_signup(
     confirm_password = str(payload.get("confirm_password") or "")
     persona = str(payload.get("persona") or "student")
     safe_persona = persona if persona in SUPPORTED_PERSONAS else "student"
+    teacher_invite_code = str(payload.get("teacher_invite_code") or payload.get("teacherInviteCode") or "")
     if not safe_name:
         raise HTTPException(status_code=400, detail="Please enter your name.")
     if not valid_email(safe_email):
@@ -8249,6 +8285,8 @@ def mobile_auth_signup(
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
     if password != confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match.")
+    if safe_persona == "teacher" and not teacher_invite_code_valid(teacher_invite_code):
+        raise HTTPException(status_code=400, detail="Teacher accounts require a valid teacher invitation code.")
     existing = conn.execute("SELECT id FROM users WHERE lower(email) = ?", (safe_email,)).fetchone()
     if existing is not None:
         raise HTTPException(status_code=400, detail="This email is already registered.")

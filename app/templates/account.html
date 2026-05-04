@@ -47,6 +47,13 @@
               {% endfor %}
             </select>
           </label>
+          {% if not is_teacher %}
+          <label>
+            <span>{{ t("teacher_invite_code") }}</span>
+            <input type="text" name="teacher_invite_code" maxlength="40">
+            <small>{{ t("teacher_invite_code_note") }}</small>
+          </label>
+          {% endif %}
           <button class="button" type="submit">{{ t("account_save_profile") }}</button>
         </form>
       </article>
