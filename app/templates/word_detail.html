@@ -79,17 +79,21 @@
     <div class="mastery-layer-row" aria-label="{{ t('mastery_progress_title') }}">
       {% for layer in mastery_progress.layers %}
       <span class="mastery-layer-badge {% if layer.complete %}complete{% endif %}" title="{{ layer.label }}">
-        {{ layer.short }}{% if layer.complete %}✓{% else %}○{% endif %}
+        <strong>{{ layer.label }}</strong>
+        <small>{% if layer.complete %}✓{% else %}○{% endif %}</small>
       </span>
       {% endfor %}
       <span class="mastery-layer-badge {% if mastery_progress.segments[2].complete %}complete{% endif %}">
-        PRON{% if mastery_progress.segments[2].complete %}✓{% else %}○{% endif %}
+        <strong>{{ mastery_progress.segments[2].label }}</strong>
+        <small>{% if mastery_progress.segments[2].complete %}✓{% else %}○{% endif %}</small>
       </span>
       <span class="mastery-layer-badge {% if mastery_progress.segments[3].complete %}complete{% endif %}">
-        WRITE{% if mastery_progress.segments[3].complete %}✓{% else %}○{% endif %}
+        <strong>{{ mastery_progress.segments[3].label }}</strong>
+        <small>{% if mastery_progress.segments[3].complete %}✓{% else %}○{% endif %}</small>
       </span>
       <span class="mastery-layer-badge {% if mastery_progress.segments[4].complete %}complete{% endif %}">
-        REV{% if mastery_progress.segments[4].complete %}✓{% else %}○{% endif %}
+        <strong>{{ mastery_progress.segments[4].label }}</strong>
+        <small>{% if mastery_progress.segments[4].complete %}✓{% else %}○{% endif %}</small>
       </span>
     </div>
   </article>

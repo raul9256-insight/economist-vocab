@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
 DATA_DIR = BASE_DIR.parent / "data"
 AI_POWER_DATA_PATH = DATA_DIR / "ai_power_vocab.json"
-STATIC_ASSET_VERSION = "20260504b"
+STATIC_ASSET_VERSION = "20260504c"
 app = FastAPI(title="VocabLab AI")
 app.add_middleware(
     CORSMiddleware,
@@ -1307,6 +1307,8 @@ TRANSLATIONS["en"].update(
         "mastery_progress_pronunciation": "Pronunciation",
         "mastery_progress_writing": "AI usage",
         "mastery_progress_review": "Review",
+        "mastery_progress_average": "Average progress",
+        "mastery_progress_mastered_count": "{count} mastered",
         "mastery_recording_unsupported": "Recording is not supported in this browser.",
         "mastery_recording": "Recording...",
         "mastery_checking": "Checking...",
@@ -1759,6 +1761,8 @@ TRANSLATIONS["zh-Hant"].update(
         "mastery_progress_pronunciation": "發音",
         "mastery_progress_writing": "AI 用法",
         "mastery_progress_review": "複習",
+        "mastery_progress_average": "平均進度",
+        "mastery_progress_mastered_count": "{count} 個已掌握",
         "mastery_recording_unsupported": "這個瀏覽器不支援錄音。",
         "mastery_recording": "錄音中...",
         "mastery_checking": "檢查中...",
@@ -2551,6 +2555,8 @@ TRANSLATIONS["zh-Hans"].update(
         "mastery_progress_pronunciation": "发音",
         "mastery_progress_writing": "AI 用法",
         "mastery_progress_review": "复习",
+        "mastery_progress_average": "平均进度",
+        "mastery_progress_mastered_count": "{count} 个已掌握",
         "mastery_recording_unsupported": "这个浏览器不支持录音。",
         "mastery_recording": "录音中...",
         "mastery_checking": "检查中...",
@@ -2912,9 +2918,9 @@ def translate_question_type(value: str, lang: str = "en") -> str:
 
 def translate_status(value: str, lang: str = "en") -> str:
     labels = {
-        "en": {"new": "new", "learning": "learning", "review": "review", "mastered": "mastered"},
-        "zh-Hant": {"new": "新字", "learning": "學習中", "review": "待複習", "mastered": "已熟悉"},
-        "zh-Hans": {"new": "新词", "learning": "学习中", "review": "待复习", "mastered": "已熟悉"},
+        "en": {"new": "new", "seen": "seen", "learning": "learning", "review": "review", "mastered": "mastered"},
+        "zh-Hant": {"new": "新字", "seen": "已看過", "learning": "學習中", "review": "待複習", "mastered": "已熟悉"},
+        "zh-Hans": {"new": "新词", "seen": "已看过", "learning": "学习中", "review": "待复习", "mastered": "已熟悉"},
     }
     return labels.get(lang, labels["en"]).get(value, value)
 
@@ -3706,6 +3712,24 @@ def word_row(conn: sqlite3.Connection, word_id: int, user_id: int = USER_ID) -> 
     return row
 
 
+def mark_word_seen(conn: sqlite3.Connection, *, user_id: int, word_id: int) -> None:
+    ensure_user_study_card(conn, user_id, word_id)
+    conn.execute(
+        """
+        UPDATE user_study_cards
+        SET status = 'seen',
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ?
+          AND word_id = ?
+          AND status = 'new'
+          AND correct_count = 0
+          AND wrong_count = 0
+        """,
+        (user_id, word_id),
+    )
+    conn.commit()
+
+
 def normalize_spoken_word(value: str) -> str:
     return re.sub(r"[^a-z]", "", (value or "").lower())
 
@@ -3869,6 +3893,15 @@ def word_mastery_status(percent: int, test_complete: bool, deep_complete: bool, 
 
 def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: int, lang: str) -> dict[str, object]:
     latest_mastery = latest_word_mastery_attempts(conn, word_id=word_id, user_id=user_id)
+    card = conn.execute(
+        """
+        SELECT status, correct_count, wrong_count, last_reviewed_at, notes
+        FROM user_study_cards
+        WHERE user_id = ?
+          AND word_id = ?
+        """,
+        (user_id, word_id),
+    ).fetchone()
     answered_rows = conn.execute(
         """
         SELECT question_type, MAX(is_correct) AS passed
@@ -3926,7 +3959,18 @@ def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: in
     ).fetchone()
     review_complete = int(review_row["total"] if review_row else 0) > 0
     test_complete = passed_layers == len(MASTERY_TEST_LAYERS)
-    raw_percent = 15 + (passed_layers * 10)
+    exposure_complete = bool(
+        card
+        and (
+            card["status"] != "new"
+            or int(card["correct_count"] or 0) > 0
+            or int(card["wrong_count"] or 0) > 0
+            or bool(card["last_reviewed_at"])
+            or bool((card["notes"] or "").strip())
+        )
+    )
+    raw_percent = 15 if exposure_complete else 0
+    raw_percent += passed_layers * 10
     if pronunciation_complete:
         raw_percent += 10
     if sentence_complete:
@@ -3947,7 +3991,7 @@ def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: in
     percent = max(0, min(100, percent))
     tone, label_key = word_mastery_status(percent, test_complete, pronunciation_complete and sentence_complete, review_complete)
     segments = [
-        {"key": "exposure", "label": translate(lang, "mastery_progress_exposure"), "complete": True, "weight": 15},
+        {"key": "exposure", "label": translate(lang, "mastery_progress_exposure"), "complete": exposure_complete, "weight": 15},
         {"key": "test", "label": translate(lang, "mastery_progress_test_layers"), "complete": test_complete, "weight": 50},
         {"key": "pronunciation", "label": translate(lang, "mastery_progress_pronunciation"), "complete": pronunciation_complete, "weight": 10},
         {"key": "writing", "label": translate(lang, "mastery_progress_writing"), "complete": sentence_complete, "weight": 15},
@@ -8752,12 +8796,15 @@ def dictionary_band(
         (band_rank, active_letter, has_english, has_example),
     ).fetchall()
     word_ids = [row["id"] for row in rows]
-    definitions_map = definitions_map_for_words(conn, word_ids, getattr(request.state, "lang", get_lang(request)))
+    lang = getattr(request.state, "lang", get_lang(request))
+    user_id = current_user_id(request)
+    definitions_map = definitions_map_for_words(conn, word_ids, lang)
     fallback_map = source_fallbacks_for_words(conn, word_ids)
     words = []
     for row in rows:
         definitions = definitions_map.get(row["id"], [])
         source_fallback = fallback_map.get(row["id"], {"pronunciation": "", "english_definition": "", "example_sentence": ""})
+        mastery_progress = word_mastery_progress(conn, word_id=row["id"], user_id=user_id, lang=lang)
         words.append(
             {
                 "id": row["id"],
@@ -8768,8 +8815,11 @@ def dictionary_band(
                 "pronunciation": row["pronunciation"] or source_fallback["pronunciation"],
                 "chinese_preview": definitions[:2],
                 "chinese_headword": definitions[0] if definitions else "",
+                "mastery_progress": mastery_progress,
             }
         )
+    progress_average = round(sum(word["mastery_progress"]["percent"] for word in words) / len(words)) if words else 0
+    mastered_count = sum(1 for word in words if word["mastery_progress"]["percent"] >= 100)
     return render(
         request,
         "dictionary_band.html",
@@ -8777,6 +8827,8 @@ def dictionary_band(
         letters=letters_for_band(conn, band_rank),
         active_letter=active_letter,
         words=words,
+        progress_average=progress_average,
+        mastered_count=mastered_count,
         has_english=has_english,
         has_example=has_example,
     )
@@ -8929,6 +8981,7 @@ def word_detail(request: Request, word_id: int) -> HTMLResponse:
     load_env_file()
     lang = getattr(request.state, "lang", get_lang(request))
     user_id = current_user_id(request)
+    mark_word_seen(conn, user_id=user_id, word_id=word_id)
     payload = word_payload(conn, word_id, lang, user_id)
     payload["pronunciation_ai_ready"] = transcription_api_ready()
     payload["sentence_check_ready"] = sentence_ai_ready()

@@ -2673,13 +2673,24 @@ input[type="file"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 54px;
+  gap: 0.4rem;
+  min-width: 0;
   min-height: 34px;
-  padding: 0.35rem 0.55rem;
+  padding: 0.45rem 0.75rem;
   border-radius: 999px;
   color: #6f7890;
   font-size: 0.82rem;
   font-weight: 800;
+}
+
+.mastery-layer-badge strong,
+.mastery-layer-badge small {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.mastery-layer-badge small {
+  font-size: 0.95rem;
 }
 
 .mastery-layer-badge.complete {
@@ -3286,6 +3297,63 @@ input[type="file"] {
 
 .dictionary-band-results {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.band-progress-summary {
+  display: grid;
+  justify-items: end;
+  gap: 0.1rem;
+  min-width: 150px;
+  padding: 0.75rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(247, 249, 255, 0.9);
+  border: 1px solid rgba(112, 125, 184, 0.12);
+}
+
+.band-progress-summary span,
+.band-progress-summary small {
+  color: #6f7890;
+}
+
+.band-progress-summary strong {
+  color: #27304b;
+  font-size: 1.4rem;
+}
+
+.dictionary-card-progress {
+  --mastery-color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(112, 125, 184, 0.1);
+}
+
+.dictionary-card-progress span {
+  color: var(--mastery-color);
+  font-weight: 900;
+}
+
+.dictionary-card-progress strong {
+  color: #3e4864;
+  font-size: 0.86rem;
+}
+
+.dictionary-card-progress-track {
+  --mastery-color: #38bdf8;
+  height: 8px;
+  margin-top: 0.2rem;
+  border-radius: 999px;
+  background: rgba(112, 125, 184, 0.12);
+  overflow: hidden;
+}
+
+.dictionary-card-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mastery-color);
 }
 
 .review-shell,
