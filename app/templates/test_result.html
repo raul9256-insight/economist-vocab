@@ -62,12 +62,17 @@
           <strong>{{ t("recommended_path_title") }}</strong>
           {{ t("recommended_path_body", band=display_band_identity.display_label) }}
         </div>
-        <form method="post" action="/learning/start" class="inline-start-form">
+        <form method="post" action="/learning/start" class="inline-start-form result-primary-action">
           {% if display_band_rank %}
           <input type="hidden" name="band_rank" value="{{ display_band_rank }}">
           {% endif %}
-          <button class="button" type="submit">{{ t("start_next_10_words") }}</button>
+          <button class="button" type="submit">{{ t("start_recommended_practice") }}</button>
         </form>
+        <div class="result-secondary-actions">
+          <span>{{ t("secondary_actions") }}</span>
+          <a href="/statistics">{{ t("view_statistics") }}</a>
+          <a href="/test">{{ t("try_again") }}</a>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -194,10 +199,10 @@
         </tbody>
       </table>
     </div>
-    <div class="action-row">
-      <a class="button secondary" href="/statistics">{{ t("view_statistics") }}</a>
-      <a class="button secondary" href="/test">{{ t("try_again") }}</a>
-      <a class="button" href="/learning">{{ t("go_to_learning") }}</a>
+    <div class="result-secondary-actions block">
+      <span>{{ t("secondary_actions") }}</span>
+      <a href="/statistics">{{ t("view_statistics") }}</a>
+      <a href="/learning">{{ t("go_to_learning") }}</a>
     </div>
   </article>
   {% else %}

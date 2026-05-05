@@ -5500,6 +5500,41 @@ input[type="file"] {
   margin-top: 1rem;
 }
 
+.result-primary-action .button {
+  width: 100%;
+}
+
+.result-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.9rem;
+  align-items: center;
+  margin-top: 0.85rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.result-secondary-actions.block {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(112, 125, 184, 0.14);
+}
+
+.result-secondary-actions span {
+  font-weight: 800;
+  color: #6f7890;
+}
+
+.result-secondary-actions a {
+  color: var(--accent);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.result-action-note {
+  margin-top: 0.75rem;
+}
+
 .review-word-strip {
   display: flex;
   flex-wrap: wrap;

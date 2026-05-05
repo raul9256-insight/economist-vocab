@@ -44,16 +44,21 @@
     <div class="action-row">
       {% if review_words %}
       <form method="post" action="/learning/{{ session.id }}/retry-incorrect">
-        <button class="button secondary" type="submit">{{ t("review_mistakes") }}</button>
+        <button class="button" type="submit">{{ t("learning_primary_review") }}</button>
       </form>
-      {% endif %}
+      {% else %}
       <form method="post" action="/learning/start">
         {% if session.band_rank %}
         <input type="hidden" name="band_rank" value="{{ session.band_rank }}">
         {% endif %}
-        <button class="button" type="submit">{{ t("start_next_10_words") }}</button>
+        <button class="button" type="submit">{{ t("learning_primary_next") }}</button>
       </form>
+      {% endif %}
+      <a class="button secondary" href="/dictionary">{{ t("deep_learning_weak_words") if review_words else t("open_dictionary") }}</a>
     </div>
+    {% if review_words %}
+    <p class="section-subtle result-action-note">{{ t("deep_learning_weak_words_note") }}</p>
+    {% endif %}
   </article>
 
   <article class="panel dashboard-v2-card learning-breakdown-card">
@@ -77,9 +82,10 @@
       </div>
       {% endfor %}
     </div>
-    <div class="action-row">
-      <a class="button secondary" href="/learning">{{ t("start_another_session") }}</a>
-      <a class="button" href="/dictionary">{{ t("open_dictionary") }}</a>
+    <div class="result-secondary-actions block">
+      <span>{{ t("secondary_actions") }}</span>
+      <a href="/learning">{{ t("start_another_session") }}</a>
+      <a href="/statistics">{{ t("view_statistics") }}</a>
     </div>
   </article>
 
