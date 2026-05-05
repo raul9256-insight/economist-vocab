@@ -21,10 +21,38 @@
         <span>{{ t("session_score") }}</span>
         <strong>{{ session.score }}</strong>
       </div>
+      <div class="learning-result-card">
+        <span>{{ t("completed_words_this_session") }}</span>
+        <strong>{{ completed_word_count }}</strong>
+      </div>
+      <div class="learning-result-card">
+        <span>{{ t("words_need_review") }}</span>
+        <strong>{{ review_words|length }}</strong>
+      </div>
     </div>
 
     <div class="callout learning-result-callout">
       <strong>{{ t("next_focus") }}</strong> {{ recommendation }}
+    </div>
+    {% if review_words %}
+    <div class="review-word-strip">
+      {% for word in review_words[:6] %}
+      <a href="/word/{{ word.word_id }}">{{ word.lemma }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="action-row">
+      {% if review_words %}
+      <form method="post" action="/learning/{{ session.id }}/retry-incorrect">
+        <button class="button secondary" type="submit">{{ t("review_mistakes") }}</button>
+      </form>
+      {% endif %}
+      <form method="post" action="/learning/start">
+        {% if session.band_rank %}
+        <input type="hidden" name="band_rank" value="{{ session.band_rank }}">
+        {% endif %}
+        <button class="button" type="submit">{{ t("start_next_10_words") }}</button>
+      </form>
     </div>
   </article>
 

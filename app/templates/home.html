@@ -73,25 +73,38 @@
       <div class="card-head tight">
         <div>
           <p class="eyebrow">{{ t("today_goal") }}</p>
-          <h2>{{ t("keep_moving") }}</h2>
+          <h2>{{ t("student_today_plan") }}</h2>
         </div>
         <span class="goal-pill">{{ t("core_steps") }}</span>
       </div>
-      <div class="mini-kicker-row">
-        <span class="mini-kicker active">{{ t("placement") }}</span>
-        <span class="mini-kicker">{{ t("practice") }}</span>
-        <span class="mini-kicker">{{ t("review") }}</span>
+      <p class="goal-note">{{ t("student_today_plan_note") }}</p>
+      <div class="student-task-list">
+        {% for item in today_plan_items %}
+        <a class="student-task-item {% if item.primary %}primary{% endif %}" href="{{ item.href }}">
+          <span class="student-task-number">{{ loop.index }}</span>
+          <span>
+            <strong>{{ t(item.title_key) }}</strong>
+            <small>
+              {% if item.body_key == "review_queue_count" %}
+                {{ t(item.body_key, count=missed_words_count) }}
+              {% else %}
+                {{ t(item.body_key) }}
+              {% endif %}
+            </small>
+          </span>
+        </a>
+        {% endfor %}
       </div>
-      <div class="goal-progress-head">
-        <strong>{{ t("study_flow") }}</strong>
-        <span>{{ t("flow_sequence") }}</span>
+      {% if latest_test %}
+      <div class="callout learning-result-callout compact-guidance">
+        <strong>{{ t("recommended_path_title") }}</strong>
+        {{ t("recommended_path_body", band=recommended_band) }}
       </div>
-      <div class="progress-track refined-track">
-        <div class="progress-fill blue-fill" style="width: 72%"></div>
-      </div>
-      <p class="goal-note">{{ t("goal_note") }}</p>
+      {% endif %}
       <div class="action-row">
-        <a class="button" href="/test">{{ t("start_test") }}</a>
+        <a class="button" href="{% if active_test %}/test/{{ active_test.id }}{% else %}/test{% endif %}">
+          {% if latest_test %}{{ t("continue_test") if active_test else t("start_test") }}{% else %}{{ t("first_login_action") }}{% endif %}
+        </a>
         <a class="button secondary" href="/learning">{{ t("continue_learning") }}</a>
       </div>
       {% if stats.tests_taken %}

@@ -5261,7 +5261,94 @@ input[type="file"] {
     grid-template-columns: 1fr;
   }
 
-  .word-detail-tabs {
+.word-detail-tabs {
     grid-template-columns: repeat(2, max-content);
   }
+}
+
+.student-task-list {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+
+.student-task-item {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(112, 125, 184, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.student-task-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(87, 103, 243, 0.32);
+  box-shadow: 0 14px 30px rgba(27, 39, 94, 0.08);
+}
+
+.student-task-item.primary {
+  border-color: rgba(48, 100, 79, 0.32);
+  background: rgba(236, 248, 242, 0.88);
+}
+
+.student-task-number {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(87, 103, 243, 0.12);
+  color: #5b68f2;
+  font-weight: 800;
+}
+
+.student-task-item.primary .student-task-number {
+  background: #30644f;
+  color: #fff;
+}
+
+.student-task-item strong,
+.student-task-item small {
+  display: block;
+}
+
+.student-task-item small {
+  margin-top: 0.2rem;
+  color: #70788d;
+  line-height: 1.35;
+}
+
+.compact-guidance {
+  margin-top: 0.8rem;
+}
+
+.inline-start-form {
+  margin-top: 1rem;
+}
+
+.review-word-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.review-word-strip a {
+  padding: 0.38rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(87, 103, 243, 0.1);
+  color: #4f5dd8;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.statistics-advice-card {
+  margin: 1rem 0 1.2rem;
 }

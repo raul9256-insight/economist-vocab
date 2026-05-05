@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
 DATA_DIR = BASE_DIR.parent / "data"
 AI_POWER_DATA_PATH = DATA_DIR / "ai_power_vocab.json"
-STATIC_ASSET_VERSION = "20260505a"
+STATIC_ASSET_VERSION = "20260505b"
 app = FastAPI(title="VocabLab AI")
 app.add_middleware(
     CORSMiddleware,
@@ -1020,6 +1020,26 @@ TRANSLATIONS = {
         "goal_note": "Start with your level test, then work the recommended band, then check missed words or the dictionary.",
         "start_test": "Start Level Test",
         "continue_learning": "Continue Learning",
+        "student_today_plan": "Today's Study Plan",
+        "student_today_plan_note": "Follow these steps in order. The app will keep your progress and point you to the next useful action.",
+        "first_login_action": "Start DSE Level Test",
+        "first_login_action_note": "Start here so VocabLab can recommend the right DSE band.",
+        "resume_level_test_action": "Continue unfinished level test",
+        "resume_learning_action": "Continue unfinished learning",
+        "daily_task_action": "Today's 10-word learning session",
+        "review_weak_words_action": "Review weak words",
+        "deep_learning_three_action": "Deep Learning: 3 words",
+        "recommended_path_title": "Recommended path",
+        "recommended_path_body": "You should start from {band}.",
+        "completed_words_this_session": "Words completed this session",
+        "words_need_review": "Words to review",
+        "review_mistakes": "Review Mistakes",
+        "start_next_10_words": "Start Next 10 Words",
+        "statistics_advice_title": "Study advice",
+        "statistics_advice_no_test": "Start with the DSE Level Test so the system can recommend your first band.",
+        "statistics_advice_no_learning": "Your next step is a 10-word learning session in your recommended DSE band.",
+        "statistics_advice_weak_layer": "Your weakest area is {layer}. Practice this question type today.",
+        "statistics_advice_good": "Your latest results are stable. Continue with the next 10 words and complete Deep Learning for your weak words.",
         "your_progress": "Your Progress",
         "at_a_glance": "At a glance",
         "total_words": "Total Words",
@@ -1280,6 +1300,26 @@ TRANSLATIONS = {
         "goal_note": "先做程度檢測，再練習建議的詞彙範圍，最後查看錯題或進入詞典補充內容。",
         "start_test": "開始程度檢測",
         "continue_learning": "繼續學習",
+        "student_today_plan": "今日學習任務",
+        "student_today_plan_note": "按順序完成以下任務。系統會保存進度，並指引你下一步最值得做甚麼。",
+        "first_login_action": "開始 DSE 程度測驗",
+        "first_login_action_note": "先從這裡開始，VocabLab 才能建議最適合你的 DSE 詞彙分級。",
+        "resume_level_test_action": "繼續上次未完成測驗",
+        "resume_learning_action": "繼續上次未完成練習",
+        "daily_task_action": "今日 10 個詞學習練習",
+        "review_weak_words_action": "複習薄弱詞彙",
+        "deep_learning_three_action": "深度學習 3 個詞",
+        "recommended_path_title": "建議學習路徑",
+        "recommended_path_body": "建議你由 {band} 開始。",
+        "completed_words_this_session": "本次完成詞彙",
+        "words_need_review": "需要重溫的詞彙",
+        "review_mistakes": "重練錯題",
+        "start_next_10_words": "開始下一組 10 個詞",
+        "statistics_advice_title": "學習建議",
+        "statistics_advice_no_test": "先完成 DSE 程度測驗，系統才能建議你的起始分級。",
+        "statistics_advice_no_learning": "下一步建議做一輪建議 DSE 分級的 10 個詞學習練習。",
+        "statistics_advice_weak_layer": "你目前較弱的是 {layer}，今天建議集中練習這類題型。",
+        "statistics_advice_good": "最近結果穩定。可以繼續下一組 10 個詞，並為薄弱詞彙完成深度學習。",
         "your_progress": "你的進度",
         "at_a_glance": "快速總覽",
         "total_words": "總詞彙數",
@@ -2567,6 +2607,26 @@ TRANSLATIONS["zh-Hans"].update(
         "goal_note": "先做程度检测，再练习建议的词汇范围，最后查看错题或进入词典补充内容。",
         "start_test": "开始程度检测",
         "continue_learning": "继续学习",
+        "student_today_plan": "今日学习任务",
+        "student_today_plan_note": "按顺序完成以下任务。系统会保存进度，并指引你下一步最值得做什么。",
+        "first_login_action": "开始 DSE 程度检测",
+        "first_login_action_note": "先从这里开始，VocabLab 才能建议最适合你的 DSE 词汇分级。",
+        "resume_level_test_action": "继续上次未完成检测",
+        "resume_learning_action": "继续上次未完成练习",
+        "daily_task_action": "今日 10 个词学习练习",
+        "review_weak_words_action": "复习薄弱词汇",
+        "deep_learning_three_action": "深度学习 3 个词",
+        "recommended_path_title": "建议学习路径",
+        "recommended_path_body": "建议你由 {band} 开始。",
+        "completed_words_this_session": "本次完成词汇",
+        "words_need_review": "需要重温的词汇",
+        "review_mistakes": "重练错题",
+        "start_next_10_words": "开始下一组 10 个词",
+        "statistics_advice_title": "学习建议",
+        "statistics_advice_no_test": "先完成 DSE 程度检测，系统才能建议你的起始分级。",
+        "statistics_advice_no_learning": "下一步建议做一轮建议 DSE 分级的 10 个词学习练习。",
+        "statistics_advice_weak_layer": "你目前较弱的是 {layer}，今天建议集中练习这类题型。",
+        "statistics_advice_good": "最近结果稳定。可以继续下一组 10 个词，并为薄弱词汇完成深度学习。",
         "your_progress": "你的进度",
         "at_a_glance": "快速概览",
         "total_words": "总词汇数",
@@ -4995,6 +5055,88 @@ def latest_learning_result(conn: sqlite3.Connection, user_id: int = USER_ID) -> 
     ).fetchone()
 
 
+def active_learning_session(conn: sqlite3.Connection, user_id: int = USER_ID) -> sqlite3.Row | None:
+    return conn.execute(
+        """
+        SELECT learning_sessions.*, COUNT(learning_questions.id) AS question_total
+        FROM learning_sessions
+        LEFT JOIN learning_questions ON learning_questions.session_id = learning_sessions.id
+        WHERE learning_sessions.status = 'active'
+          AND learning_sessions.user_id = ?
+        GROUP BY learning_sessions.id
+        HAVING question_total > 0
+           AND learning_sessions.current_index < question_total
+        ORDER BY learning_sessions.id DESC
+        LIMIT 1
+        """,
+        (user_id,),
+    ).fetchone()
+
+
+def student_today_plan_items(
+    *,
+    latest_test: sqlite3.Row | None,
+    active_test: sqlite3.Row | None,
+    active_learning: sqlite3.Row | None,
+    latest_learning: sqlite3.Row | None,
+    missed_count: int,
+) -> list[dict[str, str | bool]]:
+    if latest_test is None:
+        return [
+            {
+                "title_key": "first_login_action",
+                "body_key": "first_login_action_note",
+                "href": f"/test/{active_test['id']}" if active_test else "/test",
+                "primary": True,
+            }
+        ]
+    items: list[dict[str, str | bool]] = []
+    if active_test is not None:
+        items.append(
+            {
+                "title_key": "resume_level_test_action",
+                "body_key": "saved_incomplete_test",
+                "href": f"/test/{active_test['id']}",
+                "primary": True,
+            }
+        )
+    if active_learning is not None:
+        items.append(
+            {
+                "title_key": "resume_learning_action",
+                "body_key": "start_short_session",
+                "href": f"/learning/{active_learning['id']}",
+                "primary": not items,
+            }
+        )
+    items.append(
+        {
+            "title_key": "daily_task_action",
+            "body_key": "start_short_session",
+            "href": "/learning",
+            "primary": not items,
+        }
+    )
+    items.append(
+        {
+            "title_key": "review_weak_words_action",
+            "body_key": "review_queue_count" if missed_count else "go_to_missed_words_note",
+            "href": "/review/missed",
+            "primary": False,
+        }
+    )
+    if latest_learning is not None:
+        items.append(
+            {
+                "title_key": "deep_learning_three_action",
+                "body_key": "card_student_dictionary",
+                "href": "/dictionary",
+                "primary": False,
+            }
+        )
+    return items[:4]
+
+
 def learning_history_rows(conn: sqlite3.Connection, limit: int = 5, user_id: int = USER_ID) -> list[dict]:
     rows = conn.execute(
         """
@@ -5031,6 +5173,22 @@ def learning_history_rows(conn: sqlite3.Connection, limit: int = 5, user_id: int
             }
         )
     return history
+
+
+def statistics_advice(conn: sqlite3.Connection, latest_test: dict | None, latest_learning: dict | None, lang: str) -> str:
+    if latest_test is None:
+        return translate(lang, "statistics_advice_no_test")
+    if latest_learning is None:
+        return translate(lang, "statistics_advice_no_learning")
+    try:
+        layer_rows = layer_accuracy_rows(conn, int(latest_test["id"]), lang)
+        focus = report_focus_rows(layer_rows)
+        weakest = focus["weakest"]
+        if weakest and int(weakest["accuracy"] or 0) < 75:
+            return translate(lang, "statistics_advice_weak_layer", layer=weakest["label"])
+    except Exception:
+        pass
+    return translate(lang, "statistics_advice_good")
 
 
 def question_feedback_rows(conn: sqlite3.Connection, limit: int = 100, status: str = "open") -> list[dict]:
@@ -6726,6 +6884,8 @@ def home(request: Request) -> HTMLResponse:
         stats = fetch_stats(conn, user_id)
         latest_test = latest_test_result(conn, user_id=user_id)
         latest_learning = latest_learning_result(conn, user_id)
+        active_test = active_test_session(conn, user_id)
+        active_learning = active_learning_session(conn, user_id)
         recommended_band = latest_test["estimated_band_label"] if latest_test else "Core DSE Survival"
         bands = student_dse_band_rows(conn, lang, user_id) if profile_persona == "student" else decorate_band_rows(band_summary(conn))
         max_band_total = max((band["workbook_total"] for band in bands), default=1)
@@ -6742,6 +6902,13 @@ def home(request: Request) -> HTMLResponse:
         ]
         missed_words_count = len(missed_words(conn, limit=10, user_id=user_id))
         spotlight_words = dashboard_spotlight_words(conn)
+        today_plan_items = student_today_plan_items(
+            latest_test=latest_test,
+            active_test=active_test,
+            active_learning=active_learning,
+            latest_learning=latest_learning,
+            missed_count=missed_words_count,
+        )
     except Exception:
         profile_name = (request.cookies.get("profile_name") or "Lawrence").strip()[:40] or "Lawrence"
         profile_persona = request.cookies.get("profile_persona") if request.cookies.get("profile_persona") in SUPPORTED_PERSONAS else "lifelong_learner"
@@ -6754,11 +6921,14 @@ def home(request: Request) -> HTMLResponse:
         }
         latest_test = None
         latest_learning = None
+        active_test = None
+        active_learning = None
         recommended_band = "50~99 (3924)"
         bands = []
         hero_band_chart = []
         missed_words_count = 0
         spotlight_words = []
+        today_plan_items = []
     dashboard_quote = random.choice(HOME_QUOTES)
     return render(
         request,
@@ -6771,8 +6941,11 @@ def home(request: Request) -> HTMLResponse:
         bands=bands,
         latest_test=latest_test,
         latest_learning=latest_learning,
+        active_test=active_test,
+        active_learning=active_learning,
         recommended_band=recommended_band,
         missed_words_count=missed_words_count,
+        today_plan_items=today_plan_items,
         spotlight_words=spotlight_words,
         hero_band_chart=hero_band_chart,
         dashboard_quote=dashboard_quote,
@@ -7722,6 +7895,7 @@ def statistics_page(request: Request) -> HTMLResponse:
 def statistics_page_impl(request: Request) -> HTMLResponse:
     conn = db_conn()
     user_id = current_user_id(request)
+    lang = getattr(request.state, "lang", get_lang(request))
     try:
         history = test_history_rows(conn, limit=5, full_only=True, user_id=user_id)
     except sqlite3.Error:
@@ -7810,6 +7984,7 @@ def statistics_page_impl(request: Request) -> HTMLResponse:
         best_learning_history=best_learning,
         tests_taken_count=len(history),
         learning_runs_count=len(learning_history),
+        statistics_advice=statistics_advice(conn, latest, latest_learning, lang),
         latest_test_percent=score_percent(latest),
         latest_learning_percent=learning_percent(latest_learning),
         best_test_percent=score_percent(best),
@@ -8134,6 +8309,26 @@ def learning_start(request: Request, band_rank: int | None = Form(None), assignm
     return RedirectResponse(url=f"/learning/{session_id}", status_code=303)
 
 
+@app.post("/learning/review-weak")
+def learning_review_weak(request: Request) -> RedirectResponse:
+    conn = db_conn()
+    user_id = current_user_id(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    session_id = create_weak_words_learning_session(conn, user_id, lang)
+    return RedirectResponse(url=f"/learning/{session_id}", status_code=303)
+
+
+@app.post("/learning/{session_id}/retry-incorrect")
+def learning_retry_incorrect(request: Request, session_id: int) -> RedirectResponse:
+    conn = db_conn()
+    user_id = current_user_id(request)
+    source_session = conn.execute("SELECT * FROM learning_sessions WHERE id = ? AND user_id = ?", (session_id, user_id)).fetchone()
+    if source_session is None:
+        raise HTTPException(status_code=404, detail="Learning session not found")
+    retry_session_id = create_learning_retry_session(conn, session_id)
+    return RedirectResponse(url=f"/learning/{retry_session_id}", status_code=303)
+
+
 @app.get("/learning/{session_id}", response_class=HTMLResponse)
 def learning_question(request: Request, session_id: int) -> HTMLResponse:
     conn = db_conn()
@@ -8264,6 +8459,8 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
     question_review_rows = [question for word in word_results for question in word["questions"]]
     recommendation = learning_recommendation(session["score"], total, enriched_words, lang)
     band_identity = band_display_identity(session["band_label"], lang) if session["band_label"] else None
+    completed_word_count = sum(1 for word in word_results if word["correct_count"] == word["total_count"])
+    review_words = [word for word in word_results if word["correct_count"] < word["total_count"]]
     return render(
         request,
         "learning_result.html",
@@ -8273,6 +8470,8 @@ def learning_result(request: Request, session_id: int) -> HTMLResponse:
         question_review_rows=question_review_rows,
         recommendation=recommendation,
         band_identity=band_identity,
+        completed_word_count=completed_word_count,
+        review_words=review_words,
         percent=round((session["score"] / total) * 100) if total else 0,
     )
 

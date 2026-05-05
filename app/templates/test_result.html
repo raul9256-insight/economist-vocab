@@ -57,6 +57,18 @@
         <div class="callout learning-result-callout">
           <strong>{{ t("what_to_do_next") }}</strong> {{ recommendation }}
         </div>
+        {% if display_band_identity %}
+        <div class="callout learning-result-callout compact-guidance">
+          <strong>{{ t("recommended_path_title") }}</strong>
+          {{ t("recommended_path_body", band=display_band_identity.display_label) }}
+        </div>
+        <form method="post" action="/learning/start" class="inline-start-form">
+          {% if display_band_rank %}
+          <input type="hidden" name="band_rank" value="{{ display_band_rank }}">
+          {% endif %}
+          <button class="button" type="submit">{{ t("start_next_10_words") }}</button>
+        </form>
+        {% endif %}
       </div>
     </div>
   </article>
