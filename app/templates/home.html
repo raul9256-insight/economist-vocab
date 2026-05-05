@@ -16,7 +16,7 @@
       <div class="motto-chart-head">
         <span class="motto-chart-chip">{{ t("hero_chart_label") }}</span>
         <div class="motto-chart-total">
-          <strong>{{ stats.total_words }}</strong>
+          <strong>{{ dashboard_vocab_total }}</strong>
           <span>{{ t("hero_chart_total") }}</span>
         </div>
       </div>
@@ -30,10 +30,6 @@
           </div>
           <div class="motto-band-label">
             <strong class="motto-band-title">{{ band.title }}</strong>
-            {% if band.subtitle %}
-            <span class="motto-band-subtitle">{{ band.subtitle }}</span>
-            {% endif %}
-            <span class="motto-band-range">{{ band.label | replace("~", "+") if band.label == "2000~" else band.label }}</span>
           </div>
         </div>
         {% endfor %}
@@ -124,7 +120,7 @@
       <div class="refined-stats-grid">
         <div class="refined-stat">
           <span>{{ t("total_words") }}</span>
-          <strong>{{ stats.total_words }}</strong>
+          <strong>{{ dashboard_vocab_total }}</strong>
         </div>
         <div class="refined-stat">
           <span>{{ t("learning_runs") }}</span>
@@ -237,9 +233,10 @@
   <div class="band-grid-v2 refined-band-grid">
     {% for band in bands %}
     <a class="band-card-v2 refined-band-card band-card-tone-{{ band.tone }}" href="/dictionary/band/{{ band.best_band_rank }}">
-      <strong>{{ band.range_label }}</strong>
       <span class="band-type-name">{{ band.title }}</span>
+      {% if band.subtitle %}
       <span class="band-type-subtitle">{{ band.subtitle }}</span>
+      {% endif %}
       <small>{{ band.workbook_total }} words</small>
     </a>
     {% endfor %}

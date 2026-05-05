@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent
 EXPORT_DIR = BASE_DIR.parent / "exports"
 DATA_DIR = BASE_DIR.parent / "data"
 AI_POWER_DATA_PATH = DATA_DIR / "ai_power_vocab.json"
-STATIC_ASSET_VERSION = "20260505b"
+STATIC_ASSET_VERSION = "20260505c"
 app = FastAPI(title="VocabLab AI")
 app.add_middleware(
     CORSMiddleware,
@@ -1054,10 +1054,10 @@ TRANSLATIONS = {
         "choose_next": "Choose your next step",
         "choose_next_note": "Three fast ways to keep momentum without overthinking what to do next.",
         "learning_session": "Learning Session",
-        "frequency_bands": "Frequency Bands",
-        "browse_count": "Browse by appearance count",
+        "frequency_bands": "DSE Vocabulary Bands",
+        "browse_count": "Browse by DSE learning level",
         "open_dictionary": "Open dictionary",
-        "bands_note": "Higher bands mean the word appeared more often in your Economist source data over the last 10 years.",
+        "bands_note": "These bands are based on DSE learning level, exam usefulness, and academic vocabulary priority.",
         "core_steps": "3 core steps",
         "flow_sequence": "Test → Learn → Review",
         "latest_result": "Latest result: {band}.",
@@ -1334,10 +1334,10 @@ TRANSLATIONS = {
         "choose_next": "選擇你現在最適合的下一步",
         "choose_next_note": "用三個最快的入口保持學習節奏，不需要每次重新想要做什麼。",
         "learning_session": "學習練習",
-        "frequency_bands": "詞彙分級",
-        "browse_count": "依出現次數瀏覽",
+        "frequency_bands": "DSE 詞彙分級",
+        "browse_count": "依 DSE 學習程度瀏覽",
         "open_dictionary": "打開詞典",
-        "bands_note": "數字越高，表示這個詞彙在你近十年的《經濟學人》資料中出現得越多。",
+        "bands_note": "這些分級根據 DSE 學習程度、考試實用性和學術詞彙優先次序整理，並不是根據《經濟學人》出現頻率。",
         "core_steps": "3 個核心步驟",
         "flow_sequence": "測驗 → 練習 → 複習",
         "latest_result": "最近結果：{band}。",
@@ -1785,11 +1785,11 @@ TRANSLATIONS["en"].update(
         "no_missed_words": "No missed words yet.",
         "review_queue_auto": "After a test or learning session, your review queue will appear here automatically.",
         "start_learning": "Start Learning",
-        "hero_chart_label": "Vocabulary Snapshot",
-        "hero_chart_title": "Your Economist corpus",
-        "hero_chart_note": "A quick look at how your vocabulary source is distributed across frequency groups.",
+        "hero_chart_label": "DSE Vocabulary Snapshot",
+        "hero_chart_title": "Your DSE vocabulary bands",
+        "hero_chart_note": "A quick look at how the DSE student vocabulary set is distributed across learning bands.",
         "hero_chart_total": "Total Words",
-        "hero_chart_bands": "Frequency groups",
+        "hero_chart_bands": "DSE vocabulary bands",
         "nav_ai_power": "AI Power Vocab",
         "ai_power_label": "New Track",
         "ai_power_title": "AI + Professional Power Vocabulary",
@@ -2250,11 +2250,11 @@ TRANSLATIONS["zh-Hant"].update(
         "no_missed_words": "目前還沒有錯題。",
         "review_queue_auto": "做完一次檢測或練習後，錯題清單就會自動出現在這裡。",
         "start_learning": "開始學習",
-        "hero_chart_label": "詞彙概況",
-        "hero_chart_title": "你的 Economist 詞彙分布",
-        "hero_chart_note": "快速看看目前詞彙資料在不同常見程度分類中的分布情況。",
+        "hero_chart_label": "DSE 詞彙概況",
+        "hero_chart_title": "你的 DSE 詞彙分級",
+        "hero_chart_note": "快速看看 DSE 學生詞彙在不同學習分級中的分布情況。",
         "hero_chart_total": "總詞彙數",
-        "hero_chart_bands": "詞彙分類",
+        "hero_chart_bands": "DSE 詞彙分級",
         "nav_ai_power": "AI 指令詞庫",
         "ai_power_label": "新詞彙軌道",
         "ai_power_title": "AI 與專業高價值詞彙",
@@ -2663,10 +2663,10 @@ TRANSLATIONS["zh-Hans"].update(
         "choose_next": "选择你现在最适合的下一步",
         "choose_next_note": "用三个最快的入口保持学习节奏，不需要每次重新想该做什么。",
         "learning_session": "学习练习",
-        "frequency_bands": "词汇分级",
-        "browse_count": "按出现次数浏览",
+        "frequency_bands": "DSE 词汇分级",
+        "browse_count": "按 DSE 学习程度浏览",
         "open_dictionary": "打开词典",
-        "bands_note": "数字越高，表示这个词汇在你近十年的《经济学人》资料中出现得越多。",
+        "bands_note": "这些分级根据 DSE 学习程度、考试实用性和学术词汇优先次序整理，并不是根据《经济学人》出现频率。",
         "core_steps": "3 个核心步骤",
         "flow_sequence": "检测 → 练习 → 复习",
         "latest_result": "最近结果：{band}。",
@@ -3077,11 +3077,11 @@ TRANSLATIONS["zh-Hans"].update(
         "no_missed_words": "目前还没有错题。",
         "review_queue_auto": "做完一次检测或练习后，错题清单就会自动出现在这里。",
         "start_learning": "开始学习",
-        "hero_chart_label": "词汇概况",
-        "hero_chart_title": "你的 Economist 词汇分布",
-        "hero_chart_note": "快速看看当前词汇资料在不同常见程度分类中的分布情况。",
+        "hero_chart_label": "DSE 词汇概况",
+        "hero_chart_title": "你的 DSE 词汇分级",
+        "hero_chart_note": "快速看看 DSE 学生词汇在不同学习分级中的分布情况。",
         "hero_chart_total": "总词汇数",
-        "hero_chart_bands": "词汇分类",
+        "hero_chart_bands": "DSE 词汇分级",
         "nav_ai_power": "AI 指令词库",
         "ai_power_label": "新词汇路线",
         "ai_power_title": "AI 与专业高价值词汇",
@@ -6935,13 +6935,14 @@ def home(request: Request) -> HTMLResponse:
         active_learning = active_learning_session(conn, user_id)
         recommended_band = latest_test["estimated_band_label"] if latest_test else "Core DSE Survival"
         bands = student_dse_band_rows(conn, lang, user_id) if profile_persona == "student" else decorate_band_rows(band_summary(conn))
+        dashboard_vocab_total = sum(int(band["workbook_total"] or 0) for band in bands[:5])
         max_band_total = max((band["workbook_total"] for band in bands), default=1)
         hero_band_chart = [
             {
                 "label": band["range_label"],
-                "title": hero_band_identity(band["range_label"])["title"],
-                "subtitle": hero_band_identity(band["range_label"])["subtitle"],
-                "tone": hero_band_identity(band["range_label"])["tone"],
+                "title": band["title"],
+                "subtitle": band["subtitle"],
+                "tone": band["tone"],
                 "count": band["workbook_total"],
                 "percent": max(18, round((band["workbook_total"] / max_band_total) * 100)),
             }
@@ -6972,6 +6973,7 @@ def home(request: Request) -> HTMLResponse:
         active_learning = None
         recommended_band = "50~99 (3924)"
         bands = []
+        dashboard_vocab_total = 0
         hero_band_chart = []
         missed_words_count = 0
         spotlight_words = []
@@ -6991,6 +6993,7 @@ def home(request: Request) -> HTMLResponse:
         active_test=active_test,
         active_learning=active_learning,
         recommended_band=recommended_band,
+        dashboard_vocab_total=dashboard_vocab_total,
         missed_words_count=missed_words_count,
         today_plan_items=today_plan_items,
         spotlight_words=spotlight_words,
