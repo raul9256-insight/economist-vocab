@@ -1518,6 +1518,17 @@ TRANSLATIONS["en"].update(
         "mastery_progress_review": "Review",
         "mastery_progress_average": "Average progress",
         "mastery_progress_mastered_count": "{count} mastered",
+        "mastery_next_step": "Next step",
+        "mastery_next_start": "Open this word and start the 5-layer test.",
+        "mastery_next_continue_test": "Complete the remaining 5-layer test items.",
+        "mastery_next_deep": "Finish pronunciation and AI sentence usage to move beyond Tested.",
+        "mastery_next_review": "Review this word once more to reach 100% mastery.",
+        "mastery_next_complete": "Fully mastered. Keep it in long-term review.",
+        "mastery_list_hint": "Each card shows the current mastery stage and the missing steps.",
+        "mastery_stage_exposure": "Exposure",
+        "mastery_stage_test": "5-layer test",
+        "mastery_stage_deep": "Deep Learning",
+        "mastery_stage_review": "Review",
         "mastery_recording_unsupported": "Recording is not supported in this browser.",
         "mastery_recording": "Recording...",
         "mastery_checking": "Checking...",
@@ -1972,6 +1983,17 @@ TRANSLATIONS["zh-Hant"].update(
         "mastery_progress_review": "複習",
         "mastery_progress_average": "平均進度",
         "mastery_progress_mastered_count": "{count} 個已掌握",
+        "mastery_next_step": "下一步",
+        "mastery_next_start": "打開這個詞，先開始五層題型測驗。",
+        "mastery_next_continue_test": "完成尚未通過的五層題型。",
+        "mastery_next_deep": "完成發音和 AI 句子應用，從「已通過測驗」進入深度學習。",
+        "mastery_next_review": "再複習一次這個詞，就可以達到 100% 掌握。",
+        "mastery_next_complete": "已完整掌握。之後保留在長期複習中即可。",
+        "mastery_list_hint": "每張詞卡都會顯示目前掌握階段和仍未完成的步驟。",
+        "mastery_stage_exposure": "接觸",
+        "mastery_stage_test": "五層題型",
+        "mastery_stage_deep": "深度學習",
+        "mastery_stage_review": "複習",
         "mastery_recording_unsupported": "這個瀏覽器不支援錄音。",
         "mastery_recording": "錄音中...",
         "mastery_checking": "檢查中...",
@@ -2789,6 +2811,17 @@ TRANSLATIONS["zh-Hans"].update(
         "mastery_progress_review": "复习",
         "mastery_progress_average": "平均进度",
         "mastery_progress_mastered_count": "{count} 个已掌握",
+        "mastery_next_step": "下一步",
+        "mastery_next_start": "打开这个词，先开始五层题型检测。",
+        "mastery_next_continue_test": "完成尚未通过的五层题型。",
+        "mastery_next_deep": "完成发音和 AI 句子应用，从「已通过检测」进入深度学习。",
+        "mastery_next_review": "再复习一次这个词，就可以达到 100% 掌握。",
+        "mastery_next_complete": "已完整掌握。之后保留在长期复习中即可。",
+        "mastery_list_hint": "每张词卡都会显示目前掌握阶段和仍未完成的步骤。",
+        "mastery_stage_exposure": "接触",
+        "mastery_stage_test": "五层题型",
+        "mastery_stage_deep": "深度学习",
+        "mastery_stage_review": "复习",
         "mastery_recording_unsupported": "这个浏览器不支持录音。",
         "mastery_recording": "录音中...",
         "mastery_checking": "检查中...",
@@ -4204,6 +4237,18 @@ def word_mastery_status(percent: int, test_complete: bool, deep_complete: bool, 
     return "not-started", "mastery_progress_not_started"
 
 
+def word_mastery_next_step_key(percent: int, test_complete: bool, deep_complete: bool, review_complete: bool) -> str:
+    if percent >= 100 and test_complete and deep_complete and review_complete:
+        return "mastery_next_complete"
+    if test_complete and deep_complete and not review_complete:
+        return "mastery_next_review"
+    if test_complete and not deep_complete:
+        return "mastery_next_deep"
+    if percent > 0:
+        return "mastery_next_continue_test"
+    return "mastery_next_start"
+
+
 def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: int, lang: str) -> dict[str, object]:
     latest_mastery = latest_word_mastery_attempts(conn, word_id=word_id, user_id=user_id)
     card = conn.execute(
@@ -4314,9 +4359,11 @@ def word_mastery_progress(conn: sqlite3.Connection, *, word_id: int, user_id: in
         "percent": percent,
         "tone": tone,
         "status_label": translate(lang, label_key),
+        "next_step": translate(lang, word_mastery_next_step_key(percent, test_complete, pronunciation_complete and sentence_complete, review_complete)),
         "test_complete": test_complete,
         "deep_complete": pronunciation_complete and sentence_complete,
         "review_complete": review_complete,
+        "exposure_complete": exposure_complete,
         "layers": layers,
         "segments": segments,
     }

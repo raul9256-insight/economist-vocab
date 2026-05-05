@@ -2662,6 +2662,53 @@ input[type="file"] {
   background: var(--mastery-color);
 }
 
+.mastery-roadmap {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.mastery-roadmap-step {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  min-height: 76px;
+  padding: 0.75rem 0.5rem;
+  border-radius: 18px;
+  border: 1px solid rgba(112, 125, 184, 0.16);
+  background: rgba(255, 255, 255, 0.72);
+  color: #6f7890;
+  text-align: center;
+}
+
+.mastery-roadmap-step span {
+  width: 1.9rem;
+  height: 1.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(112, 125, 184, 0.12);
+  font-weight: 900;
+}
+
+.mastery-roadmap-step strong {
+  font-size: 0.82rem;
+  line-height: 1.15;
+}
+
+.mastery-roadmap-step.complete {
+  border-color: var(--mastery-color);
+  color: #27304b;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 4px 0 var(--mastery-color);
+}
+
+.mastery-roadmap-step.complete span {
+  background: var(--mastery-color);
+  color: #fff;
+}
+
 .mastery-segment-grid {
   display: grid;
   grid-template-columns: 0.75fr 1.25fr 0.85fr 0.85fr 0.75fr;
@@ -3391,6 +3438,42 @@ input[type="file"] {
   height: 100%;
   border-radius: inherit;
   background: var(--mastery-color);
+}
+
+.dictionary-mastery-stage-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.dictionary-mastery-stage-row span {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(112, 125, 184, 0.14);
+  background: rgba(247, 249, 255, 0.86);
+  color: #7a8399;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.dictionary-mastery-stage-row span.complete {
+  border-color: transparent;
+  background: var(--mastery-color, #38bdf8);
+  color: #fff;
+}
+
+.dictionary-next-step {
+  margin-top: 0.4rem;
+  color: #6f7890;
+  font-size: 0.88rem;
+  line-height: 1.35;
 }
 
 .review-shell,
@@ -5123,6 +5206,7 @@ input[type="file"] {
 
   .business-filter-form,
   .mastery-progress-top,
+  .mastery-roadmap,
   .mastery-segment-grid,
   .business-results-header,
   .business-result-row {
@@ -5261,8 +5345,12 @@ input[type="file"] {
     grid-template-columns: 1fr;
   }
 
-.word-detail-tabs {
+  .word-detail-tabs {
     grid-template-columns: repeat(2, max-content);
+  }
+
+  .dictionary-mastery-stage-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

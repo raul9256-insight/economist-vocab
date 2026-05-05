@@ -67,6 +67,33 @@
       <span style="width: {{ mastery_progress.percent }}%"></span>
     </div>
 
+    <div class="mastery-roadmap">
+      <div class="mastery-roadmap-step {% if mastery_progress.exposure_complete %}complete{% endif %}">
+        <span>1</span>
+        <strong>{{ t("mastery_stage_exposure") }}</strong>
+      </div>
+      <div class="mastery-roadmap-step {% if mastery_progress.test_complete %}complete{% endif %}">
+        <span>2</span>
+        <strong>{{ t("mastery_stage_test") }}</strong>
+      </div>
+      <div class="mastery-roadmap-step {% if mastery_progress.deep_complete %}complete{% endif %}">
+        <span>3</span>
+        <strong>{{ t("mastery_stage_deep") }}</strong>
+      </div>
+      <div class="mastery-roadmap-step {% if mastery_progress.review_complete %}complete{% endif %}">
+        <span>4</span>
+        <strong>{{ t("mastery_stage_review") }}</strong>
+      </div>
+      <div class="mastery-roadmap-step {% if mastery_progress.percent >= 100 %}complete{% endif %}">
+        <span>5</span>
+        <strong>{{ t("mastery_progress_mastered") }}</strong>
+      </div>
+    </div>
+
+    <div class="callout learning-result-callout compact-guidance">
+      <strong>{{ t("mastery_next_step") }}</strong> {{ mastery_progress.next_step }}
+    </div>
+
     <div class="mastery-segment-grid">
       {% for segment in mastery_progress.segments %}
       <div class="mastery-segment {% if segment.complete %}complete{% endif %}">

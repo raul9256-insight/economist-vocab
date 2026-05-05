@@ -38,6 +38,7 @@
         <small>{{ t("mastery_progress_mastered_count", count=mastered_count) }}</small>
       </div>
     </div>
+    <p class="section-subtle">{{ t("mastery_list_hint") }}</p>
     <div class="dictionary-band-results">
       {% for word in words %}
       <a class="dictionary-band-word" href="/word/{{ word.id }}">
@@ -61,9 +62,16 @@
         {% else %}
         <p>{{ t("open_word_add_details") }}</p>
         {% endif %}
+        <div class="dictionary-mastery-stage-row">
+          <span class="{% if word.mastery_progress.exposure_complete %}complete{% endif %}">{{ t("mastery_stage_exposure") }}</span>
+          <span class="{% if word.mastery_progress.test_complete %}complete{% endif %}">{{ t("mastery_stage_test") }}</span>
+          <span class="{% if word.mastery_progress.deep_complete %}complete{% endif %}">{{ t("mastery_stage_deep") }}</span>
+          <span class="{% if word.mastery_progress.review_complete %}complete{% endif %}">{{ t("mastery_stage_review") }}</span>
+        </div>
         <div class="dictionary-card-progress-track mastery-tone-{{ word.mastery_progress.tone }}">
           <span style="width: {{ word.mastery_progress.percent }}%"></span>
         </div>
+        <p class="dictionary-next-step"><strong>{{ t("mastery_next_step") }}:</strong> {{ word.mastery_progress.next_step }}</p>
       </a>
       {% else %}
       <div class="empty-card dictionary-empty-card">
