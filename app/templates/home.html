@@ -74,9 +74,24 @@
         <span class="goal-pill">{{ t("core_steps") }}</span>
       </div>
       <p class="goal-note">{{ t("student_today_plan_note") }}</p>
+      {% if primary_today_item %}
+      <a class="student-mission-card" href="{{ primary_today_item.href }}">
+        <span class="recommend-tag">{{ t("today_main_mission") }}</span>
+        <strong>{{ t(primary_today_item.title_key) }}</strong>
+        <small>
+          {% if primary_today_item.body_key == "review_queue_count" %}
+            {{ t(primary_today_item.body_key, count=missed_words_count) }}
+          {% else %}
+            {{ t(primary_today_item.body_key) }}
+          {% endif %}
+        </small>
+      </a>
+      {% endif %}
+      {% if supporting_today_items %}
+      <p class="student-task-label">{{ t("supporting_tasks") }}</p>
       <div class="student-task-list">
-        {% for item in today_plan_items %}
-        <a class="student-task-item {% if item.primary %}primary{% endif %}" href="{{ item.href }}">
+        {% for item in supporting_today_items %}
+        <a class="student-task-item" href="{{ item.href }}">
           <span class="student-task-number">{{ loop.index }}</span>
           <span>
             <strong>{{ t(item.title_key) }}</strong>
@@ -91,6 +106,7 @@
         </a>
         {% endfor %}
       </div>
+      {% endif %}
       {% if latest_test %}
       <div class="callout learning-result-callout compact-guidance">
         <strong>{{ t("recommended_path_title") }}</strong>
@@ -98,9 +114,11 @@
       </div>
       {% endif %}
       <div class="action-row">
-        <a class="button" href="{% if active_test %}/test/{{ active_test.id }}{% else %}/test{% endif %}">
-          {% if latest_test %}{{ t("continue_test") if active_test else t("start_test") }}{% else %}{{ t("first_login_action") }}{% endif %}
-        </a>
+        {% if primary_today_item %}
+        <a class="button" href="{{ primary_today_item.href }}">{{ t(primary_today_item.title_key) }}</a>
+        {% else %}
+        <a class="button" href="{% if active_test %}/test/{{ active_test.id }}{% else %}/test{% endif %}">{{ t("start_test") }}</a>
+        {% endif %}
         <a class="button secondary" href="/learning">{{ t("continue_learning") }}</a>
       </div>
       {% if stats.tests_taken %}

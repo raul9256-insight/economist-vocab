@@ -5404,6 +5404,41 @@ input[type="file"] {
   margin: 1rem 0;
 }
 
+.student-mission-card {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 22px;
+  border: 1px solid rgba(47, 101, 79, 0.24);
+  background: linear-gradient(135deg, rgba(236, 248, 242, 0.96), rgba(255, 255, 255, 0.9));
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 16px 34px rgba(47, 101, 79, 0.08);
+}
+
+.student-mission-card strong {
+  display: block;
+  font-size: 1.26rem;
+  line-height: 1.2;
+}
+
+.student-mission-card small {
+  display: block;
+  max-width: 58ch;
+  color: #657087;
+  line-height: 1.42;
+}
+
+.student-task-label {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .student-task-item {
   display: grid;
   grid-template-columns: 2.2rem minmax(0, 1fr);

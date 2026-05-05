@@ -1038,6 +1038,8 @@ TRANSLATIONS = {
         "continue_learning": "Continue Learning",
         "student_today_plan": "Today's Study Plan",
         "student_today_plan_note": "Follow these steps in order. The app will keep your progress and point you to the next useful action.",
+        "today_main_mission": "Today's main mission",
+        "supporting_tasks": "Supporting tasks",
         "first_login_action": "Start DSE Level Test",
         "first_login_action_note": "Start here so VocabLab can recommend the right DSE band.",
         "resume_level_test_action": "Continue unfinished level test",
@@ -1332,6 +1334,8 @@ TRANSLATIONS = {
         "continue_learning": "繼續學習",
         "student_today_plan": "今日學習任務",
         "student_today_plan_note": "按順序完成以下任務。系統會保存進度，並指引你下一步最值得做甚麼。",
+        "today_main_mission": "今日主要任務",
+        "supporting_tasks": "輔助任務",
         "first_login_action": "開始 DSE 程度測驗",
         "first_login_action_note": "先從這裡開始，VocabLab 才能建議最適合你的 DSE 詞彙分級。",
         "resume_level_test_action": "繼續上次未完成測驗",
@@ -2675,6 +2679,8 @@ TRANSLATIONS["zh-Hans"].update(
         "continue_learning": "继续学习",
         "student_today_plan": "今日学习任务",
         "student_today_plan_note": "按顺序完成以下任务。系统会保存进度，并指引你下一步最值得做什么。",
+        "today_main_mission": "今日主要任务",
+        "supporting_tasks": "辅助任务",
         "first_login_action": "开始 DSE 程度检测",
         "first_login_action_note": "先从这里开始，VocabLab 才能建议最适合你的 DSE 词汇分级。",
         "resume_level_test_action": "继续上次未完成检测",
@@ -7001,6 +7007,8 @@ def home(request: Request) -> HTMLResponse:
             latest_learning=latest_learning,
             missed_count=missed_words_count,
         )
+        primary_today_item = next((item for item in today_plan_items if item.get("primary")), today_plan_items[0] if today_plan_items else None)
+        supporting_today_items = [item for item in today_plan_items if item is not primary_today_item]
     except Exception:
         profile_name = (request.cookies.get("profile_name") or "Lawrence").strip()[:40] or "Lawrence"
         profile_persona = request.cookies.get("profile_persona") if request.cookies.get("profile_persona") in SUPPORTED_PERSONAS else "lifelong_learner"
@@ -7022,6 +7030,8 @@ def home(request: Request) -> HTMLResponse:
         missed_words_count = 0
         spotlight_words = []
         today_plan_items = []
+        primary_today_item = None
+        supporting_today_items = []
     dashboard_quote = random.choice(HOME_QUOTES)
     return render(
         request,
@@ -7040,6 +7050,8 @@ def home(request: Request) -> HTMLResponse:
         dashboard_vocab_total=dashboard_vocab_total,
         missed_words_count=missed_words_count,
         today_plan_items=today_plan_items,
+        primary_today_item=primary_today_item,
+        supporting_today_items=supporting_today_items,
         spotlight_words=spotlight_words,
         hero_band_chart=hero_band_chart,
         dashboard_quote=dashboard_quote,
