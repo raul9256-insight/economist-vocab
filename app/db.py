@@ -422,6 +422,7 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
     ensure_column(conn, "users", "display_name", "TEXT NOT NULL DEFAULT ''")
     ensure_column(conn, "users", "persona", "TEXT NOT NULL DEFAULT 'lifelong_learner'")
     ensure_column(conn, "users", "role", "TEXT NOT NULL DEFAULT 'student'")
+    ensure_column(conn, "class_assignments", "assignment_type", "TEXT NOT NULL DEFAULT 'band_practice'")
     conn.execute(
         """
         INSERT INTO users (id, username)

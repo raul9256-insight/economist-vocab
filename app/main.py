@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import io
 import json
 import hashlib
 import hmac
@@ -951,6 +953,20 @@ TRANSLATIONS = {
         "teacher_assignment_completion": "Completion",
         "teacher_assignment_avg_score": "Avg. score",
         "teacher_assignment_created": "Assignment created.",
+        "teacher_assignment_type": "Assignment type",
+        "assignment_type_band_practice": "Band practice",
+        "assignment_type_weak_review": "Weak-word review",
+        "assignment_type_deep_learning": "Deep Learning",
+        "teacher_total_classes": "Classes",
+        "teacher_total_students": "Students",
+        "teacher_open_assignments": "Open assignments",
+        "teacher_class_report": "Export class report",
+        "teacher_class_code_hint": "Students use this code to join the class from Account Settings.",
+        "teacher_student_action": "Next action",
+        "teacher_action_retest": "Ask this student to complete the DSE Level Test.",
+        "teacher_action_review": "Assign focused review for {question_type}.",
+        "teacher_action_remind": "Send a reminder and a short review task.",
+        "teacher_action_extend": "Move this student to a higher-band practice set.",
         "admin_dashboard_title": "Admin Dashboard",
         "admin_dashboard_lede": "Overlook the whole VocabLab AI system: users, daily usage, tests, learning sessions, and Deep Learning activity.",
         "admin_only": "This dashboard is only available to system administrators.",
@@ -1231,6 +1247,20 @@ TRANSLATIONS = {
         "teacher_assignment_completion": "完成率",
         "teacher_assignment_avg_score": "平均分",
         "teacher_assignment_created": "已建立指派練習。",
+        "teacher_assignment_type": "練習類型",
+        "assignment_type_band_practice": "Band 練習",
+        "assignment_type_weak_review": "弱詞重溫",
+        "assignment_type_deep_learning": "深度學習",
+        "teacher_total_classes": "班級",
+        "teacher_total_students": "學生",
+        "teacher_open_assignments": "進行中指派",
+        "teacher_class_report": "匯出班級報告",
+        "teacher_class_code_hint": "學生可在帳戶設定輸入此邀請碼加入班級。",
+        "teacher_student_action": "下一步",
+        "teacher_action_retest": "請這位學生先完成 DSE 程度測驗。",
+        "teacher_action_review": "指派 {question_type} 針對練習。",
+        "teacher_action_remind": "先發提醒，再派一份短複習。",
+        "teacher_action_extend": "可安排更高 Band 的練習。",
         "admin_dashboard_title": "Admin Dashboard",
         "admin_dashboard_lede": "總覽整個 VocabLab AI 系統：用戶、每日使用量、程度測驗、學習練習和深度學習活動。",
         "admin_only": "這個 dashboard 只供系統管理員使用。",
@@ -2563,6 +2593,20 @@ TRANSLATIONS["zh-Hans"].update(
         "teacher_assignment_completion": "完成率",
         "teacher_assignment_avg_score": "平均分",
         "teacher_assignment_created": "已建立指派练习。",
+        "teacher_assignment_type": "练习类型",
+        "assignment_type_band_practice": "Band 练习",
+        "assignment_type_weak_review": "弱词复习",
+        "assignment_type_deep_learning": "深度学习",
+        "teacher_total_classes": "班级",
+        "teacher_total_students": "学生",
+        "teacher_open_assignments": "进行中指派",
+        "teacher_class_report": "导出班级报告",
+        "teacher_class_code_hint": "学生可在账户设置输入此邀请码加入班级。",
+        "teacher_student_action": "下一步",
+        "teacher_action_retest": "请这位学生先完成 DSE 程度测试。",
+        "teacher_action_review": "指派 {question_type} 针对练习。",
+        "teacher_action_remind": "先发提醒，再派一份短复习。",
+        "teacher_action_extend": "可安排更高 Band 的练习。",
         "admin_dashboard_title": "Admin Dashboard",
         "admin_dashboard_lede": "总览整个 VocabLab AI 系统：用户、每日使用量、程度测试、学习练习和深度学习活动。",
         "admin_only": "这个 dashboard 只供系统管理员使用。",
@@ -7435,6 +7479,15 @@ def teacher_student_progress_rows(conn: sqlite3.Connection, students: list[sqlit
         last_active = latest_activity_at(conn, user_id) or student["joined_at"]
         latest_score = int(latest_test["score"]) if latest_test and latest_test["score"] is not None else None
         risk = risk_status_for_student(latest_score, learning["accuracy"], last_active)
+        next_action_key = "teacher_action_extend"
+        next_action_kwargs: dict[str, str] = {}
+        if latest_score is None:
+            next_action_key = "teacher_action_retest"
+        elif risk == "high":
+            next_action_key = "teacher_action_remind"
+        elif weak_type["accuracy"] is not None and weak_type["accuracy"] < 75:
+            next_action_key = "teacher_action_review"
+            next_action_kwargs = {"question_type": weak_type["label"]}
         progress_rows.append(
             {
                 "id": user_id,
@@ -7450,6 +7503,7 @@ def teacher_student_progress_rows(conn: sqlite3.Connection, students: list[sqlit
                 "last_active_days": days_since_db_datetime(last_active),
                 "risk": risk,
                 "risk_label": translate(lang, f"risk_{risk}"),
+                "next_action": translate(lang, next_action_key, **next_action_kwargs),
             }
         )
     return progress_rows
@@ -7493,7 +7547,22 @@ def teacher_recommendation_rows(snapshot: dict, student_rows: list[dict], lang: 
     return recommendations
 
 
-def teacher_assignment_rows(conn: sqlite3.Connection, teacher_user_id: int) -> list[dict]:
+def teacher_dashboard_snapshot(classes: list[dict], assignments: list[dict]) -> dict:
+    return {
+        "total_classes": len(classes),
+        "total_students": sum(int(item["snapshot"]["student_count"]) for item in classes),
+        "active_students": sum(int(item["snapshot"]["active_students"]) for item in classes),
+        "at_risk_students": sum(int(item["snapshot"]["at_risk_students"]) for item in classes),
+        "open_assignments": len(assignments),
+    }
+
+
+def assignment_type_label(value: str, lang: str) -> str:
+    safe_value = value if value in {"band_practice", "weak_review", "deep_learning"} else "band_practice"
+    return translate(lang, f"assignment_type_{safe_value}")
+
+
+def teacher_assignment_rows(conn: sqlite3.Connection, teacher_user_id: int, lang: str = "en") -> list[dict]:
     rows = conn.execute(
         """
         SELECT class_assignments.*,
@@ -7522,6 +7591,7 @@ def teacher_assignment_rows(conn: sqlite3.Connection, teacher_user_id: int) -> l
                 "completed_count": completed_count,
                 "completion_percent": round((completed_count / student_count) * 100) if student_count else 0,
                 "avg_score": round(float(row["avg_score"])) if row["avg_score"] is not None else None,
+                "type_label": assignment_type_label(row["assignment_type"] or "band_practice", lang),
             }
         )
     return assignments
@@ -7591,6 +7661,63 @@ def teacher_class_rows(conn: sqlite3.Connection, teacher_user_id: int, lang: str
             }
         )
     return classes
+
+
+def teacher_class_csv_response(conn: sqlite3.Connection, teacher_user_id: int, class_id: int, lang: str) -> Response | None:
+    row = conn.execute(
+        "SELECT * FROM teacher_classes WHERE id = ? AND teacher_user_id = ?",
+        (class_id, teacher_user_id),
+    ).fetchone()
+    if row is None:
+        return None
+    students = conn.execute(
+        """
+        SELECT users.id, users.username, users.display_name, users.email, class_memberships.joined_at
+        FROM class_memberships
+        JOIN users ON users.id = class_memberships.student_user_id
+        WHERE class_memberships.class_id = ?
+        ORDER BY class_memberships.joined_at DESC
+        """,
+        (class_id,),
+    ).fetchall()
+    progress = teacher_student_progress_rows(conn, students, lang)
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(
+        [
+            "student",
+            "email",
+            "latest_test_score",
+            "recommended_band",
+            "learning_accuracy",
+            "learning_sessions",
+            "weak_area",
+            "last_active_days",
+            "risk",
+            "next_action",
+        ]
+    )
+    for student in progress:
+        writer.writerow(
+            [
+                student["display_name"],
+                student["email"],
+                student["latest_test_score"] if student["latest_test_score"] is not None else "",
+                student["recommended_band"],
+                student["learning_accuracy"] if student["learning_accuracy"] is not None else "",
+                student["learning_sessions"],
+                student["weak_question_type"]["label"],
+                student["last_active_days"] if student["last_active_days"] is not None else "",
+                student["risk_label"],
+                student["next_action"],
+            ]
+        )
+    filename = re.sub(r"[^A-Za-z0-9_-]+", "-", row["name"]).strip("-") or f"class-{class_id}"
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}-report.csv"'},
+    )
 
 
 @app.get("/account", response_class=HTMLResponse)
@@ -7708,12 +7835,15 @@ def teacher_dashboard(request: Request, message: str = Query("")) -> HTMLRespons
         return render(request, "teacher_dashboard.html", user=user, classes=[], message_key="teacher_only")
     allowed_messages = {"account_profile_saved", "teacher_assignment_created"}
     conn = db_conn()
+    classes = teacher_class_rows(conn, int(user["id"]), lang)
+    assignments = teacher_assignment_rows(conn, int(user["id"]), lang)
     return render(
         request,
         "teacher_dashboard.html",
         user=user,
-        classes=teacher_class_rows(conn, int(user["id"]), lang),
-        assignments=teacher_assignment_rows(conn, int(user["id"])),
+        classes=classes,
+        assignments=assignments,
+        teacher_snapshot=teacher_dashboard_snapshot(classes, assignments),
         bands=student_dse_band_rows(conn, lang, int(user["id"])),
         message_key=message if message in allowed_messages else "",
     )
@@ -7748,6 +7878,7 @@ def teacher_assignment_create(
     class_id: int = Form(...),
     title: str = Form(""),
     band_rank: int = Form(2000),
+    assignment_type: str = Form("band_practice"),
     due_date: str = Form(""),
 ) -> RedirectResponse:
     user = registered_user_row(request)
@@ -7764,18 +7895,33 @@ def teacher_assignment_create(
     if class_row is None:
         return RedirectResponse(url=teacher_redirect_url(lang), status_code=303)
     selected_rank = band_rank if band_rank in STUDENT_DSE_BANDS else 1
+    safe_assignment_type = assignment_type if assignment_type in {"band_practice", "weak_review", "deep_learning"} else "band_practice"
     band_label = STUDENT_DSE_BANDS.get(selected_rank, STUDENT_DSE_BANDS[1])["label"]
     safe_title = (title or "").strip()[:100] or f"{band_label} Practice"
     safe_due = (due_date or "").strip()[:20]
     conn.execute(
         """
-        INSERT INTO class_assignments (class_id, teacher_user_id, title, band_rank, band_label, due_date)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO class_assignments (class_id, teacher_user_id, title, band_rank, band_label, assignment_type, due_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-        (class_id, user["id"], safe_title, selected_rank, band_label, safe_due),
+        (class_id, user["id"], safe_title, selected_rank, band_label, safe_assignment_type, safe_due),
     )
     conn.commit()
     return RedirectResponse(url=teacher_redirect_url(lang, "teacher_assignment_created"), status_code=303)
+
+
+@app.get("/teacher/classes/{class_id}/report.csv")
+def teacher_class_report_export(request: Request, class_id: int) -> Response:
+    user = registered_user_row(request)
+    lang = getattr(request.state, "lang", get_lang(request))
+    if user is None:
+        return RedirectResponse(url=auth_redirect_url(lang, error_key="account_login_required"), status_code=303)
+    if not is_teacher_user(user):
+        return RedirectResponse(url=teacher_redirect_url(lang), status_code=303)
+    response = teacher_class_csv_response(db_conn(), int(user["id"]), class_id, lang)
+    if response is None:
+        return RedirectResponse(url=teacher_redirect_url(lang), status_code=303)
+    return response
 
 
 @app.post("/classes/join")

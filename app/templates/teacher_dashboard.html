@@ -23,6 +23,26 @@
     {% endif %}
 
     {% if is_teacher %}
+    <section class="teacher-control-grid" aria-label="{{ t('teacher_class_snapshot') }}">
+      <div class="learning-stat-card teacher-control-card">
+        <span>{{ t("teacher_total_classes") }}</span>
+        <strong>{{ teacher_snapshot.total_classes }}</strong>
+      </div>
+      <div class="learning-stat-card teacher-control-card">
+        <span>{{ t("teacher_total_students") }}</span>
+        <strong>{{ teacher_snapshot.total_students }}</strong>
+        <small>{{ teacher_snapshot.active_students }} {{ t("teacher_active_students") }}</small>
+      </div>
+      <div class="learning-stat-card teacher-control-card">
+        <span>{{ t("teacher_at_risk_students") }}</span>
+        <strong>{{ teacher_snapshot.at_risk_students }}</strong>
+      </div>
+      <div class="learning-stat-card teacher-control-card">
+        <span>{{ t("teacher_open_assignments") }}</span>
+        <strong>{{ teacher_snapshot.open_assignments }}</strong>
+      </div>
+    </section>
+
     <div class="account-grid">
       <article class="learning-focus-card">
         <div class="card-head tight">
@@ -82,6 +102,14 @@
           </select>
         </label>
         <label>
+          <span>{{ t("teacher_assignment_type") }}</span>
+          <select name="assignment_type">
+            <option value="band_practice">{{ t("assignment_type_band_practice") }}</option>
+            <option value="weak_review">{{ t("assignment_type_weak_review") }}</option>
+            <option value="deep_learning">{{ t("assignment_type_deep_learning") }}</option>
+          </select>
+        </label>
+        <label>
           <span>{{ t("teacher_assignment_due") }}</span>
           <input type="date" name="due_date">
         </label>
@@ -103,6 +131,7 @@
             <tr>
               <th>{{ t("teacher_assignment_title") }}</th>
               <th>{{ t("teacher_assignment_class") }}</th>
+              <th>{{ t("teacher_assignment_type") }}</th>
               <th>{{ t("teacher_assignment_band") }}</th>
               <th>{{ t("teacher_assignment_due") }}</th>
               <th>{{ t("teacher_assignment_completion") }}</th>
@@ -114,6 +143,7 @@
             <tr>
               <td>{{ assignment.row.title }}</td>
               <td>{{ assignment.row.class_name }}</td>
+              <td>{{ assignment.type_label }}</td>
               <td>{{ assignment.row.band_label }}</td>
               <td>{{ assignment.row.due_date or "--" }}</td>
               <td>{{ assignment.completed_count }} / {{ assignment.student_count }} ({{ assignment.completion_percent }}%)</td>
@@ -135,8 +165,12 @@
           <div>
             <h2>{{ item.row.name }}</h2>
             <p>{{ t("class_invite_code") }}: <strong>{{ item.row.invite_code }}</strong></p>
+            <p class="teacher-code-hint">{{ t("teacher_class_code_hint") }}</p>
           </div>
-          <strong>{{ item.row.student_count }} {{ t("teacher_students") }}</strong>
+          <div class="teacher-class-actions">
+            <strong>{{ item.row.student_count }} {{ t("teacher_students") }}</strong>
+            <a class="button ghost small-button" href="/teacher/classes/{{ item.row.id }}/report.csv{% if lang != 'en' %}?lang={{ lang }}{% endif %}">{{ t("teacher_class_report") }}</a>
+          </div>
         </div>
 
         <section class="teacher-snapshot-grid" aria-label="{{ t('teacher_class_snapshot') }}">
@@ -193,6 +227,7 @@
                 <th>{{ t("teacher_weak_area") }}</th>
                 <th>{{ t("teacher_last_active") }}</th>
                 <th>{{ t("teacher_risk") }}</th>
+                <th>{{ t("teacher_student_action") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -215,6 +250,7 @@
                   {% endif %}
                 </td>
                 <td><span class="risk-pill risk-{{ student.risk }}">{{ student.risk_label }}</span></td>
+                <td class="teacher-next-action">{{ student.next_action }}</td>
               </tr>
               {% endfor %}
             </tbody>
