@@ -57,6 +57,7 @@ const personaOptions: PersonaOption[] = [
     key: "student",
     label: "Student",
     description: "Academic growth, reading, and stronger vocabulary foundations.",
+    featured: true,
   },
   {
     key: "teacher",
@@ -67,7 +68,6 @@ const personaOptions: PersonaOption[] = [
     key: "business_professional",
     label: "Business Professional",
     description: "Sharper communication for meetings, writing, and decisions.",
-    featured: true,
   },
   {
     key: "ai_power_user",
@@ -203,6 +203,39 @@ const mobileCopy = {
     noProgress: "No completed learning sessions yet.",
     reviewWeakWords: "Review weak words",
     reviewWeakWordsBody: "Start a focused session from the words you missed recently.",
+    navHome: "Home",
+    navLearning: "Learn",
+    navDictionary: "Words",
+    navAi: "AI",
+    navProfile: "Me",
+    loadingDashboard: "Preparing your daily plan...",
+    loadingDashboardBody: "We are loading your latest level result, unfinished practice, and review tasks.",
+    todayEyebrow: "Today",
+    todayTitle: "Your next best step",
+    todayBodyNoTest: "Start with the DSE level test so VocabLab can suggest the right learning band.",
+    todayBodyWithTest: "Keep today simple: continue unfinished work, learn 10 words, then review weak words.",
+    primaryTask: "Main task",
+    secondaryTask: "Next",
+    optionalTask: "Optional",
+    syncLabel: "Saved across web and mobile",
+    guestLabel: "Guest mode",
+    continueTaskTitle: "Continue unfinished practice",
+    continueTaskBody: "Your answers are saved. Resume from the question where you stopped.",
+    startTenWordsTitle: "Start 10-word practice",
+    startTenWordsBody: "A short session from your recommended DSE band with the same 5-layer test.",
+    weakReviewTitle: "Review weak words",
+    weakReviewBody: "Focus on words you recently missed before adding more new vocabulary.",
+    deepLearningTitle: "Deep learning",
+    deepLearningBody: "Search one word, listen to pronunciation, write notes, and open deeper practice.",
+    openWords: "Open words",
+    noTestYet: "No level test yet",
+    scoreLabel: "Score",
+    recommendedLabel: "Recommended",
+    dailyChecklist: "Daily checklist",
+    levelTestHint: "Level test first",
+    learningHint: "10 words",
+    reviewHint: "Weak words",
+    dictionaryHint: "Word detail",
     personas: {
       student: ["Student", "Academic growth, reading, and stronger vocabulary foundations."],
       teacher: ["Teacher / Educator", "Teaching, explaining, and building useful learning materials."],
@@ -276,6 +309,39 @@ const mobileCopy = {
     noProgress: "暫時未有已完成的 learning session。",
     reviewWeakWords: "重溫錯詞",
     reviewWeakWordsBody: "用你最近答錯的詞彙開始一個集中重溫練習。",
+    navHome: "首頁",
+    navLearning: "學習",
+    navDictionary: "詞典",
+    navAi: "AI",
+    navProfile: "我的",
+    loadingDashboard: "正在準備今日任務...",
+    loadingDashboardBody: "正在載入你最近的程度結果、未完成練習和重溫任務。",
+    todayEyebrow: "今日任務",
+    todayTitle: "下一步應該做甚麼",
+    todayBodyNoTest: "先完成 DSE 程度測驗，系統才可以建議最適合你的學習 band。",
+    todayBodyWithTest: "今日保持簡單：先繼續未完成練習，再做 10 個詞彙，最後重溫錯詞。",
+    primaryTask: "主要任務",
+    secondaryTask: "下一步",
+    optionalTask: "可選",
+    syncLabel: "網頁版和手機版同步保存",
+    guestLabel: "訪客模式",
+    continueTaskTitle: "繼續未完成練習",
+    continueTaskBody: "你的答案已保存，可以由上次停下的位置繼續。",
+    startTenWordsTitle: "開始 10 個詞彙練習",
+    startTenWordsBody: "由建議 DSE band 抽出短練習，並用相同五層題型測試。",
+    weakReviewTitle: "重溫薄弱詞彙",
+    weakReviewBody: "先集中處理最近答錯的詞，再加入更多新詞。",
+    deepLearningTitle: "深度學習",
+    deepLearningBody: "搜尋一個詞，聽發音、寫筆記，並進入更深入練習。",
+    openWords: "打開詞典",
+    noTestYet: "尚未完成程度測驗",
+    scoreLabel: "分數",
+    recommendedLabel: "建議",
+    dailyChecklist: "每日清單",
+    levelTestHint: "先做程度測驗",
+    learningHint: "10 個詞彙",
+    reviewHint: "重溫錯詞",
+    dictionaryHint: "詞彙詳情",
     personas: {
       student: ["學生", "提升學術閱讀能力，建立更穩固的詞彙基礎。"],
       teacher: ["老師 / 教育工作者", "用於教學、解釋詞彙，以及建立實用學習材料。"],
@@ -349,6 +415,39 @@ const mobileCopy = {
     noProgress: "暂时没有已完成的 learning session。",
     reviewWeakWords: "重温错词",
     reviewWeakWordsBody: "用你最近答错的词汇开始一个集中重温练习。",
+    navHome: "首页",
+    navLearning: "学习",
+    navDictionary: "词典",
+    navAi: "AI",
+    navProfile: "我的",
+    loadingDashboard: "正在准备今日任务...",
+    loadingDashboardBody: "正在加载你最近的程度结果、未完成练习和重温任务。",
+    todayEyebrow: "今日任务",
+    todayTitle: "下一步应该做什么",
+    todayBodyNoTest: "先完成 DSE 程度测试，系统才可以建议最适合你的学习 band。",
+    todayBodyWithTest: "今日保持简单：先继续未完成练习，再做 10 个词汇，最后重温错词。",
+    primaryTask: "主要任务",
+    secondaryTask: "下一步",
+    optionalTask: "可选",
+    syncLabel: "网页版和手机版同步保存",
+    guestLabel: "访客模式",
+    continueTaskTitle: "继续未完成练习",
+    continueTaskBody: "你的答案已保存，可以从上次停下的位置继续。",
+    startTenWordsTitle: "开始 10 个词汇练习",
+    startTenWordsBody: "由建议 DSE band 抽出短练习，并用相同五层题型测试。",
+    weakReviewTitle: "重温薄弱词汇",
+    weakReviewBody: "先集中处理最近答错的词，再加入更多新词。",
+    deepLearningTitle: "深度学习",
+    deepLearningBody: "搜索一个词，听发音、写笔记，并进入更深入练习。",
+    openWords: "打开词典",
+    noTestYet: "尚未完成程度测试",
+    scoreLabel: "分数",
+    recommendedLabel: "建议",
+    dailyChecklist: "每日清单",
+    levelTestHint: "先做程度测试",
+    learningHint: "10 个词汇",
+    reviewHint: "重温错词",
+    dictionaryHint: "词汇详情",
     personas: {
       student: ["学生", "提升学术阅读能力，建立更稳固的词汇基础。"],
       teacher: ["老师 / 教育工作者", "用于教学、解释词汇，以及建立实用学习材料。"],
@@ -430,7 +529,7 @@ export default function App() {
   const [started, setStarted] = useState(false);
   const [name, setName] = useState("");
   const [lang, setLang] = useState("en");
-  const [persona, setPersona] = useState("business_professional");
+  const [persona, setPersona] = useState("student");
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [showAuthForm, setShowAuthForm] = useState(false);
   const [authUser, setAuthUser] = useState<MobileUser | null>(null);
@@ -561,6 +660,11 @@ export default function App() {
     const recommended = learningBands.find((band) => band.label === bootstrap?.recommended_band);
     return recommended?.rank ?? learningBands[0]?.rank ?? null;
   }, [bootstrap]);
+  const todayBody = bootstrap?.latest_test ? copy.todayBodyWithTest : copy.todayBodyNoTest;
+  const latestTestLabel = bootstrap?.latest_test
+    ? `${bootstrap.latest_test.score} / 100`
+    : copy.noTestYet;
+  const recommendedBandLabel = bootstrap?.recommended_band || "-";
 
   function applyAuthenticatedUser(user: MobileUser) {
     setAuthUser(user);
@@ -703,6 +807,7 @@ export default function App() {
   function startLearningFlow(bandRank?: number) {
     const resolvedBandRank = bandRank ?? selectedLearningBandRank ?? recommendedBandRank ?? undefined;
     setSelectedLearningBandRank(resolvedBandRank ?? null);
+    setActiveTab("learning");
     setLoadingLearning(true);
     setError("");
     resetLearningFlow();
@@ -1126,11 +1231,11 @@ export default function App() {
 
       <View style={styles.navTabs}>
         {[
-          ["home", "Home"],
-          ["learning", "Learning"],
-          ["dictionary", "Dictionary"],
-          ["ai", "AI"],
-          ["profile", "Profile"],
+          ["home", copy.navHome],
+          ["learning", copy.navLearning],
+          ["dictionary", copy.navDictionary],
+          ["ai", copy.navAi],
+          ["profile", copy.navProfile],
         ].map(([key, label]) => (
           <Pressable
             key={key}
@@ -1152,73 +1257,122 @@ export default function App() {
             {loadingHome || !bootstrap ? (
               <View style={[styles.card, shadows.card]}>
                 <ActivityIndicator size="large" color={colors.navSoft} />
-                <Text style={styles.loadingTitle}>Preparing your mobile dashboard...</Text>
-                <Text style={styles.cardNote}>
-                  We&apos;re loading your vocabulary snapshot, recommendations, and today&apos;s words.
-                </Text>
+                <Text style={styles.loadingTitle}>{copy.loadingDashboard}</Text>
+                <Text style={styles.cardNote}>{copy.loadingDashboardBody}</Text>
               </View>
             ) : (
               <>
-                <View style={[styles.heroCard, shadows.card]}>
-                  <View style={styles.heroTopRow}>
-                    <View style={styles.heroBadge}>
-                      <Text style={styles.heroBadgeText}>{selectedPersonaLabel}</Text>
+                <View style={[styles.todayCard, shadows.card]}>
+                  <View style={styles.todayHeader}>
+                    <View style={styles.todayHeaderMain}>
+                      <Text style={styles.sectionEyebrow}>{copy.todayEyebrow}</Text>
+                      <Text style={styles.todayTitle}>{copy.todayTitle}</Text>
+                      <Text style={styles.cardNote}>{todayBody}</Text>
                     </View>
-                    <View style={styles.heroBadgeSoft}>
-                      <Text style={styles.heroBadgeSoftText}>
-                        {lang === "en" ? "English" : lang === "zh-Hant" ? "繁中" : "简中"}
-                      </Text>
+                    <View style={styles.avatar}>
+                      <Text style={styles.avatarText}>{bootstrap.profile.initials || "VL"}</Text>
                     </View>
                   </View>
-                  <Text style={styles.quote}>
-                    “Without grammar very little can be conveyed, without vocabulary nothing can be conveyed.”
-                  </Text>
+
+                  <View style={styles.todayStatsRow}>
+                    <View style={styles.todayStat}>
+                      <Text style={styles.todayStatLabel}>{copy.scoreLabel}</Text>
+                      <Text style={styles.todayStatValue}>{latestTestLabel}</Text>
+                    </View>
+                    <View style={styles.todayStat}>
+                      <Text style={styles.todayStatLabel}>{copy.recommendedLabel}</Text>
+                      <Text style={styles.todayStatValue}>{recommendedBandLabel}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.taskList}>
+                    {!bootstrap.latest_test ? (
+                      <TaskCard
+                        tag={copy.primaryTask}
+                        title={copy.startLevelTest}
+                        body={copy.placementBody}
+                        meta={copy.levelTestHint}
+                        buttonLabel={copy.startLevelTest}
+                        tone="primary"
+                        onPress={() => openWebPath("/test")}
+                      />
+                    ) : null}
+
+                    {activeLearning ? (
+                      <TaskCard
+                        tag={copy.primaryTask}
+                        title={copy.continueTaskTitle}
+                        body={copy.continueTaskBody}
+                        meta={`${activeLearning.band_label} • ${activeLearning.resume_label} ${copy.completedLabel}`}
+                        buttonLabel={copy.continueNow}
+                        tone="success"
+                        onPress={resumeActiveLearning}
+                      />
+                    ) : (
+                      <TaskCard
+                        tag={bootstrap.latest_test ? copy.primaryTask : copy.secondaryTask}
+                        title={copy.startTenWordsTitle}
+                        body={copy.startTenWordsBody}
+                        meta={`${recommendedBandLabel} • ${copy.learningHint}`}
+                        buttonLabel={copy.startBand}
+                        tone="primary"
+                        onPress={() => startLearningFlow()}
+                      />
+                    )}
+
+                    {bootstrap.missed_words_count > 0 ? (
+                      <TaskCard
+                        tag={copy.secondaryTask}
+                        title={copy.weakReviewTitle}
+                        body={copy.weakReviewBody}
+                        meta={`${bootstrap.missed_words_count} ${copy.missedWords}`}
+                        buttonLabel={copy.reviewWeakWords}
+                        tone="soft"
+                        onPress={startWeakWordsReview}
+                      />
+                    ) : (
+                      <TaskCard
+                        tag={copy.optionalTask}
+                        title={copy.deepLearningTitle}
+                        body={copy.deepLearningBody}
+                        meta={copy.dictionaryHint}
+                        buttonLabel={copy.openWords}
+                        tone="soft"
+                        onPress={() => setActiveTab("dictionary")}
+                      />
+                    )}
+                  </View>
                 </View>
 
                 <View style={[styles.card, shadows.card]}>
-                  <Text style={styles.sectionEyebrow}>Dashboard</Text>
-                  <Text style={styles.cardTitle}>Hello, {greetingName}</Text>
-                  <Text style={styles.cardBody}>{bootstrap.profile.persona_message}</Text>
-                  <Text style={styles.cardNote}>{bootstrap.profile.recommendation_note}</Text>
-                  <View style={styles.quickActionRow}>
-                    <QuickAction label="Open Dictionary" tone="soft" onPress={() => setActiveTab("dictionary")} />
-                    <QuickAction label="Open AI Track" tone="primary" onPress={() => setActiveTab("ai")} />
+                  <Text style={styles.sectionEyebrow}>{copy.dailyChecklist}</Text>
+                  <View style={styles.checklistRow}>
+                    <ChecklistStep
+                      label={copy.levelTestHint}
+                      done={Boolean(bootstrap.latest_test)}
+                    />
+                    <ChecklistStep
+                      label={copy.learningHint}
+                      done={Boolean(bootstrap.latest_learning)}
+                    />
+                    <ChecklistStep
+                      label={copy.reviewHint}
+                      done={bootstrap.missed_words_count === 0 && Boolean(bootstrap.latest_learning)}
+                    />
                   </View>
-                </View>
-
-                <View style={[styles.card, shadows.card]}>
-                  <Text style={styles.sectionEyebrow}>{copy.placementEyebrow}</Text>
-                  <Text style={styles.cardTitle}>{copy.placementTitle}</Text>
-                  <Text style={styles.cardNote}>{copy.placementBody}</Text>
-                  {bootstrap.latest_test ? (
-                    <View style={styles.detailGrid}>
-                      <View style={[styles.detailSection, styles.detailGridItem]}>
-                        <Text style={styles.detailLabel}>{copy.latestScore}</Text>
-                        <Text style={styles.detailBody}>{bootstrap.latest_test.score} / 100</Text>
-                      </View>
-                      <View style={[styles.detailSection, styles.detailGridItem]}>
-                        <Text style={styles.detailLabel}>{copy.estimatedBand}</Text>
-                        <Text style={styles.detailBody}>{bootstrap.latest_test.estimated_band_label}</Text>
-                      </View>
-                    </View>
-                  ) : null}
                   <View style={styles.quickActionRow}>
                     {bootstrap.latest_test ? (
-                      <>
-                        <QuickAction
-                          label={copy.viewCompleteReport}
-                          tone="primary"
-                          onPress={() => {
-                            if (bootstrap.latest_test) {
-                              openWebPath(`/test/${bootstrap.latest_test.session_id}/result`);
-                            }
-                          }}
-                        />
-                        <QuickAction label={copy.retakeLevelTest} tone="soft" onPress={() => openWebPath("/test")} />
-                      </>
-                    ) : (
-                      <QuickAction label={copy.startLevelTest} tone="primary" onPress={() => openWebPath("/test")} />
-                    )}
+                      <QuickAction
+                        label={copy.viewCompleteReport}
+                        tone="soft"
+                        onPress={() => {
+                          if (bootstrap.latest_test) {
+                            openWebPath(`/test/${bootstrap.latest_test.session_id}/result`);
+                          }
+                        }}
+                      />
+                    ) : null}
+                    <QuickAction label={copy.retakeLevelTest} tone="soft" onPress={() => openWebPath("/test")} />
                   </View>
                 </View>
 
@@ -2042,6 +2196,57 @@ function FeatureCard({ eyebrow, title, note }: { eyebrow: string; title: string;
   );
 }
 
+function TaskCard({
+  tag,
+  title,
+  body,
+  meta,
+  buttonLabel,
+  tone,
+  onPress,
+}: {
+  tag: string;
+  title: string;
+  body: string;
+  meta: string;
+  buttonLabel: string;
+  tone: "primary" | "success" | "soft";
+  onPress: () => void;
+}) {
+  const strong = tone === "primary" || tone === "success";
+  return (
+    <View style={[styles.taskCard, tone === "success" && styles.taskCardSuccess]}>
+      <View style={styles.taskMain}>
+        <Text style={styles.taskTag}>{tag}</Text>
+        <Text style={styles.taskTitle}>{title}</Text>
+        <Text style={styles.cardNote}>{body}</Text>
+        <Text style={styles.taskMeta}>{meta}</Text>
+      </View>
+      <Pressable
+        style={[
+          styles.taskButton,
+          strong ? styles.taskButtonStrong : styles.taskButtonSoft,
+          tone === "success" && styles.taskButtonSuccess,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={[styles.taskButtonText, strong ? styles.taskButtonTextStrong : styles.taskButtonTextSoft]}>
+          {buttonLabel}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function ChecklistStep({ label, done }: { label: string; done: boolean }) {
+  return (
+    <View style={[styles.checklistStep, done && styles.checklistStepDone]}>
+      <Text style={[styles.checklistMark, done && styles.checklistMarkDone]}>{done ? "✓" : "○"}</Text>
+      <Text style={[styles.checklistText, done && styles.checklistTextDone]}>{label}</Text>
+    </View>
+  );
+}
+
 function QuickAction({
   label,
   tone,
@@ -2326,43 +2531,154 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.ink,
   },
-  heroCard: {
+  todayCard: {
     backgroundColor: colors.panel,
     borderRadius: 26,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 22,
+    padding: 18,
+    gap: 16,
   },
-  heroTopRow: {
+  todayHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
+    alignItems: "flex-start",
+    gap: 14,
   },
-  heroBadge: {
-    backgroundColor: "#ece6ff",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
+  todayHeaderMain: {
+    flex: 1,
+    gap: 8,
   },
-  heroBadgeText: {
-    color: colors.navSoft,
-    fontWeight: "800",
-  },
-  heroBadgeSoft: {
-    backgroundColor: "#fff8eb",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-  },
-  heroBadgeSoftText: {
-    color: colors.foundation,
-    fontWeight: "800",
-  },
-  quote: {
-    fontSize: 34,
-    lineHeight: 40,
+  todayTitle: {
+    fontSize: 28,
+    lineHeight: 32,
+    color: colors.ink,
     fontWeight: "900",
+  },
+  todayStatsRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  todayStat: {
+    flex: 1,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: "#fbf9f4",
+    padding: 14,
+    gap: 5,
+  },
+  todayStatLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  todayStatValue: {
+    color: colors.ink,
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "900",
+  },
+  taskList: {
+    gap: 12,
+  },
+  taskCard: {
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: "#fbf9f4",
+    padding: 16,
+    gap: 14,
+  },
+  taskCardSuccess: {
+    borderColor: "#cdded5",
+    backgroundColor: "#eef8f2",
+  },
+  taskMain: {
+    gap: 6,
+  },
+  taskTag: {
+    color: "#d18955",
+    fontSize: 11,
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  taskTitle: {
+    color: colors.ink,
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: "900",
+  },
+  taskMeta: {
+    color: colors.success,
+    fontWeight: "900",
+    fontSize: 13,
+  },
+  taskButton: {
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+  taskButtonStrong: {
+    backgroundColor: colors.navSoft,
+    borderColor: colors.navSoft,
+  },
+  taskButtonSuccess: {
+    backgroundColor: colors.success,
+    borderColor: colors.success,
+  },
+  taskButtonSoft: {
+    backgroundColor: "#fff",
+    borderColor: colors.border,
+  },
+  taskButtonText: {
+    fontWeight: "900",
+  },
+  taskButtonTextStrong: {
+    color: "#fff",
+  },
+  taskButtonTextSoft: {
+    color: colors.ink,
+  },
+  checklistRow: {
+    flexDirection: "row",
+    gap: 10,
+    flexWrap: "wrap",
+  },
+  checklistStep: {
+    flexGrow: 1,
+    flexBasis: 96,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: "#fbf9f4",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 6,
+  },
+  checklistStepDone: {
+    borderColor: "#cdded5",
+    backgroundColor: "#eff8f2",
+  },
+  checklistMark: {
+    color: colors.muted,
+    fontWeight: "900",
+  },
+  checklistMarkDone: {
+    color: colors.success,
+  },
+  checklistText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: "800",
+    lineHeight: 16,
+  },
+  checklistTextDone: {
     color: colors.ink,
   },
   card: {
