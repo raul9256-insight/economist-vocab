@@ -66,6 +66,7 @@
 
   <div class="dashboard-hero-v3-grid">
     <article class="dashboard-hero-v3-focus">
+      {% if is_student_persona %}
       <div class="card-head tight">
         <div>
           <p class="eyebrow">{{ t("today_goal") }}</p>
@@ -126,6 +127,94 @@
         <a class="text-link" href="/statistics">{{ t("view_statistics") }}</a>
       </div>
       {% endif %}
+      {% elif is_teacher_persona %}
+      <div class="card-head tight">
+        <div>
+          <p class="eyebrow">{{ t("classroom") }}</p>
+          <h2>{{ t("teacher_dashboard_title") }}</h2>
+        </div>
+        <span class="goal-pill">{{ t("nav_teacher") }}</span>
+      </div>
+      <p class="goal-note">{{ t("teacher_dashboard_lede") }}</p>
+      <div class="student-task-list">
+        <a class="student-task-item" href="/teacher">
+          <span class="student-task-number">1</span>
+          <span>
+            <strong>{{ t("teacher_student_progress") }}</strong>
+            <small>{{ t("teacher_recommendations") }}</small>
+          </span>
+        </a>
+        <a class="student-task-item" href="/dictionary">
+          <span class="student-task-number">2</span>
+          <span>
+            <strong>{{ t("nav_dictionary") }}</strong>
+            <small>{{ t("card_teacher_dictionary") }}</small>
+          </span>
+        </a>
+      </div>
+      <div class="action-row">
+        <a class="button" href="/teacher">{{ t("nav_teacher") }}</a>
+        <a class="button secondary" href="/dictionary">{{ t("nav_dictionary") }}</a>
+      </div>
+      {% elif is_business_persona %}
+      <div class="card-head tight">
+        <div>
+          <p class="eyebrow">{{ t("nav_business_vocab") }}</p>
+          <h2>{{ t("business_vocab_home_title") }}</h2>
+        </div>
+        <span class="goal-pill">{{ t("business_band") }}</span>
+      </div>
+      <p class="goal-note">{{ t("business_featured_path_note") }}</p>
+      <div class="student-task-list">
+        <a class="student-task-item" href="/business-vocabulary">
+          <span class="student-task-number">1</span>
+          <span>
+            <strong>{{ t("business_featured_path_title") }}</strong>
+            <small>{{ t("business_featured_path_note") }}</small>
+          </span>
+        </a>
+        <a class="student-task-item" href="/ai-power-vocabulary">
+          <span class="student-task-number">2</span>
+          <span>
+            <strong>{{ t("ai_power_home_title") }}</strong>
+            <small>{{ t("ai_power_home_note") }}</small>
+          </span>
+        </a>
+      </div>
+      <div class="action-row">
+        <a class="button" href="/business-vocabulary">{{ t("nav_business_vocab") }}</a>
+        <a class="button secondary" href="/ai-power-vocabulary">{{ t("nav_ai_power") }}</a>
+      </div>
+      {% elif is_ai_persona %}
+      <div class="card-head tight">
+        <div>
+          <p class="eyebrow">{{ t("ai_power_label") }}</p>
+          <h2>{{ t("ai_power_home_title") }}</h2>
+        </div>
+        <span class="goal-pill">{{ t("nav_ai_power") }}</span>
+      </div>
+      <p class="goal-note">{{ t("ai_power_home_note") }}</p>
+      <div class="student-task-list">
+        <a class="student-task-item" href="/ai-power-vocabulary">
+          <span class="student-task-number">1</span>
+          <span>
+            <strong>{{ t("ai_power_open") }}</strong>
+            <small>{{ t("card_ai_learning") }}</small>
+          </span>
+        </a>
+        <a class="student-task-item" href="/dictionary">
+          <span class="student-task-number">2</span>
+          <span>
+            <strong>{{ t("nav_dictionary") }}</strong>
+            <small>{{ t("card_ai_dictionary") }}</small>
+          </span>
+        </a>
+      </div>
+      <div class="action-row">
+        <a class="button" href="/ai-power-vocabulary">{{ t("nav_ai_power") }}</a>
+        <a class="button secondary" href="/dictionary">{{ t("nav_dictionary") }}</a>
+      </div>
+      {% endif %}
     </article>
 
     <article class="dashboard-hero-v3-summary">
@@ -158,6 +247,7 @@
 </section>
 
 <section class="dashboard-home-stack">
+  {% if is_student_persona %}
   <article class="panel dashboard-v2-card refined-words-panel">
     <div class="card-head tight">
       <div>
@@ -188,6 +278,7 @@
       {% endfor %}
     </div>
   </article>
+  {% endif %}
 
   <article class="panel dashboard-v2-card refined-recommend-panel">
     <div class="card-head tight">
@@ -209,6 +300,7 @@
   </article>
 </section>
 
+{% if is_business_persona or is_ai_persona %}
 <section class="panel dashboard-v2-card ai-power-home-panel">
   <div class="card-head tight">
     <div>
@@ -238,7 +330,9 @@
     </div>
   </div>
 </section>
+{% endif %}
 
+{% if is_student_persona %}
 <section class="panel dashboard-v2-card refined-band-panel">
   <div class="card-head tight">
     <div>
@@ -260,4 +354,5 @@
     {% endfor %}
   </div>
 </section>
+{% endif %}
 {% endblock %}

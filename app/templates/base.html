@@ -27,6 +27,7 @@
           <span class="nav-icon">◫</span>
           <span>{{ t("nav_dashboard") }}</span>
         </a>
+        {% if is_student_persona %}
         <a href="/test" class="{% if request.url.path.startswith('/test') %}active{% endif %}">
           <span class="nav-icon">📝</span>
           <span>{{ t("nav_test") }}</span>
@@ -35,22 +36,29 @@
           <span class="nav-icon">📖</span>
           <span>{{ t("nav_learning_sidebar") if t("nav_learning_sidebar") != "nav_learning_sidebar" else t("nav_learning") }}</span>
         </a>
+        {% endif %}
         <a href="/dictionary" class="{% if request.url.path.startswith('/dictionary') or request.url.path.startswith('/word') %}active{% endif %}">
           <span class="nav-icon">字</span>
           <span>{{ t("nav_dictionary") }}</span>
         </a>
+        {% if is_business_persona %}
         <a href="/business-vocabulary" class="{% if request.url.path.startswith('/business-vocabulary') %}active{% endif %}">
           <span class="nav-icon">商</span>
           <span>{{ t("nav_business_vocab") }}</span>
         </a>
+        {% endif %}
+        {% if is_business_persona or is_ai_persona %}
         <a href="/ai-power-vocabulary" class="{% if request.url.path.startswith('/ai-power-vocabulary') %}active{% endif %}">
           <span class="nav-icon">AI</span>
           <span>{{ t("nav_ai_power") }}</span>
         </a>
+        {% endif %}
+        {% if is_student_persona %}
         <a href="/statistics" class="{% if request.url.path.startswith('/statistics') or request.url.path.startswith('/test/history') %}active{% endif %}">
           <span class="nav-icon">📊</span>
           <span>{{ t("nav_statistics") }}</span>
         </a>
+        {% endif %}
         {% if is_teacher %}
         <a href="/teacher" class="{% if request.url.path.startswith('/teacher') %}active{% endif %}">
           <span class="nav-icon">▦</span>
@@ -69,7 +77,15 @@
         <p class="sidebar-card-label">{{ t("sidebar_flow_label") }}</p>
         <strong>{{ t("sidebar_flow_title") }}</strong>
         <span>{{ t("sidebar_flow_text") }}</span>
+        {% if is_teacher_persona %}
+        <a class="sidebar-card-link" href="/teacher">{{ t("nav_teacher") }}</a>
+        {% elif is_business_persona %}
+        <a class="sidebar-card-link" href="/business-vocabulary">{{ t("nav_business_vocab") }}</a>
+        {% elif is_ai_persona %}
+        <a class="sidebar-card-link" href="/ai-power-vocabulary">{{ t("nav_ai_power") }}</a>
+        {% else %}
         <a class="sidebar-card-link" href="/learning">{{ t("sidebar_flow_link") }}</a>
+        {% endif %}
       </div>
     </aside>
 
@@ -87,10 +103,16 @@
               <a class="lang-switch-link {% if lang == 'zh-Hans' %}active{% endif %}" href="{{ lang_url('zh-Hans') }}">简中</a>
             </div>
           </div>
+          {% if is_student_persona %}
           <a class="topbar-action topbar-action-text" href="/test" aria-label="Open level test">Level Test</a>
-          <a class="topbar-action topbar-action-text {% if request.url.path.startswith('/business-vocabulary') %}active{% endif %}" href="/business-vocabulary">{{ t("nav_business_vocab") }}</a>
-          <a class="topbar-action topbar-action-text" href="/ai-power-vocabulary" aria-label="Open AI power vocabulary">{{ t("nav_ai_power") }}</a>
           <a class="topbar-action topbar-action-text" href="/statistics" aria-label="Open statistics">{{ t("nav_statistics") }}</a>
+          {% endif %}
+          {% if is_business_persona %}
+          <a class="topbar-action topbar-action-text {% if request.url.path.startswith('/business-vocabulary') %}active{% endif %}" href="/business-vocabulary">{{ t("nav_business_vocab") }}</a>
+          {% endif %}
+          {% if is_business_persona or is_ai_persona %}
+          <a class="topbar-action topbar-action-text" href="/ai-power-vocabulary" aria-label="Open AI power vocabulary">{{ t("nav_ai_power") }}</a>
+          {% endif %}
           {% if is_teacher %}
           <a class="topbar-action topbar-action-text {% if request.url.path.startswith('/teacher') %}active{% endif %}" href="/teacher">{{ t("nav_teacher") }}</a>
           {% endif %}

@@ -236,6 +236,18 @@ const mobileCopy = {
     learningHint: "10 words",
     reviewHint: "Weak words",
     dictionaryHint: "Word detail",
+    businessTodayTitle: "Business vocabulary for today",
+    businessTodayBody: "Use the business track for sector vocabulary, reports, meetings, and AI-ready professional language.",
+    businessMainTitle: "Browse by sector and business use",
+    businessMainBody: "Filter words by finance, technology, trade, strategy, risk, and other business contexts.",
+    teacherTodayTitle: "Teacher workspace",
+    teacherTodayBody: "Use mobile for quick student checks, word lookup, and teaching preparation. Class management stays in the teacher dashboard.",
+    teacherMainTitle: "Open teacher dashboard",
+    teacherMainBody: "Review classes, student progress, assignments, and at-risk learners.",
+    aiTodayTitle: "AI vocabulary track",
+    aiTodayBody: "Build precise instruction language for prompting, analysis, writing, and professional workflows.",
+    aiMainTitle: "Open AI instruction vocabulary",
+    aiMainBody: "Practice high-utility words for clearer prompts and more controlled AI output.",
     personas: {
       student: ["Student", "Academic growth, reading, and stronger vocabulary foundations."],
       teacher: ["Teacher / Educator", "Teaching, explaining, and building useful learning materials."],
@@ -342,6 +354,18 @@ const mobileCopy = {
     learningHint: "10 個詞彙",
     reviewHint: "重溫錯詞",
     dictionaryHint: "詞彙詳情",
+    businessTodayTitle: "今日商務詞彙",
+    businessTodayBody: "使用商務軌道學習行業詞彙、報告、會議和 AI 專業溝通語言。",
+    businessMainTitle: "按行業和工作用途瀏覽",
+    businessMainBody: "按 finance、technology、trade、strategy、risk 等商務情境篩選詞彙。",
+    teacherTodayTitle: "教師工作區",
+    teacherTodayBody: "手機版適合快速查看學生情況、查詞和準備教學；班級管理集中在教師 Dashboard。",
+    teacherMainTitle: "打開教師 Dashboard",
+    teacherMainBody: "查看班級、學生進度、指派練習和需要關注的學生。",
+    aiTodayTitle: "AI 詞彙軌道",
+    aiTodayBody: "建立更精準的提示詞、分析、寫作和專業工作流程語言。",
+    aiMainTitle: "打開 AI 指令詞彙",
+    aiMainBody: "練習能令提示詞更清楚、AI 輸出更可控的高實用詞彙。",
     personas: {
       student: ["學生", "提升學術閱讀能力，建立更穩固的詞彙基礎。"],
       teacher: ["老師 / 教育工作者", "用於教學、解釋詞彙，以及建立實用學習材料。"],
@@ -448,6 +472,18 @@ const mobileCopy = {
     learningHint: "10 个词汇",
     reviewHint: "重温错词",
     dictionaryHint: "词汇详情",
+    businessTodayTitle: "今日商务词汇",
+    businessTodayBody: "使用商务路线学习行业词汇、报告、会议和 AI 专业沟通语言。",
+    businessMainTitle: "按行业和工作用途浏览",
+    businessMainBody: "按 finance、technology、trade、strategy、risk 等商务情境筛选词汇。",
+    teacherTodayTitle: "教师工作区",
+    teacherTodayBody: "手机版适合快速查看学生情况、查词和准备教学；班级管理集中在教师 Dashboard。",
+    teacherMainTitle: "打开教师 Dashboard",
+    teacherMainBody: "查看班级、学生进度、指派练习和需要关注的学生。",
+    aiTodayTitle: "AI 词汇路线",
+    aiTodayBody: "建立更精准的提示词、分析、写作和专业工作流程语言。",
+    aiMainTitle: "打开 AI 指令词汇",
+    aiMainBody: "练习能令提示词更清楚、AI 输出更可控的高实用词汇。",
     personas: {
       student: ["学生", "提升学术阅读能力，建立更稳固的词汇基础。"],
       teacher: ["老师 / 教育工作者", "用于教学、解释词汇，以及建立实用学习材料。"],
@@ -665,6 +701,25 @@ export default function App() {
     ? `${bootstrap.latest_test.score} / 100`
     : copy.noTestYet;
   const recommendedBandLabel = bootstrap?.recommended_band || "-";
+  const isStudentMobile = persona === "student" || persona === "lifelong_learner";
+  const isBusinessMobile = persona === "business_professional";
+  const isTeacherMobile = persona === "teacher";
+  const isAiMobile = persona === "ai_power_user";
+  const todayPrimaryStatLabel = isStudentMobile ? copy.scoreLabel : isTeacherMobile ? copy.navProfile : "Track";
+  const todayPrimaryStatValue = isStudentMobile ? latestTestLabel : selectedPersonaLabel;
+  const todaySecondaryStatLabel = isStudentMobile ? copy.recommendedLabel : isTeacherMobile ? copy.navDictionary : copy.navAi;
+  const todaySecondaryStatValue = isStudentMobile
+    ? recommendedBandLabel
+    : isTeacherMobile
+      ? copy.openWords
+      : bootstrap?.ai_power_summary.progress_label || "-";
+  const mobileTabs: Array<[TabKey, string]> = [
+    ["home", copy.navHome],
+    ...(isStudentMobile ? ([["learning", copy.navLearning]] as Array<[TabKey, string]>) : []),
+    ["dictionary", copy.navDictionary],
+    ...(isBusinessMobile || isAiMobile ? ([["ai", copy.navAi]] as Array<[TabKey, string]>) : []),
+    ["profile", copy.navProfile],
+  ];
 
   function applyAuthenticatedUser(user: MobileUser) {
     setAuthUser(user);
@@ -1230,13 +1285,7 @@ export default function App() {
       </View>
 
       <View style={styles.navTabs}>
-        {[
-          ["home", copy.navHome],
-          ["learning", copy.navLearning],
-          ["dictionary", copy.navDictionary],
-          ["ai", copy.navAi],
-          ["profile", copy.navProfile],
-        ].map(([key, label]) => (
+        {mobileTabs.map(([key, label]) => (
           <Pressable
             key={key}
             onPress={() => setActiveTab(key as TabKey)}
@@ -1266,8 +1315,24 @@ export default function App() {
                   <View style={styles.todayHeader}>
                     <View style={styles.todayHeaderMain}>
                       <Text style={styles.sectionEyebrow}>{copy.todayEyebrow}</Text>
-                      <Text style={styles.todayTitle}>{copy.todayTitle}</Text>
-                      <Text style={styles.cardNote}>{todayBody}</Text>
+                      <Text style={styles.todayTitle}>
+                        {isBusinessMobile
+                          ? copy.businessTodayTitle
+                          : isTeacherMobile
+                            ? copy.teacherTodayTitle
+                            : isAiMobile
+                              ? copy.aiTodayTitle
+                              : copy.todayTitle}
+                      </Text>
+                      <Text style={styles.cardNote}>
+                        {isBusinessMobile
+                          ? copy.businessTodayBody
+                          : isTeacherMobile
+                            ? copy.teacherTodayBody
+                            : isAiMobile
+                              ? copy.aiTodayBody
+                              : todayBody}
+                      </Text>
                     </View>
                     <View style={styles.avatar}>
                       <Text style={styles.avatarText}>{bootstrap.profile.initials || "VL"}</Text>
@@ -1276,17 +1341,17 @@ export default function App() {
 
                   <View style={styles.todayStatsRow}>
                     <View style={styles.todayStat}>
-                      <Text style={styles.todayStatLabel}>{copy.scoreLabel}</Text>
-                      <Text style={styles.todayStatValue}>{latestTestLabel}</Text>
+                      <Text style={styles.todayStatLabel}>{todayPrimaryStatLabel}</Text>
+                      <Text style={styles.todayStatValue}>{todayPrimaryStatValue}</Text>
                     </View>
                     <View style={styles.todayStat}>
-                      <Text style={styles.todayStatLabel}>{copy.recommendedLabel}</Text>
-                      <Text style={styles.todayStatValue}>{recommendedBandLabel}</Text>
+                      <Text style={styles.todayStatLabel}>{todaySecondaryStatLabel}</Text>
+                      <Text style={styles.todayStatValue}>{todaySecondaryStatValue}</Text>
                     </View>
                   </View>
 
                   <View style={styles.taskList}>
-                    {!bootstrap.latest_test ? (
+                    {isStudentMobile && !bootstrap.latest_test ? (
                       <TaskCard
                         tag={copy.primaryTask}
                         title={copy.startLevelTest}
@@ -1298,7 +1363,7 @@ export default function App() {
                       />
                     ) : null}
 
-                    {activeLearning ? (
+                    {isStudentMobile && activeLearning ? (
                       <TaskCard
                         tag={copy.primaryTask}
                         title={copy.continueTaskTitle}
@@ -1308,7 +1373,7 @@ export default function App() {
                         tone="success"
                         onPress={resumeActiveLearning}
                       />
-                    ) : (
+                    ) : isStudentMobile ? (
                       <TaskCard
                         tag={bootstrap.latest_test ? copy.primaryTask : copy.secondaryTask}
                         title={copy.startTenWordsTitle}
@@ -1318,9 +1383,45 @@ export default function App() {
                         tone="primary"
                         onPress={() => startLearningFlow()}
                       />
-                    )}
+                    ) : null}
 
-                    {bootstrap.missed_words_count > 0 ? (
+                    {isBusinessMobile ? (
+                      <TaskCard
+                        tag={copy.primaryTask}
+                        title={copy.businessMainTitle}
+                        body={copy.businessMainBody}
+                        meta={copy.navDictionary}
+                        buttonLabel={copy.navDictionary}
+                        tone="primary"
+                        onPress={() => openWebPath("/business-vocabulary")}
+                      />
+                    ) : null}
+
+                    {isTeacherMobile ? (
+                      <TaskCard
+                        tag={copy.primaryTask}
+                        title={copy.teacherMainTitle}
+                        body={copy.teacherMainBody}
+                        meta={copy.navProfile}
+                        buttonLabel={copy.teacherMainTitle}
+                        tone="primary"
+                        onPress={() => openWebPath("/teacher")}
+                      />
+                    ) : null}
+
+                    {isAiMobile ? (
+                      <TaskCard
+                        tag={copy.primaryTask}
+                        title={copy.aiMainTitle}
+                        body={copy.aiMainBody}
+                        meta={copy.navAi}
+                        buttonLabel={copy.aiMainTitle}
+                        tone="primary"
+                        onPress={() => setActiveTab("ai")}
+                      />
+                    ) : null}
+
+                    {isStudentMobile && bootstrap.missed_words_count > 0 ? (
                       <TaskCard
                         tag={copy.secondaryTask}
                         title={copy.weakReviewTitle}
@@ -1330,7 +1431,7 @@ export default function App() {
                         tone="soft"
                         onPress={startWeakWordsReview}
                       />
-                    ) : (
+                    ) : isStudentMobile ? (
                       <TaskCard
                         tag={copy.optionalTask}
                         title={copy.deepLearningTitle}
@@ -1340,10 +1441,11 @@ export default function App() {
                         tone="soft"
                         onPress={() => setActiveTab("dictionary")}
                       />
-                    )}
+                    ) : null}
                   </View>
                 </View>
 
+                {isStudentMobile ? (
                 <View style={[styles.card, shadows.card]}>
                   <Text style={styles.sectionEyebrow}>{copy.dailyChecklist}</Text>
                   <View style={styles.checklistRow}>
@@ -1375,7 +1477,9 @@ export default function App() {
                     <QuickAction label={copy.retakeLevelTest} tone="soft" onPress={() => openWebPath("/test")} />
                   </View>
                 </View>
+                ) : null}
 
+                {isStudentMobile ? (
                 <View style={[styles.card, shadows.card]}>
                   <View style={styles.learningHomeHeader}>
                     <View style={styles.learningHomeTitleBlock}>
@@ -1434,14 +1538,18 @@ export default function App() {
                     })}
                   </View>
                 </View>
+                ) : null}
 
+                {isStudentMobile ? (
                 <View style={styles.metricGrid}>
                   <MetricCard label="Total Words" value={String(bootstrap.stats.total_words)} />
                   <MetricCard label="Tests Taken" value={String(bootstrap.stats.tests_taken)} />
                   <MetricCard label="Learning Runs" value={String(bootstrap.stats.learning_runs)} />
                   <MetricCard label="AI Power" value={bootstrap.ai_power_summary.progress_label} />
                 </View>
+                ) : null}
 
+                {isStudentMobile ? (
                 <View style={styles.featureGrid}>
                   <FeatureCard
                     eyebrow="Recommended band"
@@ -1454,7 +1562,9 @@ export default function App() {
                     note="These are the words most worth revisiting next."
                   />
                 </View>
+                ) : null}
 
+                {isStudentMobile ? (
                 <View style={[styles.card, shadows.card]}>
                   <Text style={styles.sectionEyebrow}>Vocabulary Snapshot</Text>
                   <Text style={styles.cardTitle}>Frequency bands</Text>
@@ -1481,7 +1591,9 @@ export default function App() {
                     ))}
                   </View>
                 </View>
+                ) : null}
 
+                {isStudentMobile ? (
                 <View style={[styles.card, shadows.card]}>
                   <Text style={styles.sectionEyebrow}>Today&apos;s Words</Text>
                   <Text style={styles.cardTitle}>Start with a few words</Text>
@@ -1498,7 +1610,9 @@ export default function App() {
                     </Pressable>
                   ))}
                 </View>
+                ) : null}
 
+                {(isBusinessMobile || isAiMobile) ? (
                 <View style={[styles.card, shadows.card]}>
                   <Text style={styles.sectionEyebrow}>AI Track</Text>
                   <Text style={styles.cardTitle}>Professional prompt vocabulary</Text>
@@ -1517,6 +1631,7 @@ export default function App() {
                   </View>
                   <QuickAction label="Browse AI categories" tone="primary" onPress={() => setActiveTab("ai")} />
                 </View>
+                ) : null}
               </>
             )}
           </>

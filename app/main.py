@@ -3490,15 +3490,15 @@ def recommendation_cards(persona: str | None) -> list[dict[str, str]]:
         ]
     if persona == "business_professional":
         return [
-            {"tag_key": "practice", "title_key": "nav_learning", "body_key": "card_business_learning", "href": "/learning", "class_name": "recommend-card-blue"},
+            {"tag_key": "practice", "title_key": "nav_business_vocab", "body_key": "card_business_learning", "href": "/business-vocabulary", "class_name": "recommend-card-blue"},
             {"tag_key": "review", "title_key": "nav_dictionary", "body_key": "card_business_dictionary", "href": "/dictionary", "class_name": "recommend-card-pink"},
-            {"tag_key": "placement", "title_key": "nav_test", "body_key": "card_business_test", "href": "/test", "class_name": "recommend-card-sand"},
+            {"tag_key": "practice", "title_key": "nav_ai_power", "body_key": "business_featured_path_note", "href": "/ai-power-vocabulary", "class_name": "recommend-card-sand"},
         ]
     if persona == "ai_power_user":
         return [
-            {"tag_key": "practice", "title_key": "nav_learning", "body_key": "card_ai_learning", "href": "/learning", "class_name": "recommend-card-blue"},
+            {"tag_key": "practice", "title_key": "nav_ai_power", "body_key": "card_ai_learning", "href": "/ai-power-vocabulary", "class_name": "recommend-card-blue"},
             {"tag_key": "review", "title_key": "nav_dictionary", "body_key": "card_ai_dictionary", "href": "/dictionary", "class_name": "recommend-card-pink"},
-            {"tag_key": "placement", "title_key": "nav_test", "body_key": "card_ai_test", "href": "/test", "class_name": "recommend-card-sand"},
+            {"tag_key": "practice", "title_key": "ai_power_open", "body_key": "ai_power_home_note", "href": "/ai-power-vocabulary", "class_name": "recommend-card-sand"},
         ]
     return [
         {"tag_key": "practice", "title_key": "nav_learning", "body_key": "card_lifelong_learning", "href": "/learning", "class_name": "recommend-card-blue"},
@@ -3878,12 +3878,17 @@ def mobile_recommendation_cards(persona: str, lang: str = "en") -> list[dict[str
 def render(request: Request, template_name: str, **context) -> HTMLResponse:
     lang = getattr(request.state, "lang", get_lang(request))
     user = registered_user_row(request)
+    persona = get_profile_persona(request)
     context.update(
         {
             "lang": lang,
             "profile_name": get_profile_name(request),
             "profile_initials": profile_initials(get_profile_name(request)),
-            "profile_persona": get_profile_persona(request),
+            "profile_persona": persona,
+            "is_student_persona": persona in {"student", "lifelong_learner", None},
+            "is_business_persona": persona == "business_professional",
+            "is_ai_persona": persona == "ai_power_user",
+            "is_teacher_persona": persona == "teacher",
             "registered_user": user,
             "is_teacher": is_teacher_user(user),
             "is_admin": is_admin_user(user),
